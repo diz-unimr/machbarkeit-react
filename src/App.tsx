@@ -1,20 +1,18 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
-	SPDX-License-Identifier: AGPL-3.0-or-later */
+SPDX-License-Identifier: AGPL-3.0-or-later */
 /* import { useState } from 'react' */
 
-import './App.css'
-import AttributeList from './features/attribute-list/AttributeList'
+import "./App.css";
+import AttributeList from "./features/attribute-list/AttributeList";
 
 function App() {
-  /* const [count, setCount] = useState(0) */
-
   return (
     <>
-      <div className='w-full h-full flex flex-col rounded-lg'>
+      <div className="w-full h-full flex flex-col rounded-lg">
         <AttributeList />
       </div>
-	</>     
-  )
+    </>
+  );
 }
 
-export default App
+export default App;
