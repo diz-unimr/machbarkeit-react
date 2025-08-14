@@ -4,12 +4,14 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import "./App.css";
 import AttributeList from "./features/attribute-list/AttributeList";
+import FeasibilityContainer from "./features/feasibility/FeasibilityContainer";
 
 function App() {
   return (
     <>
-      <div className="w-full h-full flex flex-col rounded-lg">
+      <div className="w-full h-full flex rounded-lg">
         <AttributeList />
+        <FeasibilityContainer />
       </div>
     </>
   );

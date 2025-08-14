@@ -9,6 +9,7 @@ import { useState } from "react";
 
 function AttributeList() {
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
+  const [mouseOverIndex, setMouseOverIndex] = useState<number | null>(null);
   const [checkboxItems, setCheckboxItem] = useState<Map<string, Attribute>>(
     new Map()
   );
@@ -70,11 +71,18 @@ function AttributeList() {
     });
   };
 
+  const getTooltipPosition = (index: number) => {
+    setMouseOverIndex(index);
+  };
+
   return (
-    <>
+    <section
+      id="attribute-list"
+      className="flex flex-col gap-7 h-full w-[40%] max-w-[500px] p-[20px]"
+    >
       <AttributeListPanel
         header="Attributliste"
-        extra={<InputTextField id="attributeList" />}
+        extra={<InputTextField id="search-attribute" label="Attribut suchen" />}
       >
         {moduleName.map((module, module_index) => (
           <div key={module_index}>
@@ -85,21 +93,42 @@ function AttributeList() {
               {expandedIndexes.has(module_index)}
               <img
                 src={arrowCollapse}
-                className={`transition-all duration-500 ${expandedIndexes.has(module_index) ? "rotate-90" : "rotate-0"}`}
+                className={
+                  "transition-all duration-500 " +
+                  expandedIndexes.has(module_index)
+                    ? "rotate-90"
+                    : "rotate-0"
+                }
               />
               {module}
             </a>
             <div
-              className={`${expandedIndexes.has(module_index) ? "block" : "hidden"}`}
+              className={expandedIndexes.has(module_index) ? "block" : "hidden"}
             >
               {filteredAttribute.map((attribute, attribute_index) =>
                 attribute.kdsModule === module ? (
                   <div key={attribute_index} className="flex gap-2.5 pl-5 pb-2">
                     <input
+                      id={"id-" + attribute_index}
                       type="checkbox"
                       onChange={() => toggleCheckbox(attribute)}
                     />
-                    <p>{attribute.attributeName}</p>
+                    <p
+                      onMouseOver={() => getTooltipPosition(attribute_index)}
+                      onMouseOut={() => setMouseOverIndex(null)}
+                    >
+                      {attribute.attributeName}
+                    </p>
+                    <span
+                      className={
+                        "w-[350px] absolute z-10 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
+                        (mouseOverIndex === attribute_index
+                          ? "flex visible"
+                          : "hidden")
+                      }
+                    >
+                      {attribute.attributeDescription}
+                    </span>
                   </div>
                 ) : null
               )}
@@ -127,7 +156,7 @@ function AttributeList() {
             </div>
           ))}
       </AttributeListPanel>
-    </>
+    </section>
   );
 }
 
