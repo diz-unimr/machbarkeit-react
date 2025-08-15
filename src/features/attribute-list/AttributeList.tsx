@@ -90,7 +90,6 @@ function AttributeList() {
               onClick={() => toggleExpansion(module_index)}
               className="flex items-center w-fit cursor-pointer mb-2.5"
             >
-              {expandedIndexes.has(module_index)}
               <img
                 src={arrowCollapse}
                 className={
