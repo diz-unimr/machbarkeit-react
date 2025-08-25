@@ -6,11 +6,11 @@ import { ArrowButton, ModuleButton } from "../../components/ui/Button";
 
 function OntologyTreePanel() {
   return (
-    <div className="flex relative w-full h-full z-50 -top-[20px]">
+    <div className="flex relative max-w-full max-h-full z-50 -top-[20px]">
       <div className="flex flex-col w-full min-h-[180px] absolute bg-white shadow-[0px_10px_15px_0px_#0003,0px_0px_25px_2px_#00000024,0px_0px_10px_0px_#0000001f] pointer-events-auto">
         <div>
           {/* Module name */}
-          <div className="flex p-3 mt-3 border-t-2 border-t-[#adbcd7] border-b-2 border-b-[#adbcd7]">
+          <div className="flex p-3 mt-4 border-t-2 border-t-[#adbcd7] border-b-2 border-b-[#adbcd7]">
             <div className="flex gap-3 m-auto">
               <ModuleButton id="person" label="Person" moduleName="person" />
               {/* e67e22 DA392B */}

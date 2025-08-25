@@ -31,13 +31,13 @@ function InputTextField({ id, label }: InputTextFieldProp) {
             />
             <label
               htmlFor={id}
-              className={`flex items-center absolute left-0 ml-10 cursor-auto transition-all duration-100
-								${textInput.length > 0 || isFocused ? "-top-2.5 text-sm font-bold bg-white" : "h-full top-0 ml-2"}`}
+              className={`flex items-center absolute left-0 ml-10 pl-1 pr-1 cursor-auto transition-all duration-200
+								${textInput.length > 0 || isFocused ? "-top-2.5 text-sm font-semibold bg-white" : "h-full top-0 ml-2"}`}
             >
               {label}
             </label>
           </div>
-          <div className="flex h-full items-center absolute top-0 left-0 ml-2">
+          <div className="flex h-full items-center absolute top-0 left-0 ml-3">
             <span>
               <svg
                 fill="currentColor"

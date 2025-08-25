@@ -3,7 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import InputTextField from "../../components/ui/InputTextField";
 import arrowCollapse from "../../assets/arrow-collapse.png";
-import AttributeListPanel from "./layout/AttributeListPanel";
+import Card from "../../components/ui/Card";
 import { type Attribute } from "./type";
 import { useState } from "react";
 
@@ -15,6 +15,16 @@ function AttributeList() {
   );
 
   const filteredAttribute = [
+    {
+      kdsModule: "Person",
+      attributeName: "Vorname",
+      attributeDescription: "Alle Vornamen einer Person",
+    },
+    {
+      kdsModule: "Person",
+      attributeName: "Nachname",
+      attributeDescription: "Alle Nachnamen einer Person",
+    },
     {
       kdsModule: "Person",
       attributeName: "Vorname",
@@ -51,9 +61,13 @@ function AttributeList() {
   const toggleExpansion = (index: number) => {
     setExpandedIndex((prev) => {
       const next = new Set(prev); // clone set() for reactive
+      console.log(next);
+      console.log(next.has(index));
       if (next.has(index)) {
         next.delete(index);
       } else next.add(index);
+      console.log(next);
+
       return next;
     });
   };
@@ -78,64 +92,73 @@ function AttributeList() {
   return (
     <section
       id="attribute-list"
-      className="flex flex-col gap-7 h-full w-[40%] max-w-[500px] p-[20px]"
+      className="flex flex-col gap-7 h-full w-[40%] max-w-[460px] p-[20px]"
     >
-      <AttributeListPanel
+      <Card
         header="Attributliste"
-        extra={<InputTextField id="search-attribute" label="Attribut suchen" />}
+        className="min-h-[48%]"
+        // extra={<InputTextField id="search-attribute" label="Attribut suchen" />}
       >
-        {moduleName.map((module, module_index) => (
-          <div key={module_index}>
-            <a
-              onClick={() => toggleExpansion(module_index)}
-              className="flex items-center w-fit cursor-pointer mb-2.5"
-            >
-              <img
-                src={arrowCollapse}
+        <InputTextField id="search-attribute" label="Attribut suchen" />
+        <div className="flex flex-col gap-2.5 h-full w-full mt-4 overflow-y-auto overflow-x-hidden">
+          {moduleName.map((module, module_index) => (
+            <div key={module_index}>
+              <a
+                onClick={() => toggleExpansion(module_index)}
+                className="flex items-center w-fit cursor-pointer mb-2.5"
+              >
+                <img
+                  src={arrowCollapse}
+                  className={
+                    "transition-all duration-300 " +
+                    (expandedIndexes.has(module_index)
+                      ? "rotate-90"
+                      : "rotate-0")
+                  }
+                />
+                {module}
+              </a>
+              <div
                 className={
-                  "transition-all duration-500 " +
-                  expandedIndexes.has(module_index)
-                    ? "rotate-90"
-                    : "rotate-0"
+                  expandedIndexes.has(module_index) ? "block" : "hidden"
                 }
-              />
-              {module}
-            </a>
-            <div
-              className={expandedIndexes.has(module_index) ? "block" : "hidden"}
-            >
-              {filteredAttribute.map((attribute, attribute_index) =>
-                attribute.kdsModule === module ? (
-                  <div key={attribute_index} className="flex gap-2.5 pl-5 pb-2">
-                    <input
-                      id={"id-" + attribute_index}
-                      type="checkbox"
-                      onChange={() => toggleCheckbox(attribute)}
-                    />
-                    <p
-                      onMouseOver={() => getTooltipPosition(attribute_index)}
-                      onMouseOut={() => setMouseOverIndex(null)}
+              >
+                {filteredAttribute.map((attribute, attribute_index) =>
+                  attribute.kdsModule === module ? (
+                    <div
+                      key={attribute_index}
+                      className="flex gap-2.5 pl-5 pb-2"
                     >
-                      {attribute.attributeName}
-                    </p>
-                    <span
-                      className={
-                        "w-[350px] absolute z-10 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
-                        (mouseOverIndex === attribute_index
-                          ? "flex visible"
-                          : "hidden")
-                      }
-                    >
-                      {attribute.attributeDescription}
-                    </span>
-                  </div>
-                ) : null
-              )}
+                      <input
+                        id={"id-" + attribute_index}
+                        type="checkbox"
+                        onChange={() => toggleCheckbox(attribute)}
+                      />
+                      <p
+                        onMouseOver={() => getTooltipPosition(attribute_index)}
+                        onMouseOut={() => setMouseOverIndex(null)}
+                      >
+                        {attribute.attributeName}
+                      </p>
+                      <span
+                        className={
+                          "w-[350px] absolute z-1000 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
+                          (mouseOverIndex === attribute_index
+                            ? "flex visible"
+                            : "hidden")
+                        }
+                      >
+                        {attribute.attributeDescription}
+                      </span>
+                    </div>
+                  ) : null
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </AttributeListPanel>
-      <AttributeListPanel header="ausgewählte Attributliste">
+          ))}
+        </div>
+      </Card>
+      <Card header="ausgewählte Attributliste" className="min-h-[48%]">
         {moduleName
           .filter((module) =>
             [...checkboxItems.values()].some(
@@ -154,7 +177,7 @@ function AttributeList() {
                 ))}
             </div>
           ))}
-      </AttributeListPanel>
+      </Card>
     </section>
   );
 }

@@ -9,7 +9,7 @@ import FeasibilityContainer from "./features/feasibility/FeasibilityContainer";
 function App() {
   return (
     <>
-      <div className="w-full h-full flex rounded-lg">
+      <div className="max-w-[2000px] h-full flex justify-around rounded-lg m-auto">
         <AttributeList />
         <FeasibilityContainer />
       </div>
