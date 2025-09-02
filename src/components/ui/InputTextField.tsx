@@ -6,15 +6,18 @@ import { useState } from "react";
 type InputTextFieldProp = {
   id: string;
   label: string;
+  className?: string;
 };
 
-function InputTextField({ id, label }: InputTextFieldProp) {
+function InputTextField({ id, label, className }: InputTextFieldProp) {
   const [isFocused, setIsFocused] = useState(false);
   const [textInput, setTextInput] = useState("");
 
   return (
     <>
-      <div className="w-full relative">
+      <div
+        className={`flex flex-col justify-center w-full relative mb-4 ${className}`}
+      >
         <div className="h-[45px] relative">
           <div
             onFocus={() => setIsFocused(true)}
@@ -27,12 +30,12 @@ function InputTextField({ id, label }: InputTextFieldProp) {
               type="text"
               value={textInput}
               placeholder=""
-              className="h-full w-full truncate !rounded-lg !border !border-[#c0c7ce] outline-0 pl-8"
+              className="h-full w-full truncate !rounded-lg !border !border-[#c0c7ce] outline-0 pl-9"
             />
             <label
               htmlFor={id}
-              className={`flex items-center absolute left-0 ml-10 pl-1 pr-1 cursor-auto transition-all duration-200
-								${textInput.length > 0 || isFocused ? "-top-2.5 text-sm font-semibold bg-white" : "h-full top-0 ml-2"}`}
+              className={`flex items-center absolute left-0 ml-10 text-[15px] cursor-auto transition-all duration-200
+								${textInput.length > 0 || isFocused ? "-top-2 !text-xs font-semibold bg-white" : "h-full top-0 ml-2"}`}
             >
               {label}
             </label>
@@ -51,9 +54,9 @@ function InputTextField({ id, label }: InputTextFieldProp) {
             </span>
           </div>
           {textInput.length > 0 && (
-            <button
+            <p
               onClick={() => setTextInput("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 !bg-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 !bg-white cursor-pointer"
             >
               <span
                 aria-hidden="true"
@@ -70,7 +73,7 @@ function InputTextField({ id, label }: InputTextFieldProp) {
                   <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path>
                 </svg>
               </span>
-            </button>
+            </p>
           )}
         </div>
       </div>

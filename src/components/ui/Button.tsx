@@ -1,76 +1,97 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
+import arrowImg from "../../assets/arrow-collapse.png";
+
 type ButtonProp = {
   id: string;
-  label?: string;
+  children?: React.ReactNode;
   bgColor?: string;
-  img?: string;
   className?: string;
-  style?: React.CSSProperties;
+  isActive?: boolean;
+  onClick?: (id: string) => void;
+  // style?: React.CSSProperties;
 };
 
-type ModuleButtonProp = ButtonProp & { moduleName: string };
-
-const moduleColors: Record<string, string> = {
-  person: "#3498db",
-  fall: "#e93f2f",
-  diagnose: "#865bd1",
-  prozedur: "#fbb016",
-  laboruntersuchung: "#27ae60",
-  unset: "unset",
-};
-
-function BaseButton({
+export function PrimaryButton({
   id,
-  label,
-  img,
+  children,
   className,
   bgColor,
-}: ButtonProp | ModuleButtonProp) {
+  isActive = true,
+  onClick,
+}: ButtonProp) {
+  return (
+    <>
+      <button
+        id={id}
+        className={`font-bold text-sm text-white ${className} ${
+          !isActive
+            ? "!cursor-default opacity-30"
+            : "cursor-auto hover:brightness-90 active:brightness-100"
+        }`}
+        style={{
+          backgroundColor: bgColor || "#0072DA",
+        }}
+        disabled={!isActive}
+        onClick={() => onClick?.(id)}
+      >
+        {children}
+      </button>
+    </>
+  );
+}
+
+export function SecondaryButton({
+  id,
+  children,
+  className,
+  isActive = true,
+  onClick,
+}: ButtonProp) {
   return (
     <button
       id={id}
-      className={`min-w-[70px] min-h-[40px] align-middle whitespace-nowrap p-2 pl-3 pr-3 m-1 rounded-lg cursor-pointer ${className}`}
-      style={{ backgroundColor: bgColor }}
+      className={`font-bold text-sm border border-white ${className} ${
+        !isActive ? "cursor-default bg-[#D1D6E2]" : "active:brightness-90"
+      }`}
+      style={{
+        padding: "6px 10px",
+      }}
+      disabled={!isActive}
+      onClick={() => onClick?.(id)}
     >
-      {label}
-      {img}
+      {children}
     </button>
   );
 }
 
-export function PrimaryButton(props: ButtonProp) {
-  return <BaseButton {...props} bgColor="#e5eff5" className="font-bold" />;
-}
-
-export function ArrowButton(props: ButtonProp) {
-  return <BaseButton {...props} />;
-}
-
-export function ModuleButton(props: ModuleButtonProp) {
+export function ArrowButton({ id }: { id: string }) {
   return (
-    <BaseButton
-      {...props}
-      bgColor={moduleColors[props.moduleName]}
-      className="text-white"
-    />
+    <button aria-expanded="true" className="!min-w-auto !p-0 !m-0">
+      <img
+        key={id}
+        className="transition-all duration-300 rotate-0"
+        src={arrowImg}
+        alt="arrow icon"
+      />
+    </button>
   );
 }
 
-type IconButtonProps = {
-  onClick?: React.MouseEventHandler<HTMLButtonElement>; // object ที่มี onClick
+type ToggleOntologyButtonProps = {
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export function IconButton({ onClick }: IconButtonProps) {
+export function ToggleOntologyButton({ onClick }: ToggleOntologyButtonProps) {
   return (
     <button
-      className="w-11 h-11 p-2.5 pl-3 pr-3 rounded-md !bg-[#5e6c78] cursor-pointer"
+      className="!w-10 !h-10 !min-w-auto !bg-[#5e6c78] hover:brightness-110 active:brightness-100 !rounded-sm"
       onClick={onClick}
     >
       <svg
-        width="20"
-        height="20"
+        width="16"
+        height="16"
         data-v-23839f87=""
         role="img"
         aria-hidden="true"

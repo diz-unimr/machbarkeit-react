@@ -4,8 +4,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import InputTextField from "../../components/ui/InputTextField";
 import arrowCollapse from "../../assets/arrow-collapse.png";
 import Card from "../../components/ui/Card";
+import { ATTRIBUTES } from "../../data";
 import { type Attribute } from "./type";
 import { useState } from "react";
+import { TreePanel } from "../../components/ui/TreePanel";
 
 function AttributeList() {
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
@@ -13,46 +15,6 @@ function AttributeList() {
   const [checkboxItems, setCheckboxItem] = useState<Map<string, Attribute>>(
     new Map()
   );
-
-  const filteredAttribute = [
-    {
-      kdsModule: "Person",
-      attributeName: "Vorname",
-      attributeDescription: "Alle Vornamen einer Person",
-    },
-    {
-      kdsModule: "Person",
-      attributeName: "Nachname",
-      attributeDescription: "Alle Nachnamen einer Person",
-    },
-    {
-      kdsModule: "Person",
-      attributeName: "Vorname",
-      attributeDescription: "Alle Vornamen einer Person",
-    },
-    {
-      kdsModule: "Person",
-      attributeName: "Nachname",
-      attributeDescription: "Alle Nachnamen einer Person",
-    },
-    {
-      kdsModule: "Labor",
-      attributeName: "LOINC Code",
-      attributeDescription:
-        "LOINC (Logical Observation Identifiers Names and Codes) ist ein internationales System zur eindeutigen Identifizierung und Kodierung",
-    },
-    {
-      kdsModule: "Diagnose",
-      attributeName: "Diagnosestellender Arzt",
-      attributeDescription: "Referenz auf diagnosestellenden Arzt",
-    },
-    {
-      kdsModule: "Fall",
-      attributeName: "Fallart",
-      attributeDescription:
-        "Art der Aufnahme (z. B. ambulant, stationären, vorstationär, ...)",
-    },
-  ];
 
   const moduleName = ["Diagnose", "Fall", "Labor", "Person"];
 
@@ -97,15 +59,14 @@ function AttributeList() {
       <Card
         header="Attributliste"
         className="min-h-[48%]"
-        // extra={<InputTextField id="search-attribute" label="Attribut suchen" />}
+        extra={<InputTextField id="search-attribute" label="Attribut suchen" />}
       >
-        <InputTextField id="search-attribute" label="Attribut suchen" />
-        <div className="flex flex-col gap-2.5 h-full w-full mt-4 overflow-y-auto overflow-x-hidden">
+        <TreePanel>
           {moduleName.map((module, module_index) => (
             <div key={module_index}>
               <a
                 onClick={() => toggleExpansion(module_index)}
-                className="flex items-center w-fit cursor-pointer mb-2.5"
+                className="flex items-center gap-2 w-fit cursor-pointer mb-2.5"
               >
                 <img
                   src={arrowCollapse}
@@ -123,40 +84,44 @@ function AttributeList() {
                   expandedIndexes.has(module_index) ? "block" : "hidden"
                 }
               >
-                {filteredAttribute.map((attribute, attribute_index) =>
-                  attribute.kdsModule === module ? (
-                    <div
-                      key={attribute_index}
-                      className="flex gap-2.5 pl-5 pb-2"
-                    >
-                      <input
-                        id={"id-" + attribute_index}
-                        type="checkbox"
-                        onChange={() => toggleCheckbox(attribute)}
-                      />
-                      <p
-                        onMouseOver={() => getTooltipPosition(attribute_index)}
-                        onMouseOut={() => setMouseOverIndex(null)}
+                {ATTRIBUTES.map(
+                  (attribute: Attribute, attribute_index: number) =>
+                    attribute.kdsModule === module ? (
+                      <div
+                        key={attribute_index}
+                        className="flex gap-2.5 pl-5 pb-2"
                       >
-                        {attribute.attributeName}
-                      </p>
-                      <span
-                        className={
-                          "w-[350px] absolute z-1000 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
-                          (mouseOverIndex === attribute_index
-                            ? "flex visible"
-                            : "hidden")
-                        }
-                      >
-                        {attribute.attributeDescription}
-                      </span>
-                    </div>
-                  ) : null
+                        <input
+                          id={"id-" + attribute_index}
+                          type="checkbox"
+                          onChange={() => toggleCheckbox(attribute)}
+                        />
+                        <p
+                          onMouseOver={() =>
+                            getTooltipPosition(attribute_index)
+                          }
+                          onMouseOut={() => setMouseOverIndex(null)}
+                        >
+                          {attribute.attributeName}
+                        </p>
+                        <span
+                          className={
+                            "w-[350px] absolute z-1000 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
+                            (mouseOverIndex === attribute_index
+                              ? "flex visible"
+                              : "hidden")
+                          }
+                        >
+                          {attribute.attributeDescription}
+                        </span>
+                      </div>
+                    ) : null
                 )}
               </div>
             </div>
           ))}
-        </div>
+        </TreePanel>
+        {/* </div> */}
       </Card>
       <Card header="ausgewählte Attributliste" className="min-h-[48%]">
         {moduleName
