@@ -23,13 +23,9 @@ function AttributeList() {
   const toggleExpansion = (index: number) => {
     setExpandedIndex((prev) => {
       const next = new Set(prev); // clone set() for reactive
-      console.log(next);
-      console.log(next.has(index));
       if (next.has(index)) {
         next.delete(index);
       } else next.add(index);
-      console.log(next);
-
       return next;
     });
   };
@@ -38,11 +34,9 @@ function AttributeList() {
     const key = keyOf(attribute);
     setCheckboxItem((items) => {
       const currentItems = new Map(items);
-      console.log(currentItems.has(key));
       if (currentItems.has(key)) {
         currentItems.delete(key);
       } else currentItems.set(key, attribute);
-      console.log(currentItems);
       return currentItems;
     });
   };

@@ -6,37 +6,52 @@ import { type Criterion } from "../../features/ontology/type";
 
 import { TreeItem } from "../../features/ontology/TreeItem";
 
-export function TreeNode({ criterion }: { criterion: Criterion }) {
+export default function TreeNode({
+  criterion,
+  onCheck,
+}: {
+  criterion: Criterion;
+  onCheck?: (isChecked: boolean, criterion: Criterion) => void;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
   const toggleExpansion = () => {
-    setIsExpanded(!isExpanded);
+    setIsExpanded((isExpanded) => !isExpanded);
   };
 
-  const toggleCheckbox = (criterion: Criterion) => {
-    console.log(criterion.display);
-    setIsChecked(!isChecked);
+  const toggleCheckbox = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    criterion: Criterion
+  ) => {
+    const checked = e.target.checked;
+    setIsChecked(e.target.checked);
+    onCheck?.(checked, criterion);
   };
 
   return (
-    <li className="list-none pl-3.5 pr-2">
-      <div className="flex gap-[clamp(10px,1.5%,15px)] items-start mb-2.5">
-        <TreeItem
-          criterion={criterion}
-          isExpanded={isExpanded}
-          isChecked={isChecked}
-          onClick={toggleExpansion}
-          onChange={() => toggleCheckbox(criterion)}
-        />
-      </div>
-      {isExpanded && (
-        <ul className="ml-10">
-          {criterion.children?.map((child) => (
-            <TreeNode key={child.id} criterion={child} />
-          ))}
-        </ul>
+    <>
+      {((criterion.children && criterion.children.length > 0) ||
+        criterion.selectable) && (
+        <li className="list-none pl-3.5 pr-2">
+          <div className="flex gap-[clamp(10px,1.5%,15px)] items-start mb-2.5">
+            <TreeItem
+              criterion={criterion}
+              isExpanded={isExpanded}
+              isChecked={isChecked}
+              onClick={toggleExpansion}
+              onChange={(e) => toggleCheckbox(e, criterion)}
+            />
+          </div>
+          {isExpanded && (
+            <ul className="ml-5">
+              {criterion.children?.map((child) => (
+                <TreeNode key={child.id} criterion={child} onCheck={onCheck} />
+              ))}
+            </ul>
+          )}
+        </li>
       )}
-    </li>
+    </>
   );
 }

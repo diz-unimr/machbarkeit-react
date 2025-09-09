@@ -2,11 +2,13 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
+import ButtonContainer from "../../components/ui/ฺButtonContainer";
 import {
   PrimaryButton,
   SecondaryButton,
-  ToggleOntologyButton,
-} from "../../components/ui/Button";
+} from "../../components/ui/buttons/Button";
+import OntologyButton from "../../components/ui/buttons/OntologyButton";
+import UploadButton from "../../components/ui/buttons/UploadButton";
 import InputTextField from "../../components/ui/InputTextField";
 import OntologyTreePanel from "../ontology/OntologyTreePanel";
 import Card from "../../components/ui/Card";
@@ -17,7 +19,7 @@ function FeasibilityContainer() {
   const [isOntolygyTreeOpen, setIsOntolygyTreeOpen] = useState(false);
 
   const handleClick = () => {
-    setIsOntolygyTreeOpen(!isOntolygyTreeOpen);
+    setIsOntolygyTreeOpen((isOntolygyTreeOpen) => !isOntolygyTreeOpen);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,73 +61,67 @@ function FeasibilityContainer() {
   const convertToCharacteristicsDisplay = (x) => {};
 
   return (
-    <section
+    <div
       id="feasibility-container"
-      className="flex flex-col h-full w-[60%] max-w-[1000px] justify-between p-[20px] overflow-y-auto"
+      className="flex flex-col gap-5 h-full w-[60%] max-w-[1000px] p-5 overflow-y-auto"
     >
-      <div className="flex flex-col">
-        {/* Feasibility output */}
-        <div className="flex w-full justify-between items-center mb-5">
-          <div className="flex h-[56px] border border-[#9ea9b3] rounded-md w-[45%] items-center p-3">
-            <p>
-              Anzahl der Patienten: <span>-</span>
-            </p>
-          </div>
-          <div className="flex gap-2 w-[55%] justify-end">
-            <PrimaryButton id="load-query" isActive={true}>
-              ZURÜCKSETZEN
-            </PrimaryButton>
-            <PrimaryButton id="save-query" isActive={false}>
-              ABFRAGE STARTEN
-            </PrimaryButton>
-          </div>
+      {/* 3 sections */}
+      {/* QueryControls */}
+      <section
+        id="query-controls"
+        className="flex w-full justify-between items-center"
+      >
+        <div className="flex h-[56px] border border-[#9ea9b3] rounded-md w-[45%] items-center p-3">
+          <p>
+            Anzahl der Patienten: <span>-</span>
+          </p>
         </div>
-        {/* Feasibility builder */}
-        <div className="flex flex-col gap-5">
-          {/* Search input */}
-          <Card header="Einschlusskriterien">
-            <div className="flex gap-3 w-full justify-between ">
-              <ToggleOntologyButton onClick={handleClick} />
-              <div className="flex w-full max-w-[92%]">
-                <InputTextField
-                  id="search-text"
-                  label="Code oder Suchbegriff eingeben"
-                  className="!mb-0"
-                />
-              </div>
+        <ButtonContainer>
+          <PrimaryButton id="load-query" label="ZURÜCKSETZEN" isActive={true} />
+          <PrimaryButton
+            id="save-query"
+            label="ABFRAGE STARTEN"
+            isActive={false}
+          />
+        </ButtonContainer>
+      </section>
+      {/* CriteriaSelector */}
+      <section>
+        <Card header="Einschlusskriterien">
+          <div className="flex gap-3 w-full justify-between ">
+            <OntologyButton onClick={handleClick} />
+            <div className="flex w-full max-w-[92%]">
+              <InputTextField
+                id="search-text"
+                label="Code oder Suchbegriff eingeben"
+                className="!mb-0"
+              />
             </div>
-          </Card>
-          {isOntolygyTreeOpen && <OntologyTreePanel />}
-          {/* Display panel */}
-          <Card header="Ausgewählte Merkmale" headerClassName="justify-start">
-            <div className="flex flex-col min-h-[150px] gap-5">
-              <div className="flex items-center justify-end gap-2">
-                <input
-                  type="file"
-                  id="upload"
-                  accept="application/json"
-                  hidden
-                  onChange={handleFileUpload}
-                />
-                <label
-                  htmlFor="upload"
-                  className="h-[36px] px-[10px] py-[6px] rounded-md border border-[#0072DA] font-bold text-sm text-center cursor-pointer hover:bg-[#0072DA] hover:text-white active:brightness-110"
-                >
-                  ABFRAGE LADEN
-                </label>
-                <SecondaryButton
-                  id="save-query"
-                  className="!w-[180px] !border-[#0072DA] hover:border-transparent hover:bg-[#0072DA] hover:text-white"
-                >
-                  ABFRAGE SPEICHERN
-                </SecondaryButton>
-              </div>
-              <div className="flex min-h-[100px] p-5 border border-black border-dashed"></div>
-            </div>
-          </Card>
-        </div>
-      </div>
-    </section>
+          </div>
+        </Card>
+      </section>
+      {isOntolygyTreeOpen && <OntologyTreePanel onClick={handleClick} />}
+      {/* CriteriaBuilder */}
+      <section>
+        <Card header="Ausgewählte Merkmale" headerClassName="justify-start">
+          <div className="flex flex-col min-h-[150px] gap-5">
+            <div className="flex min-h-[100px] p-5 border border-black border-dashed"></div>
+            <ButtonContainer>
+              <UploadButton
+                id="uplaod-query"
+                label="ABFRAGE LADEN"
+                onChange={handleFileUpload}
+              />
+              <SecondaryButton
+                id="save-query"
+                label="ABFRAGE SPEICHERN"
+                isActive={false}
+              />
+            </ButtonContainer>
+          </div>
+        </Card>
+      </section>
+    </div>
   );
 }
 

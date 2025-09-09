@@ -1,20 +1,27 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import arrowImg from "../../../assets/arrow.png";
+import arrowImg from "/arrow.png";
 
 type ArrowButtonProp = {
   id: string;
   isExpanded: boolean;
+  hasChildren: boolean;
   onClick?: () => void;
 };
 
-export function ArrowButton({ id, isExpanded, onClick }: ArrowButtonProp) {
+export function ArrowButton({
+  id,
+  isExpanded,
+  hasChildren,
+  onClick,
+}: ArrowButtonProp) {
   return (
     <button
+      disabled={!hasChildren}
       onClick={onClick}
       aria-expanded="true"
-      className="!min-w-auto !p-0 "
+      className="!p-0 "
     >
       <img
         key={id}

@@ -18,12 +18,17 @@
 }
 
 button {
-  min-width: 70px;
+  min-width: fit-content;
   padding: 8px 12px;
   margin: 4px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+}
+
+button:disabled {
+  opacity: 0;
+  cursor: auto;
 }
 
 /* button:hover {

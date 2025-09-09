@@ -1,24 +1,67 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { ModuleButton } from "../../components/ui/buttons/ModulesButton";
-import { MODULES, ONTOLOGY } from "../../data";
-import { TreePanel } from "../../components/ui/TreePanel";
-import { TreeNode } from "../../components/ui/TreeNode";
-import { type Criterion } from "./type";
-import { useState } from "react";
-import { PrimaryButton, SecondaryButton } from "../../components/ui/Button";
+import TreePanel from "../../components/ui/TreePanel";
+import TreeNode from "../../components/ui/TreeNode";
+import getModules from "../../api/moduleService";
+import getOntology from "../../api/ontologyService";
+import ButtonContainer from "../../components/ui/ฺButtonContainer";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  ModuleButton,
+} from "../../components/ui/buttons/Button";
+import { type Criterion, type Module } from "./type";
+import { useState, useEffect, useRef } from "react";
 
-function OntologyTreePanel() {
-  const [module, setModule] = useState(MODULES[0]); //default module
-  const [ontology, setOntology] = useState([ONTOLOGY[0]] as Criterion[]); //ontology data
+function OntologyTreePanel({ onClick }: { onClick: () => void }) {
+  const [modules, setModules] = useState<Module[]>([]); //default module
+  const [ontology, setOntology] = useState<Criterion[]>([]); //ontology data
+  const [activeModule, setActiveModule] = useState<Module | null>(null); //selected module
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
+  const currentAbortController = useRef<AbortController | null>(null);
 
   const changeTab = (moduleId: string) => {
-    console.log("Module ID:", moduleId);
     // call ontology request per module id
-    setModule(MODULES.find((m) => m.id === moduleId)!);
-    setOntology(ONTOLOGY.filter((c) => c.module_id === moduleId));
+    setActiveModule(modules.find((m) => m.id === moduleId) ?? null);
+    fetchOntology(moduleId);
   };
+
+  const handleCheckboxChange = (isChecked: boolean, criterion: Criterion) => {
+    if (isChecked) {
+      setSelectedCriteria((prev) => [...prev, criterion]);
+    } else {
+      setSelectedCriteria((prev) => prev.filter((c) => c.id !== criterion.id));
+    }
+  };
+
+  const fetchOntology = async (moduleId: string) => {
+    // abort current request
+    currentAbortController.current?.abort();
+    // create new request
+    currentAbortController.current = new AbortController();
+    setIsLoading(true);
+    const [data] = await getOntology(moduleId);
+    if (!currentAbortController.current.signal.aborted) {
+      setOntology(data || []);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const modules = await getModules();
+      setModules(modules || []);
+      setActiveModule(modules?.[0] ?? null);
+
+      if (modules?.[0]) {
+        await fetchOntology(modules[0].id);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="flex relative max-w-full max-h-full -top-5 z-50">
@@ -27,11 +70,13 @@ function OntologyTreePanel() {
         <div className="flex w-full overflow-x-auto">
           <menu className="flex w-full p-3 mt-4 border-t-2 border-t-[#adbcd7] border-b-2 border-b-[#adbcd7]">
             <li className="flex gap-3 m-auto">
-              {MODULES.map((module) => (
+              {modules?.map((module) => (
                 <ModuleButton
+                  id={module.id}
                   key={module.id}
-                  module={module}
-                  onClick={changeTab}
+                  label={module.name}
+                  bgColor={module.color}
+                  onClick={() => changeTab(module.id)}
                 />
               ))}
             </li>
@@ -40,34 +85,42 @@ function OntologyTreePanel() {
 
         {/* Ontology display */}
         <div className="flex flex-col w-full h-[550px] p-[30px]">
-          <p className="mb-5 text-lg font-bold">{module.name}</p>
-          <TreePanel>
-            {ontology.map((criterion) => (
-              <TreeNode key={criterion.id} criterion={criterion} /> // criterion per module
-            ))}
-          </TreePanel>
+          {isLoading ? (
+            <p className="flex items-center justify-center h-full">
+              loading...
+            </p>
+          ) : (
+            <>
+              <p className="mb-5 text-lg font-bold">{activeModule?.name}</p>
+              <TreePanel>
+                {ontology.map((criterion) => (
+                  <TreeNode
+                    key={criterion.id}
+                    criterion={criterion}
+                    onCheck={handleCheckboxChange}
+                  /> // criterion per module
+                ))}
+              </TreePanel>
+            </>
+          )}
         </div>
-        <div
-          className="flex w-full gap-2 justify-end p-5"
-          style={{ backgroundColor: module.color }}
-        >
+        <ButtonContainer className="p-5" bgContainer={activeModule?.color}>
           <SecondaryButton
             id="cancel"
-            className="!w-[110px] text-white hover:bg-white hover:text-black"
-            /* bgColor="#3498DB" */
+            className="w-[110px] border-white hover:bg-white hover:text-black"
+            bgColor="transparent"
+            onClick={onClick}
             isActive={true}
-          >
-            ABBRECHEN
-          </SecondaryButton>
+            label="ABBRECHEN"
+          />
           <PrimaryButton
             id="submit"
             className="!w-[110px] !text-black"
             bgColor="white"
-            isActive={true}
-          >
-            AUSWÄHLEN
-          </PrimaryButton>
-        </div>
+            isActive={selectedCriteria.length > 0}
+            label="AUSWÄHLEN"
+          />
+        </ButtonContainer>
       </div>
     </div>
   );

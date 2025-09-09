@@ -9,7 +9,7 @@ type TreeItemProps = {
   isExpanded: boolean;
   isChecked?: boolean;
   onClick?: () => void;
-  onChange?: () => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export function TreeItem({
@@ -21,13 +21,14 @@ export function TreeItem({
 }: TreeItemProps) {
   return (
     <>
-      {criterion.children && criterion.children.length > 0 && (
-        <ArrowButton
-          id={criterion.id}
-          isExpanded={isExpanded}
-          onClick={onClick}
-        />
-      )}
+      <ArrowButton
+        id={criterion.id}
+        isExpanded={isExpanded}
+        onClick={onClick}
+        hasChildren={
+          (criterion.children && criterion.children.length > 0) || false
+        }
+      />
       {criterion.selectable && (
         <input
           type="checkbox"
