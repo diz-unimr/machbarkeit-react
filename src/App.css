@@ -31,7 +31,7 @@ button:disabled {
   cursor: auto;
   background-color: #ededed;
   color: #222222;
-  border: none;
+  border: 1px solid #ededed;
 }
 
 /* button:hover {
