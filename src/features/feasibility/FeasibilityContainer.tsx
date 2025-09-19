@@ -28,6 +28,10 @@ function FeasibilityContainer() {
     setIsOntolygyTreeOpen((isOntolygyTreeOpen) => !isOntolygyTreeOpen);
   };
 
+  const handleFilter = () => {
+    setSelectedCriteria([])
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -69,7 +73,7 @@ function FeasibilityContainer() {
   return (
     <div
       id="feasibility-container"
-      className="flex flex-col h-full w-[60%] max-w-[1000px] p-5 overflow-y-auto"
+      className="flex flex-col h-full w-[90%] max-w-[960px] p-5 overflow-y-auto"
     >
       {/* 3 sections */}
       {/* QueryControls */}
@@ -120,7 +124,7 @@ function FeasibilityContainer() {
       </section>
       {isOntolygyTreeOpen && <OntologyTreePanel onClick={handleClick} />}
       {selectedCriteria.length > 0 && (
-        <FilterPanel criteria={selectedCriteria} />
+        <FilterPanel criteria={selectedCriteria} onClick={handleFilter} />
       )}
       {/* CriteriaBuilder */}
       <section>

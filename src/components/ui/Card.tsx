@@ -26,7 +26,7 @@ export default function Card({
   children,
 }: CardProp) {
   const ref = useRef<HTMLDivElement>(null);
-  const scrollHeight = (ref.current?.scrollHeight || 0) + 10;
+  const scrollHeight = (ref.current?.scrollHeight || 0) + 15;
 
   return (
     <div
@@ -57,7 +57,7 @@ export default function Card({
       )}
       {/* children */}
       <div
-        className={twMerge("flex flex-col w-full h-[90%] p-5", bodyClassName)}
+        className={twMerge("flex flex-col w-auto h-[90%] p-5", bodyClassName)}
       >
         {extra}
         {children}

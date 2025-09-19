@@ -7,11 +7,15 @@ import ButtonContainer from "../../components/ui/ฺButtonContainer";
 import type { Criterion } from "../ontology/type";
 import Filtercard from "./FilterCard";
 
-export default function FilterPanel({ criteria }: { criteria: Criterion[] }) {
+type FilterPanelProps = {
+  criteria: Criterion[];
+  onClick: () => void;
+};
+export default function FilterPanel({ criteria, onClick }: FilterPanelProps) {
   return (
-    <div className="flex relative z-100 w-[clamp(500px,85%,1000px)] mx-auto my-0">
-      <div className="flex absolute w-full max-h-[850px]">
-        <Card className="h-full border-none">
+    <div className="flex relative z-100 w-[clamp(500px,80%,700px)] mx-auto my-0">
+      <div className="flex justify-center w-full absolute max-h-[850px] -top-5">
+        <Card className="w-full h-full border-none">
           <h1 className="p-2.5 mb-5 font-bold border-b-2 border-solid border-[#5a78ae]">
             Einschränkungen der ausgewählten Merkmale
           </h1>
@@ -20,7 +24,7 @@ export default function FilterPanel({ criteria }: { criteria: Criterion[] }) {
           ))}
           <div className="flex gap-3.5 items-center justify-end">
             <ButtonContainer>
-              <CancelButton id="cancel" label="ABBRECHEN" />
+              <CancelButton id="cancel" label="ABBRECHEN" onClick={onClick} />
               <SubmitButton id="submit" label="HINZUFÜGEN" />
             </ButtonContainer>
           </div>
