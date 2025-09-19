@@ -7,7 +7,7 @@ import Card from "../../components/ui/Card";
 import { ATTRIBUTES } from "../../data";
 import { type Attribute } from "./type";
 import { useState } from "react";
-import { TreePanel } from "../../components/ui/TreePanel";
+import TreePanel from "../ontology/TreePanel";
 
 function AttributeList() {
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());

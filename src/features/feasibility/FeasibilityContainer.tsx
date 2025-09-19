@@ -3,22 +3,28 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
 import ButtonContainer from "../../components/ui/ฺButtonContainer";
-import {
-  PrimaryButton,
-  SecondaryButton,
-} from "../../components/ui/buttons/Button";
+import { Button } from "../../components/ui/buttons/Button";
 import OntologyButton from "../../components/ui/buttons/OntologyButton";
 import UploadButton from "../../components/ui/buttons/UploadButton";
 import InputTextField from "../../components/ui/InputTextField";
 import OntologyTreePanel from "../ontology/OntologyTreePanel";
+import FilterPanel from "../filters/FilterPanel";
 import Card from "../../components/ui/Card";
 import type { MachbarkeitQueryData } from "./type";
+import type { Criterion } from "../ontology/type";
 import { AxiosError } from "axios";
 
 function FeasibilityContainer() {
   const [isOntolygyTreeOpen, setIsOntolygyTreeOpen] = useState(false);
+  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
 
-  const handleClick = () => {
+  const handleClick = (criteria: Criterion[] | null) => {
+    console.log("criteria: ", criteria);
+    if (criteria) {
+      setSelectedCriteria(criteria);
+    } else {
+      setSelectedCriteria([]);
+    }
     setIsOntolygyTreeOpen((isOntolygyTreeOpen) => !isOntolygyTreeOpen);
   };
 
@@ -63,7 +69,7 @@ function FeasibilityContainer() {
   return (
     <div
       id="feasibility-container"
-      className="flex flex-col gap-5 h-full w-[60%] max-w-[1000px] p-5 overflow-y-auto"
+      className="flex flex-col h-full w-[60%] max-w-[1000px] p-5 overflow-y-auto"
     >
       {/* 3 sections */}
       {/* QueryControls */}
@@ -71,15 +77,21 @@ function FeasibilityContainer() {
         id="query-controls"
         className="flex w-full justify-between items-center"
       >
-        <div className="flex h-[56px] border border-[#9ea9b3] rounded-md w-[45%] items-center p-3">
+        <div className="flex h-[50px] border border-[#9ea9b3] rounded-md w-[45%] items-center px-4">
           <p>
             Anzahl der Patienten: <span>-</span>
           </p>
         </div>
         <ButtonContainer>
-          <PrimaryButton id="load-query" label="ZURÜCKSETZEN" isActive={true} />
-          <PrimaryButton
+          <Button
+            id="load-query"
+            type="primary"
+            label="ZURÜCKSETZEN"
+            isActive={true}
+          />
+          <Button
             id="save-query"
+            type="primary"
             label="ABFRAGE STARTEN"
             isActive={false}
           />
@@ -89,7 +101,13 @@ function FeasibilityContainer() {
       <section>
         <Card header="Einschlusskriterien">
           <div className="flex gap-3 w-full justify-between ">
-            <OntologyButton onClick={handleClick} />
+            <OntologyButton
+              onClick={() =>
+                setIsOntolygyTreeOpen(
+                  (isOntolygyTreeOpen) => !isOntolygyTreeOpen
+                )
+              }
+            />
             <div className="flex w-full max-w-[92%]">
               <InputTextField
                 id="search-text"
@@ -101,23 +119,27 @@ function FeasibilityContainer() {
         </Card>
       </section>
       {isOntolygyTreeOpen && <OntologyTreePanel onClick={handleClick} />}
+      {selectedCriteria.length > 0 && (
+        <FilterPanel criteria={selectedCriteria} />
+      )}
       {/* CriteriaBuilder */}
       <section>
         <Card header="Ausgewählte Merkmale" headerClassName="justify-start">
           <div className="flex flex-col min-h-[150px] gap-5">
-            <div className="flex min-h-[100px] p-5 border border-black border-dashed"></div>
             <ButtonContainer>
               <UploadButton
                 id="uplaod-query"
                 label="ABFRAGE LADEN"
                 onChange={handleFileUpload}
               />
-              <SecondaryButton
+              <Button
                 id="save-query"
+                type="secondary"
                 label="ABFRAGE SPEICHERN"
-                isActive={false}
+                isActive={true}
               />
             </ButtonContainer>
+            <div className="flex min-h-[100px] p-5 border border-black border-dashed"></div>
           </div>
         </Card>
       </section>

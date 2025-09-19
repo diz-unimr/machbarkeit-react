@@ -30,11 +30,11 @@ function InputTextField({ id, label, className }: InputTextFieldProp) {
               type="text"
               value={textInput}
               placeholder=""
-              className="h-full w-full truncate !rounded-lg !border !border-[#c0c7ce] outline-0 pl-9"
+              className="h-full w-full truncate !rounded-md !border !border-[#c0c7ce] outline-0 pl-9"
             />
             <label
               htmlFor={id}
-              className={`flex items-center absolute left-0 ml-10 text-sm cursor-auto transition-all duration-200
+              className={`flex items-center absolute left-0 ml-10 px-1 text-sm cursor-auto transition-all duration-200
 								${textInput.length > 0 || isFocused ? "-top-2 !text-xs font-semibold bg-white" : "h-full top-0 ml-2"}`}
             >
               {label}
