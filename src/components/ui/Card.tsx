@@ -45,7 +45,7 @@ export default function Card({
       {/* header */}
       {header && (
         <div
-          className={`flex justify-center items-center p-2 pl-4 pr-4
+          className={`flex justify-center items-center p-2 px-4
         h-[clamp(40px,10%,60px)]
         bg-[#5270a7]
         rounded-t-sm
@@ -57,7 +57,10 @@ export default function Card({
       )}
       {/* children */}
       <div
-        className={twMerge("flex flex-col w-auto h-[90%] p-5", bodyClassName)}
+        className={twMerge(
+          "flex flex-col w-auto h-[90%] px-5 py-4",
+          bodyClassName
+        )}
       >
         {extra}
         {children}

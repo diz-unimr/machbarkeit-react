@@ -24,15 +24,19 @@ export default function Filtercard({ id, criterion }: FilterCardProps) {
     });
   };
 
+  const getSelectedValues = (selectedValues: string[] | []) => {
+    console.log("Selected Values:", selectedValues);
+  };
+
   return (
-    <Card className="h-full border-none m-5">
+    <Card className="border-none m-5" bodyClassName="h-full">
       <div className="flex gap-2.5 items-center justify-between mx-2.5 mb-4">
         <p className="font-medium">{criterion.display}</p>
         <DeleteButton id="delete" label="Löschen" />
       </div>
       <Card
         className="relativ overflow-hidden border-none !shadow-[0_3px_1px_-2px_#adbcd7,0_2px_2px_0_#adbcd7,0_1px_5px_0_#adbcd7] transition-[height] duration-800 ease-linear"
-        bodyClassName="h-full py-1.5"
+        bodyClassName="h-full pt-1.5"
         height="56px"
         isExpanded={isExpanded}
       >
@@ -55,7 +59,7 @@ export default function Filtercard({ id, criterion }: FilterCardProps) {
           />
         </div>
         {criterion.filterType === "concept" ? (
-          <ConceptOption criterion={criterion} />
+          <ConceptOption criterion={criterion} onChange={getSelectedValues} />
         ) : criterion.filterType === "quantity" ? (
           <QuantityOption criterion={criterion} />
         ) : (

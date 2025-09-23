@@ -20,6 +20,7 @@ export default function TreeItem({
 }: TreeItemProps) {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target);
     setIsChecked(e.target.checked);
     onCheckbox(e.target.checked, criterion);
   };

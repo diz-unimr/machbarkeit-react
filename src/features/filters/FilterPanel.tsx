@@ -3,7 +3,7 @@
 
 import { CancelButton, SubmitButton } from "../../components/ui/buttons/Button";
 import Card from "../../components/ui/Card";
-import ButtonContainer from "../../components/ui/ฺButtonContainer";
+import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
 import type { Criterion } from "../ontology/type";
 import Filtercard from "./FilterCard";
 

@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
+	SPDX-License-Identifier: AGPL-3.0-or-later */
+
 import type { Criterion } from "../../ontology/type";
 export type ConceptOptionType = {
   code: string;

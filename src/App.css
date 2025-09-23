@@ -34,6 +34,25 @@ button:disabled {
   border: 1px solid #ededed;
 }
 
+select {
+  height: 42px;
+  max-width: 150px;
+  padding: 0px 14px;
+  margin: 3px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  appearance: none;
+  background: url('/arrow-down.png') no-repeat right 14px center;
+  background-color: white;
+  background-size: 8px;
+}
+
+select:focus-visible {
+  outline: none;
+}
+
 /* button:hover {
   color: #ebe7ef;
 }

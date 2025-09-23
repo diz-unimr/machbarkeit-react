@@ -2,77 +2,75 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
+import CloseIcon from "../ui/icons/CloseIcon";
+import SearchIcon from "../ui/icons/SearchIcon";
+import { twMerge } from "tailwind-merge";
 
 type InputTextFieldProp = {
   id: string;
   label: string;
+  value?: string | number;
+  type?: string;
+  width?: string;
   className?: string;
+  bodyClassName?: string;
+  onChange: (text: string | number) => void;
 };
 
-function InputTextField({ id, label, className }: InputTextFieldProp) {
+function InputTextField({
+  id,
+  label,
+  value,
+  type,
+  width,
+  className,
+  onChange,
+}: InputTextFieldProp) {
   const [isFocused, setIsFocused] = useState(false);
-  const [textInput, setTextInput] = useState("");
+  /* const [valueInput, setValueInput] = useState(0); */
+  const rootClassName = twMerge(
+    "flex flex-col justify-center h-[42px] w-full relative m-[3px]",
+    width,
+    className
+  );
 
   return (
     <>
-      <div
-        className={`flex flex-col justify-center w-full relative mb-4 ${className}`}
-      >
-        <div className="h-[45px] relative">
+      <div className={rootClassName}>
+        <div className="h-full relative">
           <div
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             className="flex h-full"
           >
             <input
-              onChange={(e) => setTextInput(e.target.value)}
+              onChange={(e) => onChange(e.target.value)}
               id={id}
-              type="text"
-              value={textInput}
+              type={type === "search" ? "text" : "number"}
+              min={type === "number" ? 0 : undefined}
+              value={value}
               placeholder=""
-              className="h-full w-full truncate !rounded-md !border !border-[#c0c7ce] outline-0 pl-9"
+              className={`h-full w-full truncate !rounded-md !border !border-[#c0c7ce] outline-0  ${type === "search" ? "pl-9" : "pl-3"}`}
             />
             <label
               htmlFor={id}
-              className={`flex items-center absolute left-0 ml-10 px-1 text-sm cursor-auto transition-all duration-200
-								${textInput.length > 0 || isFocused ? "-top-2 !text-xs font-semibold bg-white" : "h-full top-0 ml-2"}`}
+              className={`flex items-center absolute left-0 px-1 text-sm cursor-auto transition-all duration-200 ${type === "search" ? "ml-10" : "ml-3"}
+								${value!.toString().length > 0 || isFocused ? "-top-2 !text-xs font-semibold bg-white" : "h-full top-0"}`}
             >
               {label}
             </label>
           </div>
-          <div className="flex h-full items-center absolute top-0 left-0 ml-3">
-            <span>
-              <svg
-                fill="currentColor"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                className="material-design-icon__svg"
-              >
-                <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
-              </svg>
-            </span>
-          </div>
-          {textInput.length > 0 && (
+          {type === "search" && (
+            <div className="flex h-full items-center absolute top-0 left-0 ml-3">
+              <SearchIcon />
+            </div>
+          )}
+          {type === "search" && value!.toString().length > 0 && (
             <p
-              onClick={() => setTextInput("")}
+              onClick={() => onChange("")}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 !bg-white cursor-pointer"
             >
-              <span
-                aria-hidden="true"
-                role="img"
-                className="material-design-icon close-icon"
-              >
-                <svg
-                  fill="currentColor"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  className="material-design-icon__svg"
-                >
-                  <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path>
-                </svg>
-              </span>
+              <CloseIcon />
             </p>
           )}
         </div>

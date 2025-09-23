@@ -2,7 +2,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import ButtonContainer from "../../components/ui/ฺButtonContainer";
+import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
 import { Button } from "../../components/ui/buttons/Button";
 import OntologyButton from "../../components/ui/buttons/OntologyButton";
 import UploadButton from "../../components/ui/buttons/UploadButton";
@@ -17,6 +17,11 @@ import { AxiosError } from "axios";
 function FeasibilityContainer() {
   const [isOntolygyTreeOpen, setIsOntolygyTreeOpen] = useState(false);
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
+  const [textInput, setTextInput] = useState("");
+
+  const handleTextChange = (text: string | number) => {
+    setTextInput(text as string);
+  };
 
   const handleClick = (criteria: Criterion[] | null) => {
     console.log("criteria: ", criteria);
@@ -29,7 +34,7 @@ function FeasibilityContainer() {
   };
 
   const handleFilter = () => {
-    setSelectedCriteria([])
+    setSelectedCriteria([]);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +109,7 @@ function FeasibilityContainer() {
       {/* CriteriaSelector */}
       <section>
         <Card header="Einschlusskriterien">
-          <div className="flex gap-3 w-full justify-between ">
+          <div className="flex gap-3 w-full justify-between items-center">
             <OntologyButton
               onClick={() =>
                 setIsOntolygyTreeOpen(
@@ -116,7 +121,9 @@ function FeasibilityContainer() {
               <InputTextField
                 id="search-text"
                 label="Code oder Suchbegriff eingeben"
-                className="!mb-0"
+                value={textInput}
+                type="search"
+                onChange={handleTextChange}
               />
             </div>
           </div>

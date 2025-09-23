@@ -5,7 +5,7 @@ import TreePanel from "./TreePanel";
 import TreeNode from "./TreeNode";
 import getModules from "../../api/moduleService";
 import getOntology from "../../api/ontologyService";
-import ButtonContainer from "../../components/ui/ฺButtonContainer";
+import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
 import {
   Button,
   CancelButton,
