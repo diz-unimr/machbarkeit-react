@@ -1,44 +1,39 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import Card from "../../../components/ui/Card";
-import DropDown from "../../../components/ui/dropdown/DropDown";
 import type { Criterion } from "../../ontology/type";
 import type { DropDownOption } from "../../../components/ui/dropdown/type";
-import { useState } from "react";
-import InputTextField from "../../../components/ui/InputTextField";
+import { useEffect, useState } from "react";
+import InputTextField from "../../../components/ui/inputs/InputTextField";
+import DropDownContainer from "../../../components/ui/dropdown/DropDownContainer";
+import type { QuantityType } from "./type";
+
+type QuantityOptionProps = {
+  criterion: Criterion;
+  onChange: (value: QuantityType | null) => void;
+};
+
+const dropDownOption: DropDownOption[] = [
+  { code: "no filter", display: "kein Filter" },
+  { code: "eq", display: "gleich" },
+  { code: "lt", display: "kleine" },
+  { code: "gt", display: "größer" },
+  { code: "between", display: "zwischen" },
+];
 
 export default function QuantityOption({
   criterion,
-}: {
-  criterion: Criterion;
-}) {
+  onChange,
+}: QuantityOptionProps) {
   const [selectedOption, setSelectedOption] = useState("no filter");
   const [selectedUnit, setSelectedUnit] = useState(
     criterion.filterOptions?.[0].display || ""
   );
-  const [inputValue, setInputValue] = useState<number>(0);
-
-  const handleSelectedOption = (option: string) => {
-    setSelectedOption(option);
-  };
-  const handleInputValueChange = (value: string | number) => {
-    console.log("value: ", value);
-    setInputValue(value as number);
-  };
-
-  const handleSelectedUnit = (unit: string) => {
-    console.log("unit: ", unit);
-    setSelectedUnit(unit);
-  };
-
-  const dropDownOption: DropDownOption[] = [
-    { code: "no filter", display: "kein Filter" },
-    { code: "eq", display: "gleich" },
-    { code: "lt", display: "kleine" },
-    { code: "gt", display: "größer" },
-    { code: "between", display: "zwischen" },
-  ];
+  const [selectedValue, setSelectedValue] = useState({
+    value: 0,
+    min: 0,
+    max: 0,
+  });
 
   const getInputOption = (option: string) => {
     switch (option) {
@@ -50,10 +45,12 @@ export default function QuantityOption({
         return (
           <InputTextField
             id={option}
-            label="Wert"
+            label="wert"
             type="number"
-            value={inputValue}
-            onChange={handleInputValueChange}
+            value={selectedValue["value"]}
+            onChange={(value) =>
+              setSelectedValue((prev) => ({ ...prev, value: value as number }))
+            }
             width="w-[100px]"
           />
         );
@@ -62,40 +59,69 @@ export default function QuantityOption({
           <>
             <InputTextField
               id={option}
-              label="Min"
+              label="min"
               type="number"
-              value={inputValue}
-              onChange={handleInputValueChange}
+              value={selectedValue["min"]}
+              onChange={(min) =>
+                setSelectedValue((prev) => ({ ...prev, min: min as number }))
+              }
               width="w-[100px]"
             />
             <InputTextField
               id={option}
-              label="Max"
+              label="max"
               type="number"
-              value={inputValue}
-              onChange={handleInputValueChange}
+              value={selectedValue["max"]}
+              onChange={(max) =>
+                setSelectedValue((prev) => ({ ...prev, max: max as number }))
+              }
               width="w-[100px]"
             />
           </>
         );
     }
   };
+
+  useEffect(() => {
+    if (criterion.filterOptions) {
+      if (selectedOption === "no filter") {
+        onChange(null);
+        return;
+      }
+
+      onChange({
+        valueFilter: {
+          unit: criterion.filterOptions?.filter(
+            (option) => option.code === selectedUnit
+          )[0],
+          comparator: selectedOption === "between" ? null : selectedOption,
+          value: selectedOption === "between" ? null : selectedValue["value"],
+          minValue: selectedOption === "between" ? selectedValue["min"] : null,
+          maxValue: selectedOption === "between" ? selectedValue["max"] : null,
+          type:
+            selectedOption === "between"
+              ? "quantity-range"
+              : "quantity-comparator",
+        },
+      });
+    }
+  }, [
+    criterion.filterOptions,
+    onChange,
+    selectedOption,
+    selectedUnit,
+    selectedValue,
+  ]);
+
   return (
-    <Card bodyClassName="h-full gap-3">
-      <div>Geben Sie einen Wertebereich ein:</div>
-      <div className="flex items-center gap-5 pt-1.5 overflow-x-auto">
-        <DropDown options={dropDownOption} onSelect={handleSelectedOption} />
-        <div className="flex gap-2.5 items-center">
-          {getInputOption(selectedOption)}
-          {selectedOption !== "no filter" && (
-            <DropDown
-              width="100px"
-              options={criterion.filterOptions}
-              onSelect={handleSelectedUnit}
-            />
-          )}
-        </div>
-      </div>
-    </Card>
+    <DropDownContainer
+      selectedOption={selectedOption}
+      dropDownOption={dropDownOption}
+      unitOptions={criterion.filterOptions}
+      onSelectOption={(option) => setSelectedOption(option)}
+      onSelectUnit={(unit) => setSelectedUnit(unit)}
+    >
+      {getInputOption(selectedOption)}
+    </DropDownContainer>
   );
 }

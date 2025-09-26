@@ -2,21 +2,30 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { Criterion } from "../../ontology/type";
-export type ConceptOptionType = {
-  code: string;
-  system: string;
-  display: string;
-}[];
+export type ConceptType = {
+  valueFilter: {
+    selectedConcepts: NonNullable<Criterion["filterOptions"]> | [];
+    type: string;
+  };
+};
 
 export type QuantityType = {
   valueFilter: {
+    comparator: string | null;
     /* access only object inside array */
     unit: NonNullable<Criterion["filterOptions"]>[number];
-    comparator?: string;
-    value?: number;
-    minValue?: number;
-    maxValue?: number;
+    value: number | null;
+    minValue: number | null;
+    maxValue: number | null;
     type: string;
+  };
+  isFilterComplete?: boolean;
+};
+
+export type TimeRangeType = {
+  timeRestriction: {
+    beforeDate: string | null;
+    afterDate: string | null;
   };
   isFilterComplete?: boolean;
 };
