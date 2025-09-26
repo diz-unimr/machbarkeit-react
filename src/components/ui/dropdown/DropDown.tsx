@@ -17,7 +17,7 @@ export default function DropDown({ width, options, onSelect }: DropDownProps) {
   };
   return (
     <div className="max-w-[130px]">
-      <div className="flex gap-7.5 items-center">
+      <div className="flex items-center">
         <select
           style={{ width: width || "130px" }}
           id="comparator"

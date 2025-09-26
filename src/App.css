@@ -17,6 +17,10 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+div {
+  box-sizing: border-box;
+}
+
 button {
   min-width: fit-content;
   padding: 8px 12px;

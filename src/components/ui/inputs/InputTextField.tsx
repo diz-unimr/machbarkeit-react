@@ -2,8 +2,8 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import CloseIcon from "../ui/icons/CloseIcon";
-import SearchIcon from "../ui/icons/SearchIcon";
+import CloseIcon from "../icons/CloseIcon";
+import SearchIcon from "../icons/SearchIcon";
 import { twMerge } from "tailwind-merge";
 
 type InputTextFieldProp = {
@@ -55,7 +55,7 @@ function InputTextField({
             <label
               htmlFor={id}
               className={`flex items-center absolute left-0 px-1 text-sm cursor-auto transition-all duration-200 ${type === "search" ? "ml-10" : "ml-3"}
-								${value!.toString().length > 0 || isFocused ? "-top-2 !text-xs font-semibold bg-white" : "h-full top-0"}`}
+								${value!.toString().length > 0 || isFocused ? "-top-2.5 !text-xs font-semibold bg-white" : "h-full top-0"}`}
             >
               {label}
             </label>
