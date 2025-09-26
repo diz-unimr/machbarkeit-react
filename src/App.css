@@ -17,6 +17,10 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+div {
+  box-sizing: border-box;
+}
+
 button {
   min-width: fit-content;
   padding: 8px 12px;
@@ -27,8 +31,30 @@ button {
 }
 
 button:disabled {
-  opacity: 0;
+  opacity: 0.5;
   cursor: auto;
+  background-color: #ededed;
+  color: #222222;
+  border: 1px solid #ededed;
+}
+
+select {
+  height: 42px;
+  max-width: 150px;
+  padding: 0px 14px;
+  margin: 3px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  appearance: none;
+  background: url('/arrow-down.png') no-repeat right 14px center;
+  background-color: white;
+  background-size: 8px;
+}
+
+select:focus-visible {
+  outline: none;
 }
 
 /* button:hover {

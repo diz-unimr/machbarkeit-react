@@ -1,0 +1,31 @@
+/* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
+SPDX-License-Identifier: AGPL-3.0-or-later */
+
+import TextFloating from "./TextFloating";
+
+type DatePickerProps = {
+  id?: string;
+  label: string;
+  value: string;
+  onChange: (date: string) => void;
+};
+export default function DatePicker({
+  id,
+  label,
+  value,
+  onChange,
+}: DatePickerProps) {
+  return (
+    <div className="flex relative">
+      <input
+        id={id}
+        onChange={(e) => onChange(e.target.value)}
+        value={value}
+        type="date"
+        aria-label="date"
+        className="w-[140px] h-[42px] m-[3px] px-3 border border-[#808080] rounded-md text-[15px]"
+      />
+      <TextFloating id={id} label={label} />
+    </div>
+  );
+}

@@ -2,31 +2,20 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import { type Criterion } from "../../features/ontology/type";
+import { type Criterion } from "./type";
 
-import { TreeItem } from "../../features/ontology/TreeItem";
+import TreeItem from "./TreeItem";
 
-export default function TreeNode({
-  criterion,
-  onCheck,
-}: {
+type TreeNodeProps = {
   criterion: Criterion;
-  onCheck?: (isChecked: boolean, criterion: Criterion) => void;
-}) {
+  onCheckbox: (isChecked: boolean, criterion: Criterion) => void;
+};
+
+export default function TreeNode({ criterion, onCheckbox }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
 
   const toggleExpansion = () => {
     setIsExpanded((isExpanded) => !isExpanded);
-  };
-
-  const toggleCheckbox = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    criterion: Criterion
-  ) => {
-    const checked = e.target.checked;
-    setIsChecked(e.target.checked);
-    onCheck?.(checked, criterion);
   };
 
   return (
@@ -38,15 +27,18 @@ export default function TreeNode({
             <TreeItem
               criterion={criterion}
               isExpanded={isExpanded}
-              isChecked={isChecked}
-              onClick={toggleExpansion}
-              onChange={(e) => toggleCheckbox(e, criterion)}
+              onArrowClick={toggleExpansion}
+              onCheckbox={onCheckbox}
             />
           </div>
           {isExpanded && (
             <ul className="ml-5">
               {criterion.children?.map((child) => (
-                <TreeNode key={child.id} criterion={child} onCheck={onCheck} />
+                <TreeNode
+                  key={child.id}
+                  criterion={child}
+                  onCheckbox={onCheckbox}
+                />
               ))}
             </ul>
           )}

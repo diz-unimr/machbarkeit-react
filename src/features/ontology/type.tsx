@@ -13,10 +13,10 @@ export type Module = {
 export type Criterion = {
   children?: Criterion[];
   id: string;
-  module_id: string;
-  parent_id: string | null;
+  moduleId: string;
+  parentId: string | null;
   display: string;
-  term_codes: {
+  termCodes: {
     code: string;
     system: string;
     display: string;
@@ -30,10 +30,10 @@ export type Criterion = {
   };
   selectable: boolean;
   leaf: boolean;
-  time_restriction_allowed?: boolean | null;
-  filter_name?: string;
-  filter_type: string | null;
-  filter_options:
+  timeRestrictionAllowed?: boolean | null;
+  filterName?: string;
+  filterType: string | null;
+  filterOptions:
     | {
         code: string;
         display: string;
@@ -43,7 +43,7 @@ export type Criterion = {
     | null;
   // valueFilter?: ConceptType['valueFilter'] | QuantityType['valueFilter'];
   // timeRestriction?: TimeRangeType['timeRestriction'];
-  filter_complete_status?: boolean;
+  filterCompleteStatus?: boolean;
   color?: string;
   version: string | null;
 };

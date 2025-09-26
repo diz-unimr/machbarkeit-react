@@ -1,13 +1,13 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import InputTextField from "../../components/ui/InputTextField";
+import InputTextField from "../../components/ui/inputs/InputTextField";
 import arrowCollapse from "../../assets/arrow-collapse.png";
-import Card from "../../components/ui/Card";
+import Card from "../../components/layout/Card";
 import { ATTRIBUTES } from "../../data";
 import { type Attribute } from "./type";
 import { useState } from "react";
-import { TreePanel } from "../../components/ui/TreePanel";
+import TreePanel from "../ontology/TreePanel";
 
 function AttributeList() {
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
@@ -53,7 +53,13 @@ function AttributeList() {
       <Card
         header="Attributliste"
         className="min-h-[48%]"
-        extra={<InputTextField id="search-attribute" label="Attribut suchen" />}
+        extra={
+          <InputTextField
+            id="search-attribute"
+            label="Attribut suchen"
+            onChange={() => {}}
+          />
+        }
       >
         <TreePanel>
           {moduleName.map((module, module_index) => (
