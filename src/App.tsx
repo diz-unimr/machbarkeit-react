@@ -6,7 +6,7 @@ import "./App.css";
 // import AttributeList from "./features/attribute-list/AttributeList";
 import FeasibilityContainer from "./features/feasibility/FeasibilityContainer";
 
-function App() {
+export default function App() {
   return (
     <>
       <main className="max-w-[2000px] h-full flex justify-around rounded-lg m-auto">
@@ -16,5 +16,3 @@ function App() {
     </>
   );
 }
-
-export default App;

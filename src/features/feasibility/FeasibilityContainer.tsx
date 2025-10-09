@@ -14,7 +14,7 @@ import type { MachbarkeitQueryData } from "./type";
 import type { Criterion } from "../ontology/type";
 import { AxiosError } from "axios";
 
-function FeasibilityContainer() {
+export default function FeasibilityContainer() {
   const [isOntolygyTreeOpen, setIsOntolygyTreeOpen] = useState(false);
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
   const [textInput, setTextInput] = useState("");
@@ -157,5 +157,3 @@ function FeasibilityContainer() {
     </div>
   );
 }
-
-export default FeasibilityContainer;

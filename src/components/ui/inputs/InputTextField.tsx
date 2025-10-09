@@ -17,7 +17,7 @@ type InputTextFieldProp = {
   onChange: (text: string | number) => void;
 };
 
-function InputTextField({
+export default function InputTextField({
   id,
   label,
   value,
@@ -78,5 +78,3 @@ function InputTextField({
     </>
   );
 }
-
-export default InputTextField;

@@ -9,7 +9,7 @@ import { type Attribute } from "./type";
 import { useState } from "react";
 import TreePanel from "../ontology/TreePanel";
 
-function AttributeList() {
+export default function AttributeList() {
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
   const [mouseOverIndex, setMouseOverIndex] = useState<number | null>(null);
   const [checkboxItems, setCheckboxItem] = useState<Map<string, Attribute>>(
@@ -61,7 +61,7 @@ function AttributeList() {
           />
         }
       >
-        <TreePanel>
+        <div className="flex flex-col h-full w-full overflow-y-auto overflow-x-hidden">
           {moduleName.map((module, module_index) => (
             <div key={module_index}>
               <a
@@ -120,7 +120,7 @@ function AttributeList() {
               </div>
             </div>
           ))}
-        </TreePanel>
+        </div>
         {/* </div> */}
       </Card>
       <Card header="ausgewählte Attributliste" className="min-h-[48%]">
@@ -146,5 +146,3 @@ function AttributeList() {
     </section>
   );
 }
-
-export default AttributeList;

@@ -15,6 +15,7 @@ export type Criterion = {
   id: string;
   moduleId: string;
   parentId: string | null;
+  childrenIds: string[];
   display: string;
   termCodes: {
     code: string;
