@@ -23,6 +23,7 @@ export default function ConceptOption({
       : selectedValues.filter((v) => v.code !== concept.code);
 
     setSelectedValue(newSelectedValues);
+    
 
     onChange({
       valueFilter: {

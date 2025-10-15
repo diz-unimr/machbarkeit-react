@@ -7,20 +7,39 @@ import { enableMapSet } from "immer";
 import { useCheckedItemsStore } from "./checked-items-store";
 import { useModulesStore } from "./modules-store";
 import type { Criterion, Module } from "../features/ontology/type";
+import type {
+  ConceptType,
+  QuantityType,
+  TimeRangeType,
+} from "../features/filters/controls/type";
 
 enableMapSet();
 
 type Store = {
-  characteristics: Array<Criterion>;
+  characteristics: Characteristics;
   addCharacteristics: () => void;
-  deleteCharacteristic: (item: Criterion) => void;
+  deleteCharacteristic: (id: string) => void;
   updateFilterValue: () => void;
+};
+
+type QueryCriterion = {
+  id: string;
+  termCodes: Criterion["termCodes"];
+  context?: Criterion["context"];
+};
+
+type Characteristics = {
+  display?: string;
+  version?: string;
+  inclusionCriteria?: Array<
+    Array<QueryCriterion & Partial<ConceptType | QuantityType | TimeRangeType>>
+  >;
+  // exclusionCriteria?: QueryCriterion[][];
 };
 
 const getContext = () => {
   const modules: Module[] = useModulesStore.getState().modules;
   const selectedItems = useCheckedItemsStore.getState().selectedItems;
-
   const module = modules.find(
     (module) => module.id === Object.values(selectedItems)[0].moduleId
   );
@@ -35,26 +54,35 @@ const getContext = () => {
 
 export const useCharacteristicsStore = create<Store>()(
   immer((set) => ({
-    characteristics: [] as Array<Criterion>,
+    characteristics: {
+      display: "Machbarkeitsabfrage",
+      version: "1.0.0",
+      inclusionCriteria: [],
+    },
 
     addCharacteristics: () =>
       set((state) => {
         const selectedItems = useCheckedItemsStore.getState().selectedItems;
         const context = getContext();
         const itemsWithContext = Object.values(selectedItems).map((item) => ({
-          ...item,
+          id: item.id,
+          termCodes: item.termCodes,
           context,
         }));
-        return {
-          characteristics: [...state.characteristics, ...itemsWithContext],
-        };
+        itemsWithContext.forEach((item: QueryCriterion) => {
+          state.characteristics.inclusionCriteria?.push([item]);
+        });
       }),
-    deleteCharacteristic: (item: Criterion) =>
-      set((state) => ({
-        characteristics: state.characteristics.filter(
-          (characteristic) => characteristic.id !== item.id
-        ),
-      })),
+
+    deleteCharacteristic: (id: string) =>
+      set((state) => {
+        console.log(id);
+        state.characteristics.inclusionCriteria =
+          state.characteristics.inclusionCriteria?.map((inner) =>
+            inner.filter((characteristic) => characteristic.id !== id)
+          );
+      }),
+
     updateFilterValue: () =>
       set(() => {
         const selectedItems = useCheckedItemsStore.getState().selectedItems;

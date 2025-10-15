@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -14,17 +15,18 @@ import type { MachbarkeitQueryData } from "./type";
 import type { Criterion } from "../ontology/type";
 import { AxiosError } from "axios";
 import { useCharacteristicsStore } from "../../store/characteristics-store";
+import { useCheckedItemsStore } from "../../store/checked-items-store";
 
 export default function FeasibilityContainer() {
   const [isOntolygyTreeOpen, setIsOntolygyTreeOpen] = useState(false);
-  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[] | null>(
-    null
-  );
   const [textInput, setTextInput] = useState("");
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const selectedItems = useCheckedItemsStore((state) => state.selectedItems);
+  const clearItemsStore = useCheckedItemsStore((state) => state.clearItems);
   const characteristicsStore = useCharacteristicsStore(
     (state) => state.characteristics
   );
+
   const addCharacteristics = useCharacteristicsStore(
     (state) => state.addCharacteristics
   );
@@ -39,26 +41,23 @@ export default function FeasibilityContainer() {
     selectedCriteriaStore: Record<string, Criterion> | null
   ) => {
     if (selectedCriteriaStore) {
-      setSelectedCriteria(Object.values(selectedCriteriaStore));
       setIsFilterPanelOpen(true);
-    } else {
-      setSelectedCriteria(null);
     }
     setIsOntolygyTreeOpen((isOntolygyTreeOpen) => !isOntolygyTreeOpen);
   };
 
   const handleFilter = () => {
+    setIsFilterPanelOpen((prev) => !prev);
     addCharacteristics();
-    setSelectedCriteria(null);
-    //clearSelectedItemsStore();
+    clearItems();
   };
 
-  const deleteCharacteristic = (item: Criterion) => {
-    deleteCharacteristics(item);
+  const deleteCharacteristic = (id: string) => {
+    deleteCharacteristics(id);
   };
 
-  const clearSelectedItems = () => {
-    //clearSelectedItemsStore();
+  const clearItems = () => {
+    clearItemsStore();
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,8 +97,9 @@ export default function FeasibilityContainer() {
   const convertToCharacteristicsDisplay = (x) => {};
 
   useEffect(() => {
-    if (!isOntolygyTreeOpen) {
-      //clearCheckedItemsStore();
+    if (!isFilterPanelOpen && Object.values(selectedItems)) {
+      console.log("useEffect");
+      clearItemsStore();
     }
   }, [isOntolygyTreeOpen]);
 
@@ -165,11 +165,11 @@ export default function FeasibilityContainer() {
         />
       )}
       {/* Filter panel */}
-      {isFilterPanelOpen && selectedCriteria && selectedCriteria.length && (
+      {isFilterPanelOpen && Object.values(selectedItems).length && (
         <FilterPanel
-          criteria={selectedCriteria}
+          criteria={Object.values(selectedItems)}
           onClick={handleFilter}
-          onCancel={clearSelectedItems}
+          onCancel={clearItems}
         />
       )}
       {/* CriteriaBuilder */}
@@ -190,15 +190,17 @@ export default function FeasibilityContainer() {
               />
             </ButtonContainer>
             <div className="flex flex-col min-h-[100px] p-5 border border-black border-dashed">
-              {Object.values(characteristicsStore).map((item, index) => (
-                <div key={index} className="flex">
-                  <p>{item.display}</p>
-                  <DeleteButton
-                    id={"delete-characteristic-" + index}
-                    onClick={() => deleteCharacteristic(item)}
-                  ></DeleteButton>
-                </div>
-              ))}
+              {characteristicsStore.inclusionCriteria?.map((inner, index) =>
+                inner.map((item) => (
+                  <div key={index} className="flex">
+                    <p>{item.termCodes[0].display}</p>
+                    <DeleteButton
+                      id={"delete-characteristic-" + index}
+                      onClick={() => deleteCharacteristic(item.id)}
+                    ></DeleteButton>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </Card>

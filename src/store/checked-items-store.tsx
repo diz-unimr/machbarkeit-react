@@ -19,6 +19,7 @@ type Store = {
     criteria: Criterion,
     action: "check" | "uncheck"
   ) => void;
+  clearItems: () => void;
 };
 
 const traverseChildrenNode = (children: Criterion[], isChecked: boolean) => {
@@ -109,19 +110,28 @@ export const useCheckedItemsStore = create<Store>()(
       set((state) => {
         state.checkedItems.add(criterion.id);
       }),
+
     deleteCheckedItem: (criterion: Criterion) =>
       set((state) => {
         state.checkedItems.delete(criterion.id);
       }),
+
     toggleCheckedItem: (criterion: Criterion, isChecked: boolean) =>
       set((state) => {
         if (isChecked) state.checkedItems.add(criterion.id);
         else state.checkedItems.delete(criterion.id);
       }),
+
     toggleSelectedItem: (criterion: Criterion, action: "check" | "uncheck") =>
       set((state) => {
         if (action === "check") state.selectedItems[criterion.id] = criterion;
         else delete state.selectedItems[criterion.id];
+      }),
+
+    clearItems: () =>
+      set((state) => {
+        state.checkedItems.clear();
+        state.selectedItems = {};
       }),
   }))
 );
