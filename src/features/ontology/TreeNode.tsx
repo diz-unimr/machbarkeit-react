@@ -8,10 +8,11 @@ import TreeItem from "./TreeItem";
 
 type TreeNodeProps = {
   criterion: Criterion;
-  onCheckbox: (isChecked: boolean, criterion: Criterion) => void;
+  parent?: Criterion;
+  onToggle?: (criterion: Criterion, isParent?: boolean) => void;
 };
 
-export default function TreeNode({ criterion, onCheckbox }: TreeNodeProps) {
+export default function TreeNode({ criterion }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpansion = () => {
@@ -28,17 +29,12 @@ export default function TreeNode({ criterion, onCheckbox }: TreeNodeProps) {
               criterion={criterion}
               isExpanded={isExpanded}
               onArrowClick={toggleExpansion}
-              onCheckbox={onCheckbox}
             />
           </div>
           {isExpanded && (
             <ul className="ml-5">
               {criterion.children?.map((child) => (
-                <TreeNode
-                  key={child.id}
-                  criterion={child}
-                  onCheckbox={onCheckbox}
-                />
+                <TreeNode key={child.id} criterion={child} parent={criterion} />
               ))}
             </ul>
           )}

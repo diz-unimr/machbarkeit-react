@@ -1,29 +1,31 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useState } from "react";
 import { type Criterion } from "../../features/ontology/type";
 import { ArrowButton } from "../../components/ui/buttons/ArrowButton";
+import { useCheckedItemsStore } from "../../store/checked-items-store";
+import { handleCheckbox } from "../../store/checked-items-store";
+import { useRef } from "react";
 
 type TreeItemProps = {
   criterion: Criterion;
   isExpanded: boolean;
   onArrowClick?: () => void;
-  onCheckbox: (isChecked: boolean, criterion: Criterion) => void;
 };
 
 export default function TreeItem({
   criterion,
   isExpanded,
   onArrowClick,
-  onCheckbox,
 }: TreeItemProps) {
-  const [isChecked, setIsChecked] = useState<boolean>(false);
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target);
-    setIsChecked(e.target.checked);
-    onCheckbox(e.target.checked, criterion);
+  const checkedItems = useCheckedItemsStore((state) => state.checkedItems);
+  const checkRef = useRef<HTMLInputElement>(null);
+
+  const handleChange = () => {
+    const isChecked = checkRef.current?.checked;
+    handleCheckbox(criterion, isChecked!);
   };
+
   return (
     <>
       <ArrowButton
@@ -36,9 +38,10 @@ export default function TreeItem({
       />
       {criterion.selectable && (
         <input
+          ref={checkRef}
           type="checkbox"
           className="mt-1.5 cursor-pointer"
-          checked={isChecked}
+          checked={checkedItems.has(criterion.id)}
           onChange={handleChange}
         />
       )}

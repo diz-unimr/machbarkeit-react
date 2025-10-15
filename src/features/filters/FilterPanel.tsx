@@ -6,12 +6,31 @@ import Card from "../../components/layout/Card";
 import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
 import type { Criterion } from "../ontology/type";
 import Filtercard from "./FilterCard";
+// import { useCheckedItemsStore } from "../../store/checked-items-store";
+import { useMachbarkeitQueryStore } from "../../store/machbarkeit-query-store";
+import { useEffect } from "react";
+import type { ConceptType, QuantityType, TimeRangeType } from "./controls/type";
 
 type FilterPanelProps = {
   criteria: Criterion[];
   onClick: () => void;
+  onCancel: () => void;
 };
-export default function FilterPanel({ criteria, onClick }: FilterPanelProps) {
+export default function FilterPanel({
+  criteria,
+  onClick,
+  onCancel,
+}: FilterPanelProps) {
+  const machbarkeitQueryData = useMachbarkeitQueryStore(
+    (state) => state.machbarkeitQueryData
+  );
+
+  const getFilter = (
+    selectedFilter: ConceptType | QuantityType | TimeRangeType | null
+  ) => {};
+  useEffect(() => {
+    console.log("machbarkeitQueryData: ", machbarkeitQueryData);
+  });
   return (
     <div className="flex relative z-100 w-[clamp(500px,95%,750px)] mx-auto my-0">
       <div className="flex justify-center w-full absolute -top-5">
@@ -25,13 +44,14 @@ export default function FilterPanel({ criteria, onClick }: FilterPanelProps) {
                 key={index}
                 id={String(index)}
                 criterion={criterion}
+                onGetFilter={getFilter}
               />
             ))}
           </div>
           <div className="flex gap-3.5 items-center justify-end mt-5 mr-5">
             <ButtonContainer>
-              <CancelButton id="cancel" label="ABBRECHEN" onClick={onClick} />
-              <SubmitButton id="submit" label="HINZUFÜGEN" />
+              <CancelButton id="cancel" label="ABBRECHEN" onClick={onCancel} />
+              <SubmitButton id="submit" label="HINZUFÜGEN" onClick={onClick} />
             </ButtonContainer>
           </div>
         </Card>

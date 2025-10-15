@@ -12,12 +12,12 @@ import { twMerge } from "tailwind-merge";
 type ButtonProp = {
   id: string;
   type?: "primary" | "secondary" | "danger";
-  label: string;
+  label?: string;
   color?: string;
   isActive?: boolean;
   className?: string;
   onClick?: (id: string) => void;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  // onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
 
 export function Button({

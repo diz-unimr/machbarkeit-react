@@ -1,9 +1,9 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
-import { Button } from "../../components/ui/buttons/Button";
+import { Button, DeleteButton } from "../../components/ui/buttons/Button";
 import OntologyButton from "../../components/ui/buttons/OntologyButton";
 import UploadButton from "../../components/ui/buttons/UploadButton";
 import InputTextField from "../../components/ui/inputs/InputTextField";
@@ -13,28 +13,52 @@ import Card from "../../components/layout/Card";
 import type { MachbarkeitQueryData } from "./type";
 import type { Criterion } from "../ontology/type";
 import { AxiosError } from "axios";
+import { useCharacteristicsStore } from "../../store/characteristics-store";
 
 export default function FeasibilityContainer() {
   const [isOntolygyTreeOpen, setIsOntolygyTreeOpen] = useState(false);
-  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
+  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[] | null>(
+    null
+  );
   const [textInput, setTextInput] = useState("");
-
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const characteristicsStore = useCharacteristicsStore(
+    (state) => state.characteristics
+  );
+  const addCharacteristics = useCharacteristicsStore(
+    (state) => state.addCharacteristics
+  );
+  const deleteCharacteristics = useCharacteristicsStore(
+    (state) => state.deleteCharacteristic
+  );
   const handleTextChange = (text: string | number) => {
     setTextInput(text as string);
   };
 
-  const handleClick = (criteria: Criterion[] | null) => {
-    console.log("criteria: ", criteria);
-    if (criteria) {
-      setSelectedCriteria(criteria);
+  const handleCriteria = (
+    selectedCriteriaStore: Record<string, Criterion> | null
+  ) => {
+    if (selectedCriteriaStore) {
+      setSelectedCriteria(Object.values(selectedCriteriaStore));
+      setIsFilterPanelOpen(true);
     } else {
-      setSelectedCriteria([]);
+      setSelectedCriteria(null);
     }
     setIsOntolygyTreeOpen((isOntolygyTreeOpen) => !isOntolygyTreeOpen);
   };
 
   const handleFilter = () => {
-    setSelectedCriteria([]);
+    addCharacteristics();
+    setSelectedCriteria(null);
+    //clearSelectedItemsStore();
+  };
+
+  const deleteCharacteristic = (item: Criterion) => {
+    deleteCharacteristics(item);
+  };
+
+  const clearSelectedItems = () => {
+    //clearSelectedItemsStore();
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +76,6 @@ export default function FeasibilityContainer() {
         const uploadedCriteria: MachbarkeitQueryData = JSON.parse(
           e.target?.result as string
         );
-        // const text = e.target?.result as string;
         const isJsonDataValid =
           !!(
             uploadedCriteria.inclusionCriteria &&
@@ -60,7 +83,6 @@ export default function FeasibilityContainer() {
           ) ||
           (uploadedCriteria.exclusionCriteria &&
             uploadedCriteria.exclusionCriteria!.length > 0);
-        // const data = JSON.parse(text);
         if (isJsonDataValid) {
           convertToCharacteristicsDisplay(uploadedCriteria);
         } else {
@@ -74,6 +96,12 @@ export default function FeasibilityContainer() {
   };
 
   const convertToCharacteristicsDisplay = (x) => {};
+
+  useEffect(() => {
+    if (!isOntolygyTreeOpen) {
+      //clearCheckedItemsStore();
+    }
+  }, [isOntolygyTreeOpen]);
 
   return (
     <div
@@ -129,9 +157,20 @@ export default function FeasibilityContainer() {
           </div>
         </Card>
       </section>
-      {isOntolygyTreeOpen && <OntologyTreePanel onClick={handleClick} />}
-      {selectedCriteria.length > 0 && (
-        <FilterPanel criteria={selectedCriteria} onClick={handleFilter} />
+      {/* OmtologyTree panel */}
+      {isOntolygyTreeOpen && (
+        <OntologyTreePanel
+          onSelectCriteria={handleCriteria}
+          onCancel={() => setIsOntolygyTreeOpen(false)}
+        />
+      )}
+      {/* Filter panel */}
+      {isFilterPanelOpen && selectedCriteria && selectedCriteria.length && (
+        <FilterPanel
+          criteria={selectedCriteria}
+          onClick={handleFilter}
+          onCancel={clearSelectedItems}
+        />
       )}
       {/* CriteriaBuilder */}
       <section>
@@ -150,7 +189,17 @@ export default function FeasibilityContainer() {
                 isActive={true}
               />
             </ButtonContainer>
-            <div className="flex min-h-[100px] p-5 border border-black border-dashed"></div>
+            <div className="flex flex-col min-h-[100px] p-5 border border-black border-dashed">
+              {Object.values(characteristicsStore).map((item, index) => (
+                <div key={index} className="flex">
+                  <p>{item.display}</p>
+                  <DeleteButton
+                    id={"delete-characteristic-" + index}
+                    onClick={() => deleteCharacteristic(item)}
+                  ></DeleteButton>
+                </div>
+              ))}
+            </div>
           </div>
         </Card>
       </section>

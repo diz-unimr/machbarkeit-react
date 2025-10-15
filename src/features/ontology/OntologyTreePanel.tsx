@@ -4,9 +4,7 @@
 
 import TreeNode from "./TreeNode";
 import fetchModules from "../../services/moduleService";
-import {
-  fetchOntology,
-} from "../../services/ontologyService";
+import { fetchOntology } from "../../services/ontologyService";
 import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
 import {
   Button,
@@ -16,22 +14,25 @@ import {
 import { type Criterion, type Module } from "./type";
 import { useState, useEffect } from "react";
 import { useCheckedItemsStore } from "../../store/checked-items-store";
-import { useSelectedItemsStore } from "../../store/selected-items-store";
 import { useOntologyStore } from "../../store/ontology-store";
 import { useModulesStore } from "../../store/modules-store";
 
 export default function OntologyTreePanel({
-  onClick,
+  onSelectCriteria,
+  onCancel,
 }: {
-  onClick: (criteria: Criterion[] | null) => void;
+  onSelectCriteria: (criteria: Record<string, Criterion> | null) => void;
+  onCancel: () => void;
 }) {
   const { modules, setModules } = useModulesStore();
-  const { ontology, setOntology, flattenCriterion, setTree } =
-    useOntologyStore();
+  const ontology = useOntologyStore((state) => state.ontology);
+  const flattenCriterion = useOntologyStore((state) => state.flattenCriterion);
+  const setOntology = useOntologyStore((state) => state.setOntology);
+  const setTree = useOntologyStore((state) => state.setTree);
   const [activeModule, setActiveModule] = useState<Module | null>(null); //selected module
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { checkedItems } = useCheckedItemsStore();
-  const { selectedItems, setSelectedItems } = useSelectedItemsStore();
+  const selectedItems = useCheckedItemsStore((state) => state.selectedItems);
+  const checkedItems = useCheckedItemsStore((state) => state.checkedItems);
 
   const getOntology = async (moduleId: string) => {
     if (!ontology[moduleId]) {
@@ -92,7 +93,6 @@ export default function OntologyTreePanel({
                 </li>
               </menu>
             </div>
-
             {/* Ontology display */}
             <div className="flex flex-col w-full h-[550px] p-[30px]">
               {isLoading ? (
@@ -111,6 +111,7 @@ export default function OntologyTreePanel({
                 </>
               )}
             </div>
+
             <ButtonContainer className="p-5" bgContainer={activeModule?.color}>
               <CancelButton
                 id="cancel"
@@ -118,7 +119,7 @@ export default function OntologyTreePanel({
                 color="white"
                 isActive={true}
                 className="w-[110px] text-white hover:text-black"
-                onClick={() => onClick(null)}
+                onClick={onCancel}
               />
               <SubmitButton
                 id="submit"
@@ -127,10 +128,8 @@ export default function OntologyTreePanel({
                 isActive={Array.from(checkedItems).length > 0}
                 className="text-black"
                 onClick={() =>
-                  onClick(
-                    selectedItems.size > 0
-                      ? Array.from(selectedItems.values())
-                      : []
+                  onSelectCriteria(
+                    Object.keys(selectedItems).length ? selectedItems : null
                   )
                 }
               />

@@ -25,7 +25,6 @@ export const useOntologyStore = create<OntologyStore>((set, get) => ({
   setTree: (tree) => {
     const currentFlattenCriterion = get().flattenCriterion;
     const modules = Object.keys(currentFlattenCriterion);
-    console.log("modules.length: ", modules.length);
     if (modules.length >= 3) delete currentFlattenCriterion[modules[0]];
     const newFlattenCriterion = flattenTree(currentFlattenCriterion, tree);
     set({ flattenCriterion: newFlattenCriterion });

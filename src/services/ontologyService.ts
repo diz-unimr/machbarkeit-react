@@ -11,17 +11,14 @@ let controller: AbortController | null = null
 export async function setAbortController(): Promise<void> {
 	// if there is an existing abortController, abort the previous request
 	if (controller) {
-		console.log('abort')
 		controller.abort()
 		controller = null
 		await Promise.resolve()
-	} else console.log('no Controller')
+	}
 }
 
 export async function fetchOntology(moduleId: string, searchText: string = ''): Promise<[Criterion[] | null, string]> {
-	console.log('has controller: ', controller)
 	controller = new AbortController()
-	console.log('new controller: ', controller)
 	let apiResponse: AxiosResponse
 	try {
 		if (searchText.length > 0) {

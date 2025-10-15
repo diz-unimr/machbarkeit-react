@@ -14,8 +14,16 @@ import type { ConceptType, QuantityType, TimeRangeType } from "./controls/type";
 type FilterCardProps = {
   id: string;
   criterion: Criterion;
+  onGetFilter: (
+    selectedFilter: ConceptType | QuantityType | TimeRangeType | null
+  ) => void;
 };
-export default function Filtercard({ id, criterion }: FilterCardProps) {
+
+export default function Filtercard({
+  id,
+  criterion,
+  onGetFilter,
+}: FilterCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpansion = () => {
@@ -28,10 +36,10 @@ export default function Filtercard({ id, criterion }: FilterCardProps) {
   const getSelectedValues = (
     selectedValues: ConceptType | QuantityType | TimeRangeType | null
   ) => {
-    console.log("Selected Values:", selectedValues);
+    console.log("Filter Card:", selectedValues);
+    onGetFilter(selectedValues);
   };
 
-  console.log("FilterCard render: ", id);
 
   return (
     <Card className="border-none m-5">
