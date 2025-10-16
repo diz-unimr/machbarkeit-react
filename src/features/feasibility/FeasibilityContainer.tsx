@@ -97,7 +97,7 @@ export default function FeasibilityContainer() {
   const convertToCharacteristicsDisplay = (x) => {};
 
   useEffect(() => {
-    if (!isFilterPanelOpen && Object.values(selectedItems)) {
+    if (!isFilterPanelOpen && Object.values(selectedItems).length) {
       console.log("useEffect");
       clearItemsStore();
     }
