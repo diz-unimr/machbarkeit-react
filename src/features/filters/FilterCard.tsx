@@ -15,7 +15,8 @@ type FilterCardProps = {
   id: string;
   criterion: Criterion;
   onGetFilter: (
-    selectedFilter: ConceptType | QuantityType | TimeRangeType | null
+    selectedFilter: ConceptType | QuantityType | TimeRangeType | null,
+    warningMessage?: string
   ) => void;
 };
 
@@ -34,12 +35,11 @@ export default function Filtercard({
   };
 
   const getSelectedValues = (
-    selectedValues: ConceptType | QuantityType | TimeRangeType | null
+    selectedValues: ConceptType | QuantityType | TimeRangeType | null,
+    warningMessage?: string
   ) => {
-    console.log("Filter Card:", selectedValues);
-    onGetFilter(selectedValues);
+    onGetFilter(selectedValues, warningMessage);
   };
-
 
   return (
     <Card className="border-none m-5">

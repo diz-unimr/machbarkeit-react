@@ -55,7 +55,6 @@ export default function OntologyTreePanel({
     getOntology(moduleId);
     if (ontology[moduleId] && !flattenCriterion[moduleId])
       setTree(ontology[moduleId]);
-    console.log(flattenCriterion);
   };
 
   useEffect(() => {

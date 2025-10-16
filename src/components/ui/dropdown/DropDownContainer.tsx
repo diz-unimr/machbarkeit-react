@@ -23,11 +23,12 @@ export default function DropDownContainer({
 }: DropDownContainerProps) {
   return (
     <div className="flex items-center gap-6.5 pt-1.5 overflow-x-auto">
-      <DropDown options={dropDownOption} onSelect={onSelectOption} />
+      <DropDown id="comparator-option" options={dropDownOption} onSelect={onSelectOption} />
       <div className="flex gap-2.5 items-center">
         {children}
         {unitOptions && onSelectUnit && selectedOption !== "no filter" && (
           <DropDown
+          id="unit-option"
             width="100px"
             options={unitOptions}
             onSelect={onSelectUnit}

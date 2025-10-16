@@ -6,9 +6,6 @@ import Card from "../../components/layout/Card";
 import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
 import type { Criterion } from "../ontology/type";
 import Filtercard from "./FilterCard";
-// import { useCheckedItemsStore } from "../../store/checked-items-store";
-import { useMachbarkeitQueryStore } from "../../store/machbarkeit-query-store";
-import { useEffect } from "react";
 import type { ConceptType, QuantityType, TimeRangeType } from "./controls/type";
 
 type FilterPanelProps = {
@@ -21,16 +18,13 @@ export default function FilterPanel({
   onClick,
   onCancel,
 }: FilterPanelProps) {
-  const machbarkeitQueryData = useMachbarkeitQueryStore(
-    (state) => state.machbarkeitQueryData
-  );
-
   const getFilter = (
-    selectedFilter: ConceptType | QuantityType | TimeRangeType | null
-  ) => {};
-  useEffect(() => {
-    console.log("machbarkeitQueryData: ", machbarkeitQueryData);
-  });
+    selectedFilter: ConceptType | QuantityType | TimeRangeType | null,
+    warningMessage?: string
+  ) => {
+
+  };
+
   return (
     <div className="flex relative z-100 w-[clamp(500px,95%,750px)] mx-auto my-0">
       <div className="flex justify-center w-full absolute -top-5">

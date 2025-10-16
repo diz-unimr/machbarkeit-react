@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -16,13 +17,16 @@ type SelectedDate = {
 export default function TimeRangeOption({
   onChange,
 }: {
-  onChange: (timeRange: TimeRangeType | null) => void;
+  onChange: (timeRange: TimeRangeType | null, warningMessage?: string) => void;
 }) {
   const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({
     afterDate: "",
     beforeDate: "",
   });
+  /*  const [warningMessage, setWarningMessage] = useState<string | undefined>(
+    undefined
+  ); */
 
   const dropDownOption: DropDownOption[] = [
     { code: "no filter", display: "kein Filter" },
@@ -98,14 +102,29 @@ export default function TimeRangeOption({
     }
   };
 
-  const handleTimeRange = (
+  const checkCompletedFilter = (
+    selectedOption: string,
+    timeRestriction: TimeRangeType["timeRestriction"]
+  ) => {
+    let warningMessage = undefined;
+    if (
+      selectedOption === "between" &&
+      (timeRestriction.afterDate === null ||
+        timeRestriction.beforeDate === null ||
+        timeRestriction.afterDate >= timeRestriction.beforeDate)
+    ) {
+      warningMessage =
+        "Der minimale Wert muss kleiner als der maximale Wert sein";
+    }
+    return warningMessage;
+  };
+
+  const handleTimeRangeFilter = (
     selectedDate: SelectedDate,
     selectedOption: string
   ) => {
-    if (
-      selectedOption === "no filter" ||
-      (selectedDate.beforeDate === "" && selectedDate.afterDate === "")
-    ) {
+    let warningMessage = undefined;
+    if (selectedOption === "no filter") {
       return null;
     } else {
       const timeRestriction: TimeRangeType["timeRestriction"] = {
@@ -123,16 +142,26 @@ export default function TimeRangeOption({
               : null,
       };
 
+      if (selectedOption === "between") {
+        warningMessage = checkCompletedFilter(selectedOption, timeRestriction);
+      }
+
       return timeRestriction.beforeDate === null &&
         timeRestriction.afterDate === null
-        ? null
-        : { timeRestriction };
+        ? { timeRestriction: null, warningMessage }
+        : { timeRestriction: { timeRestriction }, warningMessage };
     }
   };
 
   useEffect(() => {
-    onChange(handleTimeRange(selectedDate, selectedOption));
-  }, [onChange, selectedDate, selectedOption]);
+    const timeRangeResult = handleTimeRangeFilter(selectedDate, selectedOption);
+
+    if (!timeRangeResult) {
+      onChange(null, undefined);
+    } else {
+      onChange(timeRangeResult.timeRestriction, timeRangeResult.warningMessage);
+    }
+  }, [selectedDate, selectedOption]);
 
   return (
     <>

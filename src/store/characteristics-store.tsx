@@ -76,7 +76,6 @@ export const useCharacteristicsStore = create<Store>()(
 
     deleteCharacteristic: (id: string) =>
       set((state) => {
-        console.log(id);
         state.characteristics.inclusionCriteria =
           state.characteristics.inclusionCriteria?.map((inner) =>
             inner.filter((characteristic) => characteristic.id !== id)
@@ -86,7 +85,6 @@ export const useCharacteristicsStore = create<Store>()(
     updateFilterValue: () =>
       set(() => {
         const selectedItems = useCheckedItemsStore.getState().selectedItems;
-        console.log(selectedItems);
         return { characteristics: Object.values(selectedItems) };
       }),
   }))

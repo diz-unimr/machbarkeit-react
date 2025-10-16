@@ -98,7 +98,6 @@ export default function FeasibilityContainer() {
 
   useEffect(() => {
     if (!isFilterPanelOpen && Object.values(selectedItems).length) {
-      console.log("useEffect");
       clearItemsStore();
     }
   }, [isOntolygyTreeOpen]);

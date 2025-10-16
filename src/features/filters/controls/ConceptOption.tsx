@@ -21,16 +21,18 @@ export default function ConceptOption({
     const newSelectedValues = checked
       ? [...selectedValues, concept]
       : selectedValues.filter((v) => v.code !== concept.code);
-
     setSelectedValue(newSelectedValues);
-    
 
-    onChange({
-      valueFilter: {
-        type: "concept",
-        selectedConcepts: newSelectedValues,
-      },
-    });
+    onChange(
+      newSelectedValues.length
+        ? {
+            valueFilter: {
+              type: "concept",
+              selectedConcepts: newSelectedValues,
+            },
+          }
+        : null
+    );
   };
 
   return (
