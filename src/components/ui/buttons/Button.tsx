@@ -6,27 +6,29 @@ import { twMerge } from "tailwind-merge";
 /* disabled button 
   bg-color: #ededed;
   text-color: #222222;
+  id: string;
 
 */
 
 type ButtonProp = {
   id: string;
-  type?: "primary" | "secondary" | "danger";
+  type?: "primary" | "secondary" | "danger" | "icon";
   label?: string;
+  iconPath?: string;
   color?: string;
   isActive?: boolean;
   className?: string;
   onClick?: (id: string) => void;
   // onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
-
 export function Button({
   id,
   type = "primary",
   label,
-  className,
+  iconPath,
   color = undefined,
   isActive = true,
+  className,
   onClick,
 }: ButtonProp) {
   const baseClass =
@@ -34,22 +36,37 @@ export function Button({
   /* const isActiveClass = !isActive
     ? "!cursor-not-allowed !opacity-45"
     : "cursor-auto hover:brightness-90 active:brightness-100"; */
-  const isActiveClass = isActive && "hover:brightness-90 active:brightness-100";
+  const isActiveClass =
+    isActive && "hover:brightness-100 active:brightness-110";
 
   let typeClass = "";
   switch (type) {
     case "primary":
-      typeClass = "text-white";
+      typeClass = twMerge(
+        baseClass,
+        "text-white",
+        isActive ? "hover:brightness-105" : ""
+      );
       break;
     case "secondary":
-      typeClass = "bg-transparent text-black px-2.5 py-1.5 hover:text-white";
+      typeClass = twMerge(
+        baseClass,
+        "bg-transparent text-black px-2.5 py-1.5 hover:text-white"
+      );
       break;
     case "danger":
-      typeClass = "flex items-center gap-1 border-none hover:text-red-700";
+      typeClass = twMerge(
+        baseClass,
+        "flex items-center gap-1 border-none hover:text-red-700"
+      );
+      break;
+    case "icon":
+      typeClass =
+        "flex !w-[10px] items-center !m-0 !p-0 border-none hover:text-red-700";
       break;
   }
 
-  const buttonClass = twMerge(baseClass, typeClass, isActiveClass, className);
+  const buttonClass = twMerge(isActiveClass, typeClass, className);
 
   return (
     <button
@@ -65,7 +82,10 @@ export function Button({
     >
       {label}
       {type === "danger" && (
-        <img src="./delete.png" className="!w-[22px] !h-[16px]" />
+        <img src={iconPath} className="!w-[22px] !h-[16px]" />
+      )}
+      {type === "icon" && (
+        <img src={iconPath} className="!w-[16px] !h-[16px]" />
       )}
     </button>
   );
@@ -88,4 +108,8 @@ export function DeleteButton({ className, ...props }: ButtonProp) {
       {...props}
     ></Button>
   );
+}
+
+export function IconButton({ className, ...props }: ButtonProp) {
+  return <Button type="icon" className={className} {...props}></Button>;
 }
