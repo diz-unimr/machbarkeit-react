@@ -21,7 +21,7 @@ export function ArrowButton({
       disabled={!hasChildren}
       onClick={onClick}
       aria-expanded="true"
-      className={`!p-0 ${!hasChildren && "!opacity-0"}`}
+      className={`!p-0 ${!hasChildren && "!opacity-0 !m-[3px]"}`}
     >
       <img
         key={id}

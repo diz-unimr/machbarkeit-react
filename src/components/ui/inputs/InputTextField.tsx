@@ -54,7 +54,7 @@ export default function InputTextField({
             />
             <label
               htmlFor={id}
-              className={`flex items-center absolute left-0 px-1 text-sm cursor-auto transition-all duration-200 ${type === "search" ? "ml-10" : "ml-3"}
+              className={`flex items-center absolute left-0 px-1 cursor-auto transition-all duration-200 ${type === "search" ? "ml-10" : "ml-3"}
 								${value!.toString().length > 0 || isFocused ? "-top-2.5 !text-xs font-semibold bg-white" : "h-full top-0"}`}
             >
               {label}
