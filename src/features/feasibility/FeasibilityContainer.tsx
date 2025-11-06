@@ -3,27 +3,22 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
-import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
-import { Button, DeleteButton } from "../../components/ui/buttons/Button";
-import OntologyButton from "../../components/ui/buttons/OntologyButton";
-import UploadButton from "../../components/ui/buttons/UploadButton";
-import InputTextField from "../../components/ui/inputs/InputTextField";
 import OntologyTreePanel from "../ontology/OntologyTreePanel";
 import FilterPanel from "../filters/FilterPanel";
-import Card from "../../components/layout/Card";
-import type { MachbarkeitQueryData } from "./type";
 import type { Criterion } from "../ontology/type";
-import { AxiosError } from "axios";
-import { useCharacteristicsStore } from "../../store/characteristics-store";
-import { useCheckedItemsStore } from "../../store/checked-items-store";
+import { useCharacteristicsStore } from "../../store/characteristics-ui-store";
+import { useItemsStore } from "../../store/checked-items-store";
+import FeasibilityDisplay from "./feasibility-display/FeasibilityDisplay";
+import FeasibilityQueryControl from "./FeasibilityQueryControl";
+import FeasibilityBuilder from "./FeasibilityBuilder";
 
 export default function FeasibilityContainer() {
   const [isOntolygyTreeOpen, setIsOntolygyTreeOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
-  const selectedItems = useCheckedItemsStore((state) => state.selectedItems);
-  const clearItemsStore = useCheckedItemsStore((state) => state.clearItems);
-  const characteristicsStore = useCharacteristicsStore(
+  const selectedItems = useItemsStore((state) => state.selectedItems);
+  const clearItemsStore = useItemsStore((state) => state.clearItems);
+  const characteristicsUI = useCharacteristicsStore(
     (state) => state.characteristics
   );
 
@@ -48,19 +43,18 @@ export default function FeasibilityContainer() {
 
   const handleFilter = () => {
     setIsFilterPanelOpen((prev) => !prev);
-    addCharacteristics();
     clearItems();
-  };
-
-  const deleteCharacteristic = (id: string) => {
-    deleteCharacteristics(id);
   };
 
   const clearItems = () => {
     clearItemsStore();
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const toggleOntologyTree = () => {
+    setIsOntolygyTreeOpen((isOntolygyTreeOpen) => !isOntolygyTreeOpen);
+  }
+
+  /* const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -92,15 +86,14 @@ export default function FeasibilityContainer() {
       }
     };
     reader.readAsText(file);
-  };
-
-  const convertToCharacteristicsDisplay = (x) => {};
+  }; */
 
   useEffect(() => {
+    console.log("characteristicsUI: ", characteristicsUI);
     if (!isFilterPanelOpen && Object.values(selectedItems).length) {
       clearItemsStore();
     }
-  }, [isOntolygyTreeOpen]);
+  }, [isOntolygyTreeOpen, isFilterPanelOpen]);
 
   return (
     <div
@@ -109,54 +102,10 @@ export default function FeasibilityContainer() {
     >
       {/* 3 sections */}
       {/* QueryControls */}
-      <section
-        id="query-controls"
-        className="flex w-full justify-between items-center"
-      >
-        <div className="flex h-[50px] border border-[#9ea9b3] rounded-md w-[45%] items-center px-4">
-          <p>
-            Anzahl der Patienten: <span>-</span>
-          </p>
-        </div>
-        <ButtonContainer>
-          <Button
-            id="load-query"
-            type="primary"
-            label="ZURÜCKSETZEN"
-            isActive={true}
-          />
-          <Button
-            id="save-query"
-            type="primary"
-            label="ABFRAGE STARTEN"
-            isActive={false}
-          />
-        </ButtonContainer>
-      </section>
+      <FeasibilityQueryControl />
       {/* CriteriaSelector */}
-      <section>
-        <Card header="Einschlusskriterien">
-          <div className="flex gap-3 w-full justify-between items-center">
-            <OntologyButton
-              onClick={() =>
-                setIsOntolygyTreeOpen(
-                  (isOntolygyTreeOpen) => !isOntolygyTreeOpen
-                )
-              }
-            />
-            <div className="flex w-full max-w-[92%]">
-              <InputTextField
-                id="search-text"
-                label="Code oder Suchbegriff eingeben"
-                value={textInput}
-                type="search"
-                onChange={handleTextChange}
-              />
-            </div>
-          </div>
-        </Card>
-      </section>
-      {/* OmtologyTree panel */}
+      <FeasibilityBuilder toggleOntologyButton={toggleOntologyTree} />
+      {/* OntologyTree panel */}
       {isOntolygyTreeOpen && (
         <OntologyTreePanel
           onSelectCriteria={handleCriteria}
@@ -166,44 +115,13 @@ export default function FeasibilityContainer() {
       {/* Filter panel */}
       {isFilterPanelOpen && Object.values(selectedItems).length && (
         <FilterPanel
-          criteria={Object.values(selectedItems)}
-          onClick={handleFilter}
+          selectedCriteria={Object.values(selectedItems)}
+          onSubmit={handleFilter}
           onCancel={clearItems}
         />
       )}
-      {/* CriteriaBuilder */}
-      <section>
-        <Card header="Ausgewählte Merkmale" headerClassName="justify-start">
-          <div className="flex flex-col min-h-[150px] gap-5">
-            <ButtonContainer>
-              <UploadButton
-                id="uplaod-query"
-                label="ABFRAGE LADEN"
-                onChange={handleFileUpload}
-              />
-              <Button
-                id="save-query"
-                type="secondary"
-                label="ABFRAGE SPEICHERN"
-                isActive={true}
-              />
-            </ButtonContainer>
-            <div className="flex flex-col min-h-[100px] p-5 border border-black border-dashed">
-              {characteristicsStore.inclusionCriteria?.map((inner, index) =>
-                inner.map((item) => (
-                  <div key={index} className="flex">
-                    <p>{item.termCodes[0].display}</p>
-                    <DeleteButton
-                      id={"delete-characteristic-" + index}
-                      onClick={() => deleteCharacteristic(item.id)}
-                    ></DeleteButton>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </Card>
-      </section>
+      {/* CriteriaDisplay */}
+      <FeasibilityDisplay characteristics={characteristicsUI} />
     </div>
   );
 }

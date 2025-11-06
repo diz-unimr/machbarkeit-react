@@ -13,7 +13,7 @@ import {
 } from "../../components/ui/buttons/Button";
 import { type Criterion, type Module } from "./type";
 import { useState, useEffect } from "react";
-import { useCheckedItemsStore } from "../../store/checked-items-store";
+import { useItemsStore } from "../../store/checked-items-store";
 import { useOntologyStore } from "../../store/ontology-store";
 import { useModulesStore } from "../../store/modules-store";
 
@@ -28,11 +28,13 @@ export default function OntologyTreePanel({
   const ontology = useOntologyStore((state) => state.ontology);
   const flattenCriterion = useOntologyStore((state) => state.flattenCriterion);
   const setOntology = useOntologyStore((state) => state.setOntology);
-  const setTree = useOntologyStore((state) => state.setTree);
+  const setFlattenCriterion = useOntologyStore(
+    (state) => state.setFlattenCriterion
+  );
   const [activeModule, setActiveModule] = useState<Module | null>(null); //selected module
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const selectedItems = useCheckedItemsStore((state) => state.selectedItems);
-  const checkedItems = useCheckedItemsStore((state) => state.checkedItems);
+  const selectedItems = useItemsStore((state) => state.selectedItems);
+  const checkedItems = useItemsStore((state) => state.checkedItems);
 
   const getOntology = async (moduleId: string) => {
     if (!ontology[moduleId]) {
@@ -40,7 +42,7 @@ export default function OntologyTreePanel({
       const [data, statusMessage] = await fetchOntology(moduleId);
       if (data) {
         setOntology(data);
-        setTree(data);
+        setFlattenCriterion(data);
         setIsLoading(false);
       } else if (statusMessage === "canceled") {
         return;
@@ -54,7 +56,7 @@ export default function OntologyTreePanel({
     setActiveModule(activeModule);
     getOntology(moduleId);
     if (ontology[moduleId] && !flattenCriterion[moduleId])
-      setTree(ontology[moduleId]);
+      setFlattenCriterion(ontology[moduleId]);
   };
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function OntologyTreePanel({
   }, []);
 
   return (
-    <>
+    <div>
       {modules.length > 0 && (
         <div className="flex relative max-w-full max-h-full -top-5 z-50">
           <div className="flex flex-col w-full min-h-[180px] absolute bg-white shadow-[0px_10px_15px_0px_#0003,0px_0px_25px_2px_#00000024,0px_0px_10px_0px_#0000001f] pointer-events-auto">
@@ -85,7 +87,7 @@ export default function OntologyTreePanel({
                       type="primary"
                       label={module.name}
                       color={module.color}
-                      className="font-normal"
+                      className="text-[15px] font-normal"
                       onClick={() => changeModuleTab(module.id)}
                     />
                   ))}
@@ -93,7 +95,7 @@ export default function OntologyTreePanel({
               </menu>
             </div>
             {/* Ontology display */}
-            <div className="flex flex-col w-full h-[550px] p-[30px]">
+            <div className="flex flex-col w-full min-h-[520px] h-[50vh] p-[30px]">
               {isLoading ? (
                 <p className="flex items-center justify-center h-full">
                   loading...
@@ -136,6 +138,6 @@ export default function OntologyTreePanel({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

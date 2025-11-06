@@ -4,14 +4,14 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { Criterion } from "../../ontology/type";
 import type { DropDownOption } from "../../../components/ui/dropdown/type";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import InputTextField from "../../../components/ui/inputs/InputTextField";
 import DropDownContainer from "../../../components/ui/dropdown/DropDownContainer";
 import type { QuantityType } from "./type";
 
 type QuantityOptionProps = {
-  criterion: Criterion;
-  onChange: (value: QuantityType | null, warningMessage?: string) => void;
+  criterionFilter: Criterion;
+  onChange: (value: QuantityType | null, isFilterCompleted?: boolean) => void;
 };
 
 const dropDownOption: DropDownOption[] = [
@@ -23,12 +23,13 @@ const dropDownOption: DropDownOption[] = [
 ];
 
 export default function QuantityOption({
-  criterion,
+  criterionFilter,
   onChange,
 }: QuantityOptionProps) {
+  const isFirstRender = useRef(true);
   const [selectedOption, setSelectedOption] = useState("no filter");
   const [selectedUnit, setSelectedUnit] = useState(
-    criterion.filterOptions?.[0].display || ""
+    criterionFilter.filterOptions?.[0].display || ""
   );
   const [selectedValue, setSelectedValue] = useState({
     value: 0,
@@ -87,26 +88,25 @@ export default function QuantityOption({
     selectedOption: string,
     valueFilter: QuantityType["valueFilter"]
   ) => {
-    let warningMessage = undefined;
+    let isFilterCompleted = true;
     if (
       selectedOption === "between" &&
       (valueFilter.maxValue === null ||
         valueFilter.minValue === null ||
         valueFilter.minValue >= valueFilter.maxValue)
     ) {
-      warningMessage =
-        "Der minimale Wert muss kleiner als der maximale Wert sein";
+      isFilterCompleted = false;
     }
-    return warningMessage;
+    return isFilterCompleted;
   };
 
   const handleQuantityFilter = () => {
-    let warningMessage = undefined;
+    let isFilterCompleted = true;
     if (selectedOption === "no filter") {
       return null;
     } else {
       const valueFilter: QuantityType["valueFilter"] = {
-        unit: criterion.filterOptions?.filter(
+        unit: criterionFilter.filterOptions?.filter(
           (option) => option.code === selectedUnit
         )[0] ?? { code: "", display: "" },
         comparator: selectedOption === "between" ? null : selectedOption,
@@ -120,27 +120,30 @@ export default function QuantityOption({
       };
 
       if (selectedOption === "between") {
-        warningMessage = checkCompletedFilter(selectedOption, valueFilter);
+        isFilterCompleted = checkCompletedFilter(selectedOption, valueFilter);
       }
 
       return valueFilter.minValue === null &&
         valueFilter.maxValue === null &&
         valueFilter.value
-        ? { valueFilter: null, warningMessage }
-        : { valueFilter: { valueFilter }, warningMessage };
+        ? { valueFilter: null, isFilterCompleted }
+        : { valueFilter: { valueFilter }, isFilterCompleted };
     }
   };
 
   useEffect(() => {
-    if (criterion.filterOptions) {
-      const valueFilterResult = handleQuantityFilter();
-      if (!valueFilterResult) onChange(null, undefined);
-      else
-        onChange(
-          valueFilterResult.valueFilter,
-          valueFilterResult.warningMessage
-        );
-      /* onChange(
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const valueFilterResult = handleQuantityFilter();
+    if (!valueFilterResult) onChange(null, true);
+    else
+      onChange(
+        valueFilterResult.valueFilter,
+        valueFilterResult.isFilterCompleted
+      );
+    /* onChange(
         selectedOption !== "no filter"
           ? {
               valueFilter: {
@@ -163,14 +166,13 @@ export default function QuantityOption({
             }
           : null
       ); */
-    }
   }, [selectedOption, selectedUnit, selectedValue]);
 
   return (
     <DropDownContainer
       selectedOption={selectedOption}
       dropDownOption={dropDownOption}
-      unitOptions={criterion.filterOptions}
+      unitOptions={criterionFilter.filterOptions}
       onSelectOption={(option) => setSelectedOption(option)}
       onSelectUnit={(unit) => setSelectedUnit(unit)}
     >

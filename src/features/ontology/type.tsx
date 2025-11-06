@@ -1,6 +1,12 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
+import type {
+  ConceptType,
+  QuantityType,
+  TimeRangeType,
+} from "../filters/controls/type";
+
 export type Module = {
   id: string;
   name: string;
@@ -42,8 +48,8 @@ export type Criterion = {
         version?: string | null;
       }[]
     | null;
-  // valueFilter?: ConceptType['valueFilter'] | QuantityType['valueFilter'];
-  // timeRestriction?: TimeRangeType['timeRestriction'];
+  valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
+  timeRestriction?: TimeRangeType["timeRestriction"];
   filterCompleteStatus?: boolean;
   color?: string;
   version: string | null;

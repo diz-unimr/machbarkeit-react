@@ -5,7 +5,7 @@ import type { Criterion } from "../../ontology/type";
 export type ConceptType = {
   valueFilter: {
     selectedConcepts: NonNullable<Criterion["filterOptions"]> | [];
-    type: string;
+    type: "concept";
   };
 };
 
@@ -17,7 +17,7 @@ export type QuantityType = {
     value: number | null;
     minValue: number | null;
     maxValue: number | null;
-    type: string;
+    type: "quantity-comparator" | "quantity-range";
   };
   isFilterComplete?: boolean;
 };

@@ -6,13 +6,13 @@ import type { Criterion } from "../../ontology/type";
 import type { ConceptType } from "./type";
 
 type ConceptOptionProps = {
-  criterion: Criterion;
+  criterionFilter: Criterion;
   onChange: (concept: ConceptType | null) => void;
 };
 type Concept = ConceptType["valueFilter"]["selectedConcepts"][number];
 
 export default function ConceptOption({
-  criterion,
+  criterionFilter,
   onChange,
 }: ConceptOptionProps) {
   const [selectedValues, setSelectedValue] = useState<Concept[] | []>([]);
@@ -37,7 +37,7 @@ export default function ConceptOption({
 
   return (
     <div className="flex flex-col gap-1">
-      {criterion.filterOptions?.map((option) => (
+      {criterionFilter.filterOptions?.map((option) => (
         <div key={option.code} className="flex gap-2">
           <input
             type="checkbox"

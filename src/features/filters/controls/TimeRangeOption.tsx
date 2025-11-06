@@ -7,6 +7,7 @@ import DropDownContainer from "../../../components/ui/dropdown/DropDownContainer
 import type { DropDownOption } from "../../../components/ui/dropdown/type";
 import DatePicker from "../../../components/ui/inputs/DatePicker";
 import type { TimeRangeType } from "./type";
+import type { Criterion } from "../../ontology/type";
 
 type OptionCode = "no filter" | "at" | "before" | "after" | "between";
 type SelectedDate = {
@@ -15,18 +16,20 @@ type SelectedDate = {
 };
 
 export default function TimeRangeOption({
+  criterionFilter,
   onChange,
 }: {
-  onChange: (timeRange: TimeRangeType | null, warningMessage?: string) => void;
+  criterionFilter: Criterion;
+  onChange: (
+    timeRange: TimeRangeType | null,
+    isFilterCompleted?: boolean
+  ) => void;
 }) {
   const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({
     afterDate: "",
     beforeDate: "",
   });
-  /*  const [warningMessage, setWarningMessage] = useState<string | undefined>(
-    undefined
-  ); */
 
   const dropDownOption: DropDownOption[] = [
     { code: "no filter", display: "kein Filter" },
@@ -106,24 +109,23 @@ export default function TimeRangeOption({
     selectedOption: string,
     timeRestriction: TimeRangeType["timeRestriction"]
   ) => {
-    let warningMessage = undefined;
+    let isFilterCompleted = true;
     if (
       selectedOption === "between" &&
       (timeRestriction.afterDate === null ||
         timeRestriction.beforeDate === null ||
         timeRestriction.afterDate >= timeRestriction.beforeDate)
     ) {
-      warningMessage =
-        "Der minimale Wert muss kleiner als der maximale Wert sein";
+      isFilterCompleted = false;
     }
-    return warningMessage;
+    return isFilterCompleted;
   };
 
   const handleTimeRangeFilter = (
     selectedDate: SelectedDate,
     selectedOption: string
   ) => {
-    let warningMessage = undefined;
+    let isFilterCompleted = true;
     if (selectedOption === "no filter") {
       return null;
     } else {
@@ -143,23 +145,33 @@ export default function TimeRangeOption({
       };
 
       if (selectedOption === "between") {
-        warningMessage = checkCompletedFilter(selectedOption, timeRestriction);
+        isFilterCompleted = checkCompletedFilter(
+          selectedOption,
+          timeRestriction
+        );
       }
 
       return timeRestriction.beforeDate === null &&
         timeRestriction.afterDate === null
-        ? { timeRestriction: null, warningMessage }
-        : { timeRestriction: { timeRestriction }, warningMessage };
+        ? { timeRestriction: null, isFilterCompleted }
+        : { timeRestriction: { timeRestriction }, isFilterCompleted };
     }
   };
 
   useEffect(() => {
-    const timeRangeResult = handleTimeRangeFilter(selectedDate, selectedOption);
-
-    if (!timeRangeResult) {
-      onChange(null, undefined);
-    } else {
-      onChange(timeRangeResult.timeRestriction, timeRangeResult.warningMessage);
+    if (selectedDate || selectedOption) {
+      const timeRangeResult = handleTimeRangeFilter(
+        selectedDate,
+        selectedOption
+      );
+      if (!timeRangeResult) {
+        onChange(null, true);
+      } else {
+        onChange(
+          timeRangeResult.timeRestriction,
+          timeRangeResult.isFilterCompleted
+        );
+      }
     }
   }, [selectedDate, selectedOption]);
 

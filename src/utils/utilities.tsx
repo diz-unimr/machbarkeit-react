@@ -2,6 +2,8 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import lodash from "lodash";
+import { useModulesStore } from "../store/modules-store";
+import type { Module } from "../features/ontology/type";
 
 export function getTabColor(moduleName: string): string {
   if (moduleName === "Person") {
@@ -31,3 +33,10 @@ export function transformObjectKeys<T extends { children?: T[] }>(
   });
   return response;
 }
+
+export const getModuleName = (moduleId: string) => {
+    const modules = useModulesStore.getState().modules;
+    const moduleName =
+      modules.find((module: Module) => module.id === moduleId)?.name || "";
+    return moduleName;
+  };

@@ -22,9 +22,18 @@ type Store = {
   clearItems: () => void;
 };
 
+let flattenCriteriaCache: Record<string, Record<string, Criterion>> | null =
+  null;
+
+const getFlattenCriteria = () => {
+  if (!flattenCriteriaCache) {
+    flattenCriteriaCache = useOntologyStore.getState().flattenCriterion;
+  }
+  return flattenCriteriaCache;
+};
+
 const traverseChildrenNode = (children: Criterion[], isChecked: boolean) => {
-  const { toggleCheckedItem, toggleSelectedItem } =
-    useCheckedItemsStore.getState();
+  const { toggleCheckedItem, toggleSelectedItem } = useItemsStore.getState();
   for (const child of children) {
     toggleCheckedItem(child, isChecked);
     toggleSelectedItem(child, "uncheck");
@@ -39,52 +48,54 @@ const handleParent = (
   currentSelectedItem: Criterion,
   isChecked: boolean
 ) => {
-  // get parent data from flattenCriterion
-  const flattenCriterion = useOntologyStore.getState().flattenCriterion;
+  const { toggleCheckedItem, toggleSelectedItem } = useItemsStore.getState();
+  // get parent data from flattenCriteriaCache
+  const flattenCriteria = getFlattenCriteria();
   let parent: Criterion | undefined =
-    flattenCriterion[criterion.moduleId][criterion.parentId!];
+    flattenCriteria[criterion.moduleId][criterion.parentId!];
 
   while (parent) {
     if (!parent.selectable) break;
+    // call checkedItems inside while loop for reactive
+    const { checkedItems } = useItemsStore.getState();
 
-    // call gestate() inside while loop for reactive
-    const { checkedItems, toggleCheckedItem, toggleSelectedItem } =
-      useCheckedItemsStore.getState();
     if (isChecked) {
-      // if checked
       const areAllChildrenChecked = parent.children?.every((child) =>
         checkedItems.has(child.id)
       );
+      // all children are checked, check parent
       if (areAllChildrenChecked) {
         toggleCheckedItem(parent, isChecked);
         currentSelectedItem = parent;
       } else break;
     } else {
       // if unchecked
-      toggleCheckedItem(parent, isChecked);
-      toggleSelectedItem(parent, "uncheck");
-      // check sibling and add them to selectedItems
-      parent.children?.forEach((child) => {
-        const isChildChecked = checkedItems.has(child.id);
-        if (isChildChecked) toggleSelectedItem(child, "check");
-      });
-    }
+      if (checkedItems.has(parent.id)) {
+        toggleCheckedItem(parent, isChecked);
+        toggleSelectedItem(parent, "uncheck");
 
+        // check sibling and add them to selectedItems
+        parent.children?.forEach((child) => {
+          const isChildChecked = checkedItems.has(child.id);
+          if (isChildChecked) toggleSelectedItem(child, "check");
+        });
+      }
+    }
     // set ancestor if available
     parent = parent.parentId
-      ? flattenCriterion[parent.moduleId][parent.parentId!]
+      ? flattenCriteria[parent.moduleId][parent.parentId!]
       : undefined;
   }
   return currentSelectedItem;
 };
 
 export const handleCheckbox = (criterion: Criterion, isChecked: boolean) => {
-  const { toggleSelectedItem, toggleCheckedItem } =
-    useCheckedItemsStore.getState();
+  const { toggleCheckedItem, toggleSelectedItem } = useItemsStore.getState();
   let currentSelectedItem: Criterion = criterion;
 
   // toggle current item
   toggleCheckedItem(criterion, isChecked);
+
   // handle all children
   if (criterion.children?.length) {
     traverseChildrenNode(criterion.children, isChecked);
@@ -101,7 +112,7 @@ export const handleCheckbox = (criterion: Criterion, isChecked: boolean) => {
   toggleSelectedItem(currentSelectedItem, isChecked ? "check" : "uncheck");
 };
 
-export const useCheckedItemsStore = create<Store>()(
+export const useItemsStore = create<Store>()(
   immer((set) => ({
     checkedItems: new Set<string>(),
     selectedItems: {} as Record<string, Criterion>,
@@ -125,6 +136,12 @@ export const useCheckedItemsStore = create<Store>()(
     toggleSelectedItem: (criterion: Criterion, action: "check" | "uncheck") =>
       set((state) => {
         if (action === "check") state.selectedItems[criterion.id] = criterion;
+        else delete state.selectedItems[criterion.id];
+      }),
+
+    toggleSelectedItem2: (criterion: Criterion, isChecked: boolean) =>
+      set((state) => {
+        if (isChecked) state.selectedItems[criterion.id] = criterion;
         else delete state.selectedItems[criterion.id];
       }),
 

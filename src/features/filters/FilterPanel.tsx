@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -5,25 +6,73 @@ import { CancelButton, SubmitButton } from "../../components/ui/buttons/Button";
 import Card from "../../components/layout/Card";
 import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
 import type { Criterion } from "../ontology/type";
-import Filtercard from "./FilterCard";
-import type { ConceptType, QuantityType, TimeRangeType } from "./controls/type";
+import FilterCard from "./FilterCard";
+import type { FilterDataProps } from "./FilterCard";
+import { useCharacteristicsStore } from "../../store/characteristics-ui-store";
+import { useEffect, useState } from "react";
+import { useModulesStore } from "../../store/modules-store";
+
+/* type selectedCriteriaFilterProps = Criterion & {
+  index: string;
+}; */
 
 type FilterPanelProps = {
-  criteria: Criterion[];
-  onClick: () => void;
+  selectedCriteria: Criterion[];
+  onSubmit: () => void;
   onCancel: () => void;
 };
 export default function FilterPanel({
-  criteria,
-  onClick,
+  selectedCriteria,
+  onSubmit,
   onCancel,
 }: FilterPanelProps) {
-  const getFilter = (
-    selectedFilter: ConceptType | QuantityType | TimeRangeType | null,
-    warningMessage?: string
-  ) => {
+  const modules = useModulesStore((state) => state.modules);
+  const addCharacteristics = useCharacteristicsStore(
+    (state) => state.addCharacteristics
+  );
 
+  const [selectedCriteriaFilter, setSelectedCriteriaFilter] = useState<
+    Criterion[]
+  >([]);
+
+  const handleFilterChange = (index: string, filterData: FilterDataProps) => {
+    if (filterData.selectedFilter !== null && filterData.isCompleted) {
+      setSelectedCriteriaFilter((prev) =>
+        prev.map((criterion, criterion_index) =>
+          String(criterion_index) === index
+            ? {
+                ...criterion,
+                valueFilter:
+                  filterData.selectedFilter &&
+                  "valueFilter" in filterData.selectedFilter
+                    ? filterData.selectedFilter.valueFilter
+                    : undefined,
+                timeRestriction:
+                  filterData.selectedFilter &&
+                  "timeRestriction" in filterData.selectedFilter
+                    ? filterData.selectedFilter.timeRestriction
+                    : undefined,
+              }
+            : criterion
+        )
+      );
+    }
   };
+  const submitFilter = () => {
+    addCharacteristics(selectedCriteriaFilter);
+    onSubmit();
+  };
+
+  useEffect(() => {
+    const criteria = selectedCriteria.map((criterion) => {
+      const moduleColor = modules.find(
+        (module) => module.id === criterion.moduleId
+      )?.color;
+      console.log("moduleColor: ", moduleColor);
+      return { ...criterion, color: moduleColor };
+    });
+    setSelectedCriteriaFilter(criteria);
+  }, [selectedCriteria]);
 
   return (
     <div className="flex relative z-100 w-[clamp(500px,95%,750px)] mx-auto my-0">
@@ -33,19 +82,25 @@ export default function FilterPanel({
             Einschränkungen der ausgewählten Merkmale
           </h1>
           <div className="min-h-0 overflow-y-auto">
-            {criteria.map((criterion, index) => (
-              <Filtercard
+            {selectedCriteriaFilter.map((criterionFilter, index) => (
+              <FilterCard
                 key={index}
                 id={String(index)}
-                criterion={criterion}
-                onGetFilter={getFilter}
+                criterionFilter={criterionFilter}
+                onFilterChange={(filterData) =>
+                  handleFilterChange(String(index), filterData)
+                }
               />
             ))}
           </div>
           <div className="flex gap-3.5 items-center justify-end mt-5 mr-5">
             <ButtonContainer>
               <CancelButton id="cancel" label="ABBRECHEN" onClick={onCancel} />
-              <SubmitButton id="submit" label="HINZUFÜGEN" onClick={onClick} />
+              <SubmitButton
+                id="submit"
+                label="HINZUFÜGEN"
+                onClick={submitFilter}
+              />
             </ButtonContainer>
           </div>
         </Card>
