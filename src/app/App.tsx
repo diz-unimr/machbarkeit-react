@@ -9,30 +9,13 @@ import FeasibilityContainer from "@features/feasibility/feasibility-builder/Feas
 function App() {
   return (
     <>
-      <main className="w-full h-full flex rounded-lg m-auto">
+      <main>
         <Splitter
-          leftChild={({ toggleLeftPanel, isMinWidthReached }) => (
-            <DataSelectionContainer
-              onToggle={toggleLeftPanel}
-              isMinWidthReached={isMinWidthReached}
-            />
+          leftChild={({ toggleLeftPanel }) => (
+            <DataSelectionContainer onToggle={toggleLeftPanel} />
           )}
           rightChild={<FeasibilityContainer />}
         />
-        {/* <div
-          ref={containerRef}
-          className="flex h-screen w-full overflow-hidden bg-gray-50"
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          <DataSelectionContainer />
-          <div
-            className="w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize"
-            onMouseDown={handleMouseDown}
-          ></div>
-          <FeasibilityContainer />
-        </div> */}
       </main>
     </>
   );

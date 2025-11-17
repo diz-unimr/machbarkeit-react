@@ -36,13 +36,18 @@
   }
 }
 
+html,
+body,
+#root,
+main {
+  height: 100%;
+}
+
 html {
   font-size: clamp(10px, 1vw + 0.3rem, 16px);
 }
 
 body {
-  width: 100%;
-  min-height: 100vh;
   margin: 0;
   padding: 0;
   display: flex;
@@ -53,6 +58,7 @@ main {
   width: 100%;
   min-height: 100vh;
   display: flex;
+  margin: auto;
 }
 
 div {
@@ -90,13 +96,17 @@ select {
   cursor: pointer;
   /* font-size: 15px; */
   appearance: none;
-  background: url("/arrow-down.png") no-repeat right 14px center;
+  background: url("/filter-arrow.png") no-repeat right 14px center;
   background-color: white;
   background-size: 8px;
 }
 
 select:focus-visible {
   outline: none;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
 }
 
 * {
