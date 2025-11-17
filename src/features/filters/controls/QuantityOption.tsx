@@ -1,12 +1,12 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "../../ontology/type";
-import type { DropDownOption } from "../../../components/ui/dropdown/type";
+import type { Criterion } from "@app/types/ontology";
+import type { DropDownOption } from "@components/ui/dropdown/type";
 import { useEffect, useState } from "react";
-import InputTextField from "../../../components/ui/inputs/InputTextField";
-import DropDownContainer from "../../../components/ui/dropdown/DropDownContainer";
-import type { QuantityType } from "./type";
+import InputTextField from "@components/ui/inputs/InputTextField";
+import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
+import type { QuantityType } from "@features/filters/controls/type";
 
 type QuantityOptionProps = {
   criterion: Criterion;
@@ -30,9 +30,9 @@ export default function QuantityOption({
     criterion.filterOptions?.[0].display || ""
   );
   const [selectedValue, setSelectedValue] = useState({
-    value: 0,
-    min: 0,
-    max: 0,
+    value: "0",
+    min: "0",
+    max: "0",
   });
 
   const getInputOption = (option: string) => {
@@ -49,7 +49,7 @@ export default function QuantityOption({
             type="number"
             value={selectedValue["value"]}
             onChange={(value) =>
-              setSelectedValue((prev) => ({ ...prev, value: value as number }))
+              setSelectedValue((prev) => ({ ...prev, value: value }))
             }
             width="w-[100px]"
           />
@@ -63,7 +63,7 @@ export default function QuantityOption({
               type="number"
               value={selectedValue["min"]}
               onChange={(min) =>
-                setSelectedValue((prev) => ({ ...prev, min: min as number }))
+                setSelectedValue((prev) => ({ ...prev, min: min }))
               }
               width="w-[100px]"
             />
@@ -73,7 +73,7 @@ export default function QuantityOption({
               type="number"
               value={selectedValue["max"]}
               onChange={(max) =>
-                setSelectedValue((prev) => ({ ...prev, max: max as number }))
+                setSelectedValue((prev) => ({ ...prev, max: max }))
               }
               width="w-[100px]"
             />
@@ -95,9 +95,14 @@ export default function QuantityOption({
             (option) => option.code === selectedUnit
           )[0],
           comparator: selectedOption === "between" ? null : selectedOption,
-          value: selectedOption === "between" ? null : selectedValue["value"],
-          minValue: selectedOption === "between" ? selectedValue["min"] : null,
-          maxValue: selectedOption === "between" ? selectedValue["max"] : null,
+          value:
+            selectedOption === "between"
+              ? null
+              : Number(selectedValue["value"]),
+          minValue:
+            selectedOption === "between" ? Number(selectedValue["min"]) : null,
+          maxValue:
+            selectedOption === "between" ? Number(selectedValue["max"]) : null,
           type:
             selectedOption === "between"
               ? "quantity-range"

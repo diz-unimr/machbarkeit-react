@@ -27,17 +27,15 @@ export default function Card({
 }: CardProp) {
   const ref = useRef<HTMLDivElement>(null);
   const scrollHeight = (ref.current?.scrollHeight || 0) + 20;
-
   return (
     <div
       ref={ref}
-      className={`flex flex-col
+      className={twMerge(`flex flex-col w-full
         relative 
-        border border-gray-400
+        border-2 border-[var(--color-border)]
         rounded-md
-        shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f]
         bg-white
-        ${className}`}
+        ${className}`)}
       style={{
         height: isExpanded ? `${scrollHeight}px` : height || undefined,
       }}
@@ -47,9 +45,8 @@ export default function Card({
         <div
           className={`flex justify-center items-center p-2 px-4
         h-[clamp(40px,10%,60px)]
-        bg-[#5270a7]
         rounded-t-sm
-        font-medium text-md text-white
+        font-medium text-md text-[#5e5e5e]
         ${headerClassName}`}
         >
           {header}
@@ -57,9 +54,8 @@ export default function Card({
       )}
       {/* children */}
       <div
-        /* w-auto h-[90%] */
         className={twMerge(
-          "flex flex-col w-full h-full px-6 py-5",
+          "flex flex-col w-full h-full py-5 px-6",
           bodyClassName
         )}
       >

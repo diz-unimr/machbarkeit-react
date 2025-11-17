@@ -2,10 +2,10 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
-import DropDownContainer from "../../../components/ui/dropdown/DropDownContainer";
-import type { DropDownOption } from "../../../components/ui/dropdown/type";
-import DatePicker from "../../../components/ui/inputs/DatePicker";
-import type { TimeRangeType } from "./type";
+import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
+import type { DropDownOption } from "@components/ui/dropdown/type";
+import DatePicker from "@components/ui/inputs/DatePicker";
+import type { TimeRangeType } from "@features/filters/controls/type";
 
 type OptionCode = "no filter" | "at" | "before" | "after" | "between";
 type SelectedDate = {

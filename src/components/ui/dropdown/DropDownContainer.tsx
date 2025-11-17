@@ -1,9 +1,9 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "../../../features/ontology/type";
-import DropDown from "./DropDown";
-import type { DropDownOption } from "./type";
+import type { Criterion } from "@app/types/ontology";
+import DropDown from "@components/ui/dropdown/DropDown";
+import type { DropDownOption } from "@components/ui/dropdown/type";
 
 type DropDownContainerProps = {
   children?: React.ReactNode;

@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import TextFloating from "./TextFloating";
+import TextFloating from "@components/ui/inputs/TextFloating";
 
 type DatePickerProps = {
   id?: string;

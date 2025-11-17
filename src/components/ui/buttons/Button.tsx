@@ -3,12 +3,6 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { twMerge } from "tailwind-merge";
 
-/* disabled button 
-  bg-color: #ededed;
-  text-color: #222222;
-
-*/
-
 type ButtonProp = {
   id: string;
   type?: "primary" | "secondary" | "danger";
@@ -30,11 +24,11 @@ export function Button({
   onClick,
 }: ButtonProp) {
   const baseClass =
-    "!min-w-[80px] font-bold text-sm border border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
-  /* const isActiveClass = !isActive
-    ? "!cursor-not-allowed !opacity-45"
-    : "cursor-auto hover:brightness-90 active:brightness-100"; */
-  const isActiveClass = isActive && "hover:brightness-90 active:brightness-100";
+    "!min-w-[80px] font-bold border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
+
+  const isActiveClass =
+    isActive &&
+    "hover:shadow-md hover:border-gray-300 transition-all duration-150";
 
   let typeClass = "";
   switch (type) {
@@ -65,7 +59,7 @@ export function Button({
     >
       {label}
       {type === "danger" && (
-        <img src="./delete.png" className="!w-[22px] !h-[16px]" />
+        <img src="/delete.png" className="!w-[22px] !h-[16px]" />
       )}
     </button>
   );

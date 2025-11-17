@@ -2,7 +2,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import type { DropDownOption } from "./type";
+import type { DropDownOption } from "@components/ui/dropdown/type";
 
 type DropDownProps = {
   width?: string;

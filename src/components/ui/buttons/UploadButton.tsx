@@ -23,7 +23,7 @@ export default function UploadButton({
       />
       <label
         htmlFor={id}
-        className="min-h-[36px] px-[10px] py-[6px] rounded-md border border-[#0072DA] font-bold text-sm text-center cursor-pointer hover:bg-[#0072DA] hover:text-white active:brightness-110"
+        className="min-h-[36px] px-[clamp(9px,1vw,12px)] py-[clamp(6px,1vw,8px)] text-[clamp(10px,1vw,12px)] rounded-md border-[1.5px] border-[#0072DA] font-bold text-center cursor-pointer hover:bg-[#0072DA] hover:text-white active:brightness-110"
       >
         {label}
       </label>

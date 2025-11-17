@@ -54,7 +54,7 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
                     key={criterion.id}
                     criterion={criterion}
                     onCheckbox={handleCheckboxChange}
-                  /> // criterion per module
+                  />
                 ))}
             </TreePanel>
           </>

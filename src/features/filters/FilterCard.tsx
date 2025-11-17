@@ -2,14 +2,18 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import { ArrowButton } from "../../components/ui/buttons/ArrowButton";
-import { Button, DeleteButton } from "../../components/ui/buttons/Button";
-import Card from "../../components/layout/Card";
-import ConceptOption from "./controls/ConceptOption";
-import QuantityOption from "./controls/QuantityOption";
-import TimeRangeOption from "./controls/TimeRangeOption";
-import type { Criterion } from "../ontology/type";
-import type { ConceptType, QuantityType, TimeRangeType } from "./controls/type";
+import { ArrowButton } from "@components/ui/buttons/ArrowButton";
+import { Button, DeleteButton } from "@components/ui/buttons/Button";
+import Card from "@components/layout/Card";
+import ConceptOption from "@features/filters/controls/ConceptOption";
+import QuantityOption from "@features/filters/controls/QuantityOption";
+import TimeRangeOption from "@features/filters/controls/TimeRangeOption";
+import type { Criterion } from "@app/types/ontology";
+import type {
+  ConceptType,
+  QuantityType,
+  TimeRangeType,
+} from "@features/filters/controls/type";
 
 type FilterCardProps = {
   id: string;
@@ -27,11 +31,7 @@ export default function Filtercard({ id, criterion }: FilterCardProps) {
 
   const getSelectedValues = (
     selectedValues: ConceptType | QuantityType | TimeRangeType | null
-  ) => {
-    console.log("Selected Values:", selectedValues);
-  };
-
-  console.log("FilterCard render: ", id);
+  ) => {};
 
   return (
     <Card className="border-none m-5">

@@ -5,27 +5,27 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type handlePanelProps = {
   toggleLeftPanel: (isToggle: boolean) => void;
-  isMinWidthReached: boolean;
 };
 
 type SplitterProps = {
   leftChild: (handleLeftPanel: handlePanelProps) => ReactNode;
   rightChild: ReactNode;
-  minLeftPercent?: number;
-  maxLeftPercent?: number;
+  startLeftPercent?: number;
 };
 
 export default function Splitter({
   leftChild,
   rightChild,
-  minLeftPercent = 5,
-  maxLeftPercent = 50,
+  startLeftPercent = 50,
 }: SplitterProps) {
-  const [leftPercent, setLeftPercent] = useState<number>(maxLeftPercent);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isResizing = useRef<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [isMinWidthReached, setIsMinWidthReached] = useState<boolean>(false);
+  const [leftWidth, setLeftWidth] = useState<number | null>(null);
+
+  const toggleLeftPanel = (isToggle: boolean) => {
+    setIsExpanded(isToggle);
+  };
 
   const startResizing = () => {
     isResizing.current = true;
@@ -33,75 +33,53 @@ export default function Splitter({
     document.body.style.userSelect = "none";
   };
 
-  const toggleLeftPanel = (isToggle: boolean) => {
-    setIsExpanded(isToggle);
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isResizing.current || !containerRef.current) return;
+    const currentWidth = e.clientX;
+    setLeftWidth(currentWidth);
   };
 
+  const stopResizing = () => {
+    isResizing.current = false;
+    document.body.style.cursor = "default";
+    document.body.style.userSelect = "auto";
+  };
+
+  window.addEventListener("mousemove", handleMouseMove);
+  window.addEventListener("mouseup", stopResizing);
+
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isResizing.current || !containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const relativeX = e.clientX - rect.left;
-      const newPercent = Math.min(
-        maxLeftPercent,
-        Math.max(minLeftPercent, (relativeX / rect.width) * 100)
-      );
-
-      // throttle animation frame not re-render all times
-      requestAnimationFrame(() => {
-        setLeftPercent(newPercent);
-      });
-
-      if (newPercent === minLeftPercent) {
-        setIsMinWidthReached(true);
-        setIsExpanded(false);
-      }
-    };
-
-    const stopResizing = () => {
-      isResizing.current = false;
-      document.body.style.cursor = "default";
-      document.body.style.userSelect = "auto";
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", stopResizing);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", stopResizing);
-    };
-  }, [minLeftPercent, maxLeftPercent]);
+    if (containerRef.current) {
+      const width = containerRef.current.offsetWidth;
+      setLeftWidth(width / 2);
+    }
+  }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative flex h-full w-full overflow-hidden"
-    >
+    <div ref={containerRef} className="flex w-full h-full">
       {/* Left Panel */}
-      {String(isExpanded)}
       <div
-        className="h-full border-r border-gray-300 bg-white"
+        className="h-full bg-white w-[50%]"
         style={{
           width: isExpanded
-            ? leftPercent === minLeftPercent
-              ? `${maxLeftPercent}%`
-              : `${leftPercent}%`
-            : `${minLeftPercent}%`,
+            ? (leftWidth ?? `${startLeftPercent}%`)
+            : "fit-content",
+          minWidth: isExpanded ? "300px" : undefined,
+          maxWidth: "50%",
           transition: isResizing.current ? "none" : "width 0.3s ease",
         }}
       >
-        {leftChild({ toggleLeftPanel, isMinWidthReached })}
+        {leftChild({ toggleLeftPanel })}
       </div>
-
       {/* Splitter */}
-      {isExpanded && (
-        <div
-          className="w-[1.5px] bg-[var(--color-border)] hover:bg-gray-300 cursor-col-resize"
-          onMouseDown={startResizing}
-        ></div>
-      )}
-
+      <div
+        className={
+          isExpanded
+            ? "w-[4px] border-r-2 border-gray-300 bg-[var(--color-border)] hover:bg-gray-300 cursor-col-resize"
+            : "border-r-[1.5px] border-[var(--color-border)]"
+        }
+        onMouseDown={isExpanded ? startResizing : undefined}
+      ></div>
       {/* Right Panel */}
       <div className="flex-1 h-full bg-gray-100">{rightChild}</div>
     </div>

@@ -1,11 +1,11 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { CancelButton, SubmitButton } from "../../components/ui/buttons/Button";
-import Card from "../../components/layout/Card";
-import ButtonContainer from "../../components/ui/buttons/ฺButtonContainer";
-import type { Criterion } from "../ontology/type";
-import Filtercard from "./FilterCard";
+import { CancelButton, SubmitButton } from "@components/ui/buttons/Button";
+import Card from "@components/layout/Card";
+import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
+import type { Criterion } from "@app/types/ontology";
+import Filtercard from "@features/filters/FilterCard";
 
 type FilterPanelProps = {
   criteria: Criterion[];
