@@ -3,7 +3,7 @@
 
 export default function TreePanel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col h-full w-full overflow-y-auto overflow-x-hidden">
+    <div className="flex flex-col w-full overflow-y-auto overflow-x-hidden">
       {children}
     </div>
   );

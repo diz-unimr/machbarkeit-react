@@ -2,8 +2,8 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import { type Criterion } from "../../features/ontology/type";
-import { ArrowButton } from "../../components/ui/buttons/ArrowButton";
+import { type Criterion } from "@app/types/ontology";
+import { ArrowButton } from "@components/ui/buttons/ArrowButton";
 
 type TreeItemProps = {
   criterion: Criterion;
@@ -20,7 +20,6 @@ export default function TreeItem({
 }: TreeItemProps) {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target);
     setIsChecked(e.target.checked);
     onCheckbox(e.target.checked, criterion);
   };

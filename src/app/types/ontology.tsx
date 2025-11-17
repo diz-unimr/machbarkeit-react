@@ -1,13 +1,20 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
+import type { ModuleColorProps } from "@app/utils/utilities";
+import type {
+  ConceptType,
+  QuantityType,
+  TimeRangeType,
+} from "@features/filters/controls/type";
+
 export type Module = {
   id: string;
   name: string;
   fdpgCdsCode: string;
   fdpgCdsSystem: string;
   version: string;
-  color: string;
+  color: ModuleColorProps;
 };
 
 export type Criterion = {
@@ -15,6 +22,7 @@ export type Criterion = {
   id: string;
   moduleId: string;
   parentId: string | null;
+  childrenIds: string[];
   display: string;
   termCodes: {
     code: string;
@@ -41,8 +49,8 @@ export type Criterion = {
         version?: string | null;
       }[]
     | null;
-  // valueFilter?: ConceptType['valueFilter'] | QuantityType['valueFilter'];
-  // timeRestriction?: TimeRangeType['timeRestriction'];
+  valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
+  timeRestriction?: TimeRangeType["timeRestriction"];
   filterCompleteStatus?: boolean;
   color?: string;
   version: string | null;

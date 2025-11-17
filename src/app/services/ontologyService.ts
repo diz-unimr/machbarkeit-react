@@ -2,8 +2,8 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import axios, { type AxiosResponse, AxiosError } from "axios";
-import type { Criterion } from "../features/ontology/type";
-import { API_ONTOLOGY_URL, API_SEARCH_ONTOLOGY_URL } from "../constants/appConfig";
+import type { Criterion } from "@app/types/ontology";
+import { API_ONTOLOGY_URL, API_SEARCH_ONTOLOGY_URL } from "@app/constants/appConfig";
 import lodash from "lodash";
 
 let abortController: AbortController | null = null

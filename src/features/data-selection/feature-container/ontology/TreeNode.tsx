@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import { type Criterion } from "./type";
+import { type Criterion } from "@app/types/ontology";
 
 import TreeItem from "./TreeItem";
 
