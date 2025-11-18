@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 
 type ButtonProp = {
   id: string;
-  type?: "primary" | "secondary" | "danger";
+  type?: "primary" | "secondary" | "tertiary" | "danger";
   label: string;
   color?: string;
   isActive?: boolean;
@@ -37,6 +37,9 @@ export function Button({
       break;
     case "secondary":
       typeClass = "bg-transparent text-black px-2.5 py-1.5 hover:text-white";
+      break;
+    case "tertiary":
+      typeClass = "hover:underline";
       break;
     case "danger":
       typeClass = "flex items-center gap-1 border-none hover:text-red-700";

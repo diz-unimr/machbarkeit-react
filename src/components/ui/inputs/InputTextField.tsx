@@ -31,7 +31,7 @@ function InputTextField({
   const [isFocused, setIsFocused] = useState(false);
   /* const [valueInput, setValueInput] = useState(0); */
   const rootClassName = twMerge(
-    "flex flex-col justify-center h-[42px] w-full relative px-1 my-2",
+    "flex flex-col justify-center h-[40px] w-full relative px-1 my-2",
     width,
     className
   );

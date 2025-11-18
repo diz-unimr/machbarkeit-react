@@ -56,10 +56,10 @@ export default function Splitter({
   }, []);
 
   return (
-    <div ref={containerRef} className="flex w-full h-full">
+    <div ref={containerRef} className="flex w-full min-h-screen">
       {/* Left Panel */}
       <div
-        className="h-full bg-white w-[50%]"
+        className="bg-white w-[50%]"
         style={{
           width: isExpanded
             ? (leftWidth ?? `${startLeftPercent}%`)
@@ -81,7 +81,7 @@ export default function Splitter({
         onMouseDown={isExpanded ? startResizing : undefined}
       ></div>
       {/* Right Panel */}
-      <div className="flex-1 h-full bg-gray-100">{rightChild}</div>
+      <div className="flex-1 bg-gray-100">{rightChild}</div>
     </div>
   );
 }

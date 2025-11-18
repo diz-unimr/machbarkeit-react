@@ -63,7 +63,7 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
           </>
         )}
       </div>
-      <ButtonContainer bgContainer={activeModule?.color.btnColor}>
+      {/* <ButtonContainer bgContainer={activeModule?.color.btnColor}>
         <CancelButton
           id="cancel"
           label="ABBRECHEN"
@@ -80,7 +80,7 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
           className="text-black"
           onClick={() => onClick(selectedCriteria)}
         />
-      </ButtonContainer>
+      </ButtonContainer> */}
     </div>
   );
 }
