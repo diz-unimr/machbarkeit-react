@@ -1,9 +1,10 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useState } from "react";
+import { useState, type ChangeEvent, type DragEvent } from "react";
 import { type Criterion } from "@app/types/ontology";
 import { ArrowButton } from "@components/ui/buttons/ArrowButton";
+import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 
 type TreeItemProps = {
   criterion: Criterion;
@@ -19,12 +20,34 @@ export default function TreeItem({
   onCheckbox,
 }: TreeItemProps) {
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const draggable = !!criterion.selectable;
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
     onCheckbox(e.target.checked, criterion);
   };
+
+  const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
+    if (!draggable) return;
+    event.dataTransfer.setData(
+      DRAG_DATA_FORMATS.CRITERION,
+      JSON.stringify(criterion)
+    );
+    event.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleDragEnd = (event: DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.clearData();
+  };
+
   return (
-    <>
+    <div
+      key={criterion.id}
+      className="flex gap-2 items-start cursor-default"
+      draggable={draggable}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <ArrowButton
         id={criterion.id}
         isExpanded={isExpanded}
@@ -33,17 +56,16 @@ export default function TreeItem({
           (criterion.children && criterion.children.length > 0) || false
         }
       />
-      {criterion.selectable && (
+      {/* {criterion.selectable && (
         <input
           type="checkbox"
           className="mt-1.5 cursor-pointer"
           checked={isChecked}
           onChange={handleChange}
         />
-      )}
+      )} */}
       <div
-        key={criterion.id}
-        className="flex gap-2 cursor-default"
+        className={`flex gap-2 cursor-pointer ${criterion.selectable ? "hover:font-medium" : undefined}`}
         onClick={onArrowClick}
       >
         {criterion.selectable ? (
@@ -54,6 +76,6 @@ export default function TreeItem({
         ) : undefined}{" "}
         <p>{criterion.display}</p>
       </div>
-    </>
+    </div>
   );
 }

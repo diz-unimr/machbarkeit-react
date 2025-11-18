@@ -4,12 +4,13 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import Papa from "papaparse";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import { type Attribute } from "@features/data-selection/attribute-list/type";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type DragEvent } from "react";
 import TreePanel from "@features/data-selection/feature-container/ontology/TreePanel";
 import { ArrowButton } from "@components/ui/buttons/ArrowButton";
+import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 
 function AttributeList() {
-  const [metadata, setMetadata] = useState<object[] | null>(null);
+  const [metadata, setMetadata] = useState<Attribute[]>([]);
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
   const [mouseOverIndex, setMouseOverIndex] = useState<number | null>(null);
   const [checkboxItems, setCheckboxItem] = useState<Map<string, Attribute>>(
@@ -51,10 +52,34 @@ function AttributeList() {
     setMouseOverIndex(index);
   };
 
+  const handleAttributeDragStart = (
+    event: DragEvent<HTMLDivElement>,
+    attribute: Attribute
+  ) => {
+    event.dataTransfer.setData(
+      DRAG_DATA_FORMATS.ATTRIBUTE,
+      JSON.stringify(attribute)
+    );
+    event.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleAttributeDragEnd = (event: DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.clearData();
+  };
+
   useEffect(() => {
-    const metadata = Papa.parse("/diz_metadaten.csv", { header: true })
-      .data as object[];
-    setMetadata(metadata);
+    Papa.parse<Attribute>("/diz_metadaten.csv", {
+      download: true,
+      header: true,
+      complete: ({ data }) => {
+        const parsedData =
+          data?.filter(
+            (attribute) =>
+              attribute.kdsModule && attribute.attributeName?.trim().length
+          ) ?? [];
+        setMetadata(parsedData);
+      },
+    });
   }, []);
 
   return (
@@ -83,40 +108,43 @@ function AttributeList() {
               {module}
             </a>
             <div className={expandedIndexes.has(index) ? "block" : "hidden"}>
-              {/* {metadata &&
-                  metadata.map(
-                    (attribute: Attribute, attribute_index: number) =>
-                      attribute.kdsModule === module ? (
-                        <div
-                          key={attribute_index}
-                          className="flex gap-2.5 pl-5 pb-2"
-                        >
-                          <input
-                            id={"id-" + attribute_index}
-                            type="checkbox"
-                            onChange={() => toggleCheckbox(attribute)}
-                          />
-                          <p
-                            onMouseOver={() =>
-                              getTooltipPosition(attribute_index)
-                            }
-                            onMouseOut={() => setMouseOverIndex(null)}
-                          >
-                            {attribute.attributeName}
-                          </p>
-                          <span
-                            className={
-                              "w-[350px] absolute z-1000 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
-                              (mouseOverIndex === attribute_index
-                                ? "flex visible"
-                                : "hidden")
-                            }
-                          >
-                            {attribute.attributeDescription}
-                          </span>
-                        </div>
-                      ) : null
-                  )} */}
+              {metadata
+                .filter((attribute) => attribute.kdsModule === module)
+                .map((attribute, attribute_index) => (
+                  <div
+                    key={`${module}-${attribute_index}`}
+                    className="flex gap-2.5 pl-5 pb-2 items-start cursor-grab"
+                    draggable
+                    onDragStart={(event) =>
+                      handleAttributeDragStart(event, attribute)
+                    }
+                    onDragEnd={handleAttributeDragEnd}
+                  >
+                    <input
+                      id={"id-" + attribute_index}
+                      type="checkbox"
+                      onChange={() => toggleCheckbox(attribute)}
+                    />
+                    <div className="flex flex-col">
+                      <p
+                        onMouseOver={() => getTooltipPosition(attribute_index)}
+                        onMouseOut={() => setMouseOverIndex(null)}
+                      >
+                        {attribute.attributeName}
+                      </p>
+                      <span
+                        className={
+                          "w-[350px] absolute z-1000 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
+                          (mouseOverIndex === attribute_index
+                            ? "flex visible"
+                            : "hidden")
+                        }
+                      >
+                        {attribute.attributeDescription}
+                      </span>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
         ))}

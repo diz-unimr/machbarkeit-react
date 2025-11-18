@@ -51,7 +51,7 @@ export default function DataSelectionContainer({
       <div className="flex h-[60px] justify-between px-2 py-3 border-b-[1.5px] border-[var(--color-border)]">
         <div className="flex gap-3 items-center">
           <img src={appIcon} width={20} height={20} className="text-black" />
-          {isExpanded ? <p>Machbarkeitsabfrage</p> : undefined}
+          {/* {isExpanded ? <p>Machbarkeitsabfrage</p> : undefined} */}
         </div>
 
         <ArrowButton
