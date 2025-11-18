@@ -45,7 +45,10 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
               value={textInput}
               onChange={handleTextChange}
             />
-            <p className="my-5 text-lg font-bold">{activeModule?.name}</p>
+            {/* <p className="mt-3 text-sm text-red-400">
+              ** Hinweis: Merkmale nach rechts auf die Kriterien ziehen. **
+            </p> */}
+            <p className="mb-5 text-lg font-bold">{activeModule?.name}</p>
             <TreePanel>
               {activeModule &&
                 ontology[activeModule.id] &&

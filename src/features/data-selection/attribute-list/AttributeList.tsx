@@ -80,13 +80,6 @@ function AttributeList() {
                 id={String(index)}
                 isExpanded={expandedIndexes.has(index)}
               />
-              {/* <img
-                  src={arrowCollapse}
-                  className={
-                    "transition-all duration-300 " +
-                    (expandedIndexes.has(index) ? "rotate-90" : "rotate-0")
-                  }
-                /> */}
               {module}
             </a>
             <div className={expandedIndexes.has(index) ? "block" : "hidden"}>

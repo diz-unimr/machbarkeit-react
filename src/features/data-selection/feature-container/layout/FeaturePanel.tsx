@@ -22,7 +22,7 @@ export default function FeaturePanel({
   return (
     <div className="flex flex-col border-b-[2px] border-[var(--color-border)]">
       <div className="flex justify-between px-4 py-3">
-        <p className="font-medium">Merkmalen</p>
+        <p className="font-medium">Merkmale</p>
         <ArrowButton
           id="characteristic-btn"
           image={accordionArrow}

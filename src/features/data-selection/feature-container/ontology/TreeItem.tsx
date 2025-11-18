@@ -41,8 +41,18 @@ export default function TreeItem({
           onChange={handleChange}
         />
       )}
-      <div key={criterion.id} className="cursor-default" onClick={onArrowClick}>
-        {criterion.display}
+      <div
+        key={criterion.id}
+        className="flex gap-2 cursor-default"
+        onClick={onArrowClick}
+      >
+        {criterion.selectable ? (
+          <>
+            <p className="whitespace-nowrap">{criterion.termCodes[0].code}</p>{" "}
+            <p>|</p>
+          </>
+        ) : undefined}{" "}
+        <p>{criterion.display}</p>
       </div>
     </>
   );
