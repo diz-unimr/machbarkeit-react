@@ -2,6 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState, type ChangeEvent, type DragEvent } from "react";
+import Highlighter from "react-highlight-words";
 import { type Criterion } from "@app/types/ontology";
 import { ArrowButton } from "@components/ui/buttons/ArrowButton";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
@@ -14,23 +15,6 @@ type TreeItemProps = {
   searchTerm?: string;
 };
 
-const highlightMatch = (text: string, term?: string) => {
-  if (!term) return text;
-  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`(${escaped})`, "gi");
-  return text.split(regex).map((part, index) => {
-    const match = part.toLowerCase() === term.toLowerCase();
-    if (!part) return null;
-    return match ? (
-      <mark key={`mark-${index}`} className="bg-yellow-200 px-1 rounded">
-        {part}
-      </mark>
-    ) : (
-      <span key={`text-${index}`}>{part}</span>
-    );
-  });
-};
-
 export default function TreeItem({
   criterion,
   isExpanded,
@@ -40,6 +24,7 @@ export default function TreeItem({
 }: TreeItemProps) {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const draggable = !!criterion.selectable;
+  const searchWords = searchTerm?.trim() ? [searchTerm.trim()] : [];
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
@@ -67,11 +52,12 @@ export default function TreeItem({
       draggable={draggable}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onClick={onArrowClick}
     >
       <ArrowButton
         id={criterion.id}
         isExpanded={isExpanded}
-        onClick={onArrowClick}
+        /* onClick={onArrowClick} */
         hasChildren={
           (criterion.children && criterion.children.length > 0) || false
         }
@@ -84,16 +70,24 @@ export default function TreeItem({
           onChange={handleChange}
         />
       )} */}
-      <div className={`flex gap-2`} onClick={onArrowClick}>
+      <div className={`flex gap-2`} /* onClick={onArrowClick} */>
         {criterion.selectable ? (
           <>
-            <p className="whitespace-nowrap">
-              {highlightMatch(criterion.termCodes[0].code, searchTerm)}
-            </p>{" "}
-            {/* <p>|</p> */}
+            <Highlighter
+              className="whitespace-nowrap"
+              searchWords={searchWords}
+              textToHighlight={criterion.termCodes[0].code}
+              highlightClassName="bg-yellow-200 rounded"
+            />
+            <span>|</span>
           </>
-        ) : undefined}{" "}
-        <p>{highlightMatch(criterion.display, searchTerm)}</p>
+        ) : undefined}
+        <Highlighter
+          className="" /* line-clamp-1 */
+          searchWords={searchWords}
+          textToHighlight={criterion.display}
+          highlightClassName="bg-yellow-200 rounded"
+        />
       </div>
     </div>
   );

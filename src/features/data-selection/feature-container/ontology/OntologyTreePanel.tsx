@@ -26,15 +26,11 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
 
   useEffect(() => {
     const handler = setTimeout(
-      () => setDebouncedSearch(textInput.trim()),
+      () => setDebouncedSearch(textInput!.trim()),
       1000
     );
     return () => clearTimeout(handler);
   }, [textInput]);
-
-  const handleTextSearch = (textSearch: string) => {
-    setTextInput(textSearch);
-  };
 
   const handleCheckboxChange = (isChecked: boolean, criterion: Criterion) => {
     if (isChecked) {
@@ -50,37 +46,47 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
         <InputTextField
           id="search-text"
           label="Code oder Suchbegriff eingeben"
-          value={textInput}
-          onChange={handleTextSearch}
+          value={textInput ?? ""}
+          resultStatus={
+            ontologyResult.status ? ontologyResult.status : undefined
+          }
+          onChange={setTextInput}
+          onClearText={() => {
+            setDebouncedSearch("");
+            setTextInput("");
+          }}
         />
         <div className="flex flex-col flex-1 min-h-0 gap-4 overflow-hidden">
-          {isLoading ? (
-            <p className="flex items-center justify-center h-full">
-              loading...
-            </p>
-          ) : !ontologyResult || ontologyResult.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              Keine daten
-            </div>
-          ) : (
-            <>
-              <p className="text-lg font-bold">{activeModule?.name}</p>
-              <div className="flex-1 min-h-0 overflow-hidden">
-                <TreePanel>
-                  {activeModule &&
-                    ontologyResult &&
-                ontologyResult.map((criterion) => (
-                  <TreeNode
-                    key={criterion.id}
-                    criterion={criterion}
-                    onCheckbox={handleCheckboxChange}
-                    searchTerm={debouncedSearch}
-                  />
-                ))}
-                </TreePanel>
+          {ontologyResult.status !== 400 ? (
+            isLoading ? (
+              <p className="flex items-center justify-center h-full">
+                loading...
+              </p>
+            ) : !ontologyResult.criteria ||
+              ontologyResult.criteria.length === 0 ? (
+              <div className="flex items-center justify-center h-full">
+                Keine daten
               </div>
-            </>
-          )}
+            ) : (
+              <>
+                <p className="text-lg font-bold">{activeModule?.name}</p>
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <TreePanel>
+                    {activeModule &&
+                      ontologyResult.criteria &&
+                      ontologyResult.criteria.map((criterion) => (
+                        <TreeNode
+                          key={criterion.id}
+                          criterion={criterion}
+                          onCheckbox={handleCheckboxChange}
+                          searchTerm={debouncedSearch}
+                        />
+                      ))}
+                  </TreePanel>
+                </div>
+              </>
+            )
+          ) : undefined}
         </div>
       </div>
       {/* <ButtonContainer bgContainer={activeModule?.color.btnColor}>
