@@ -6,7 +6,7 @@ import TreeNode from "./TreeNode";
 import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
 import { CancelButton, SubmitButton } from "@components/ui/buttons/Button";
 import { type Criterion, type Module } from "@app/types/ontology";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useOntology from "@app/hooks/useOntology";
 import InputTextField from "@components/ui/inputs/InputTextField";
 
@@ -16,12 +16,24 @@ type OntologyTreePanelProps = {
 };
 
 function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
-  const { ontology, isLoading } = useOntology(activeModule?.id ?? null);
   const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
   const [textInput, setTextInput] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+  const { ontologyResult, isLoading } = useOntology(
+    activeModule?.id ?? null,
+    debouncedSearch
+  );
 
-  const handleTextChange = (text: string) => {
-    setTextInput(text);
+  useEffect(() => {
+    const handler = setTimeout(
+      () => setDebouncedSearch(textInput.trim()),
+      1000
+    );
+    return () => clearTimeout(handler);
+  }, [textInput]);
+
+  const handleTextSearch = (textSearch: string) => {
+    setTextInput(textSearch);
   };
 
   const handleCheckboxChange = (isChecked: boolean, criterion: Criterion) => {
@@ -33,35 +45,43 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
   };
 
   return (
-    <div className="flex flex-col flex-1 h-full min-h-0">
-      <div className="flex flex-col flex-1 min-h-0 w-full h-full p-[14px] overflow-hidden">
-        {isLoading ? (
-          <p className="flex items-center justify-center h-full">loading...</p>
-        ) : (
-          <>
-            <InputTextField
-              id="search-text"
-              label="Code oder Suchbegriff eingeben"
-              value={textInput}
-              onChange={handleTextChange}
-            />
-            {/* <p className="mt-3 text-sm text-red-400">
-              ** Hinweis: Merkmale nach rechts auf die Kriterien ziehen. **
-            </p> */}
-            <p className="mb-5 text-lg font-bold">{activeModule?.name}</p>
-            <TreePanel>
-              {activeModule &&
-                ontology[activeModule.id] &&
-                ontology[activeModule.id].map((criterion) => (
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 w-full h-full p-3 gap-4 overflow-hidden">
+        <InputTextField
+          id="search-text"
+          label="Code oder Suchbegriff eingeben"
+          value={textInput}
+          onChange={handleTextSearch}
+        />
+        <div className="flex flex-col flex-1 min-h-0 gap-4 overflow-hidden">
+          {isLoading ? (
+            <p className="flex items-center justify-center h-full">
+              loading...
+            </p>
+          ) : !ontologyResult || ontologyResult.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              Keine daten
+            </div>
+          ) : (
+            <>
+              <p className="text-lg font-bold">{activeModule?.name}</p>
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <TreePanel>
+                  {activeModule &&
+                    ontologyResult &&
+                ontologyResult.map((criterion) => (
                   <TreeNode
                     key={criterion.id}
                     criterion={criterion}
                     onCheckbox={handleCheckboxChange}
+                    searchTerm={debouncedSearch}
                   />
                 ))}
-            </TreePanel>
-          </>
-        )}
+                </TreePanel>
+              </div>
+            </>
+          )}
+        </div>
       </div>
       {/* <ButtonContainer bgContainer={activeModule?.color.btnColor}>
         <CancelButton

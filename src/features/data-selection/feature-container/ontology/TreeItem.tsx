@@ -11,6 +11,24 @@ type TreeItemProps = {
   isExpanded: boolean;
   onArrowClick?: () => void;
   onCheckbox: (isChecked: boolean, criterion: Criterion) => void;
+  searchTerm?: string;
+};
+
+const highlightMatch = (text: string, term?: string) => {
+  if (!term) return text;
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escaped})`, "gi");
+  return text.split(regex).map((part, index) => {
+    const match = part.toLowerCase() === term.toLowerCase();
+    if (!part) return null;
+    return match ? (
+      <mark key={`mark-${index}`} className="bg-yellow-200 px-1 rounded">
+        {part}
+      </mark>
+    ) : (
+      <span key={`text-${index}`}>{part}</span>
+    );
+  });
 };
 
 export default function TreeItem({
@@ -18,6 +36,7 @@ export default function TreeItem({
   isExpanded,
   onArrowClick,
   onCheckbox,
+  searchTerm,
 }: TreeItemProps) {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const draggable = !!criterion.selectable;
@@ -33,6 +52,7 @@ export default function TreeItem({
       DRAG_DATA_FORMATS.CRITERION,
       JSON.stringify(criterion)
     );
+    console.log("event.dataTransfer: ", event.dataTransfer.types);
     event.dataTransfer.effectAllowed = "copy";
   };
 
@@ -43,7 +63,7 @@ export default function TreeItem({
   return (
     <div
       key={criterion.id}
-      className="flex gap-2 items-start cursor-default"
+      className={`flex gap-2 items-start bg-white border border-[var(--color-border)] rounded px-3 py-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab" : "cursor-auto"}`}
       draggable={draggable}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
@@ -64,17 +84,16 @@ export default function TreeItem({
           onChange={handleChange}
         />
       )} */}
-      <div
-        className={`flex gap-2 cursor-pointer ${criterion.selectable ? "hover:font-medium" : undefined}`}
-        onClick={onArrowClick}
-      >
+      <div className={`flex gap-2`} onClick={onArrowClick}>
         {criterion.selectable ? (
           <>
-            <p className="whitespace-nowrap">{criterion.termCodes[0].code}</p>{" "}
-            <p>|</p>
+            <p className="whitespace-nowrap">
+              {highlightMatch(criterion.termCodes[0].code, searchTerm)}
+            </p>{" "}
+            {/* <p>|</p> */}
           </>
         ) : undefined}{" "}
-        <p>{criterion.display}</p>
+        <p>{highlightMatch(criterion.display, searchTerm)}</p>
       </div>
     </div>
   );

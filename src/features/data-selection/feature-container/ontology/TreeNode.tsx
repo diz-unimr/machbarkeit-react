@@ -9,9 +9,14 @@ import TreeItem from "./TreeItem";
 type TreeNodeProps = {
   criterion: Criterion;
   onCheckbox: (isChecked: boolean, criterion: Criterion) => void;
+  searchTerm?: string;
 };
 
-export default function TreeNode({ criterion, onCheckbox }: TreeNodeProps) {
+export default function TreeNode({
+  criterion,
+  onCheckbox,
+  searchTerm,
+}: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpansion = () => {
@@ -29,6 +34,7 @@ export default function TreeNode({ criterion, onCheckbox }: TreeNodeProps) {
               isExpanded={isExpanded}
               onArrowClick={toggleExpansion}
               onCheckbox={onCheckbox}
+              searchTerm={searchTerm}
             />
           </div>
           {isExpanded && (
@@ -38,6 +44,7 @@ export default function TreeNode({ criterion, onCheckbox }: TreeNodeProps) {
                   key={child.id}
                   criterion={child}
                   onCheckbox={onCheckbox}
+                  searchTerm={searchTerm}
                 />
               ))}
             </ul>
