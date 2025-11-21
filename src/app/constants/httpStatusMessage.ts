@@ -2,11 +2,11 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 export const httpStatusMessages: Record<number | string, string> = {
-  200: "OK",
-  400: "Bad request",
-  401: "Unauthorized",
-  404: "Not found",
-  500: "Server error",
-  network: "Network error",
-  canceled: "Request canceled",
+  200: "",
+  400: "Bitte mindestens 2 Buchstaben eingeben",
+  401: "Zugriff nicht erlaubt",
+  404: "Nicht gefunden",
+  500: "Interner Serverfehler",
+  network: "Netzwerkfehler",
+  canceled: "Die Anfrage wurde abgebrochen",
 };
