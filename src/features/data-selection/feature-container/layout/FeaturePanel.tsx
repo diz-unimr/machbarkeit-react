@@ -20,20 +20,22 @@ export default function FeaturePanel({
   const [activeModule, setActiveModule] = useState<Module | null>(null);
 
   return (
-    <div className="flex flex-col border-b-[2px] border-[var(--color-border)]">
+    <div className="flex flex-col flex-1 min-h-0">
+      {" "}
+      {/* border-b-[2px] border-[var(--color-border)] */}
       <div className="flex justify-between px-4 py-3">
         <p className="font-medium">Merkmale</p>
-        <ArrowButton
+        {/* <ArrowButton
           id="characteristic-btn"
           image={accordionArrow}
           mode="rotate-left"
           width="28"
           isExpanded={isFeaturePanelOpen}
           onClick={onSetPanelStatus}
-        />
+        /> */}
       </div>
       <div
-        className="flex flex-col w-full h-[70vh] p-2"
+        className="flex flex-col w-full flex-1 min-h-0 p-2 pb-3"
         style={{
           display: isFeaturePanelOpen ? "flex" : "none",
         }}

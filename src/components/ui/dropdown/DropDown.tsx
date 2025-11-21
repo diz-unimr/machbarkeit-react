@@ -19,7 +19,7 @@ export default function DropDown({ width, options, onSelect }: DropDownProps) {
     <div className="max-w-[130px]">
       <div className="flex items-center">
         <select
-          style={{ width: width || "130px" }}
+          style={{ width: width || "120px" }}
           id="comparator"
           name="comparator"
           value={selectedValue}

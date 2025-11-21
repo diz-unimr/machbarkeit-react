@@ -55,7 +55,7 @@ export default function Card({
       {/* children */}
       <div
         className={twMerge(
-          "flex flex-col w-full h-full py-5 px-6",
+          "flex flex-col w-full h-full py-4 px-5",
           bodyClassName
         )}
       >

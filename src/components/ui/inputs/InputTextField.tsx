@@ -7,16 +7,19 @@ import { useState } from "react";
 import closeIcon from "@assets/close-icon.svg";
 import searchIcon from "@assets/search-icon.svg";
 import { twMerge } from "tailwind-merge";
+import { httpStatusMessages } from "@app/constants/httpStatusMessage";
 
 type InputTextFieldProp = {
   id: string;
   label: string;
   value?: string;
   type?: "search" | "number";
+  resultStatus?: number;
   width?: string;
   className?: string;
   bodyClassName?: string;
   onChange: (text: string) => void;
+  onClearText: () => void;
 };
 
 function InputTextField({
@@ -24,14 +27,16 @@ function InputTextField({
   label,
   value,
   type = "search",
+  resultStatus,
   width,
   className,
   onChange,
+  onClearText,
 }: InputTextFieldProp) {
   const [isFocused, setIsFocused] = useState(false);
   /* const [valueInput, setValueInput] = useState(0); */
   const rootClassName = twMerge(
-    "flex flex-col justify-center h-[40px] w-full relative px-1 my-2",
+    "flex flex-col justify-center w-full relative px-1 my-2",
     width,
     className
   );
@@ -43,7 +48,7 @@ function InputTextField({
           <div
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="flex h-full"
+            className="flex h-[40px]"
           >
             <input
               onChange={(e) => onChange(e.target.value)}
@@ -69,13 +74,18 @@ function InputTextField({
           )}
           {type === "search" && value && value.toString().length > 0 && (
             <p
-              onClick={() => onChange("")}
+              onClick={() => onClearText("")}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 !bg-white cursor-pointer"
             >
               <img src={closeIcon} />
             </p>
           )}
         </div>
+        {resultStatus === 400 ? (
+          <p className="pl-10 text-xs text-red-600">
+            {httpStatusMessages[resultStatus]}
+          </p>
+        ) : undefined}
       </div>
     </>
   );

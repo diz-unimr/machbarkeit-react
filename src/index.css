@@ -86,11 +86,13 @@ button:disabled {
 }
 
 select {
-  height: 42px;
+  height: 38px;
   max-width: 150px;
-  padding: 0px 14px;
+  /* padding: 0px 14px; */
+
+  padding: clamp(6px, 1vw, 8px) clamp(9px, 1vw, 12px);
   margin: 3px;
-  border: 1px solid gray;
+  border: 1px solid #c0c7ce;
   border-radius: 5px;
   cursor: pointer;
   /* font-size: 15px; */
@@ -100,12 +102,19 @@ select {
   background-size: 8px;
 }
 
-select:focus-visible {
+select:focus-visible,
+input:focus-visible {
   outline: none;
 }
 
 input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
+}
+
+input[type="date"] {
+  height: 38px;
+  max-width: 120px;
+  border: 1px solid #c0c7ce;
 }
 
 * {
