@@ -33,13 +33,13 @@ export function Button({
   let typeClass = "";
   switch (type) {
     case "primary":
-      typeClass = "text-white";
+      typeClass = "text-white uppercase";
       break;
     case "secondary":
       typeClass = "bg-transparent text-black px-2.5 py-1.5 hover:text-white";
       break;
     case "tertiary":
-      typeClass = "hover:underline";
+      typeClass = "border-none bg-gray-200 hover:underline hover:bg-gray-300";
       break;
     case "danger":
       typeClass = "flex items-center gap-1 border-none hover:text-red-700";

@@ -59,13 +59,13 @@ export default function Splitter({
     <div ref={containerRef} className="flex w-full h-screen overflow-hidden">
       {/* Left Panel */}
       <div
-        className="w-[50%] h-full bg-white flex flex-col"
+        className="w-[50%] h-full bg-white flex flex-col overflow-x-auto"
         style={{
           width: isExpanded
             ? (leftWidth ?? `${startLeftPercent}%`)
             : "fit-content",
-          minWidth: isExpanded ? "300px" : undefined,
-          maxWidth: "50%",
+          minWidth: isExpanded ? "380px" : undefined,
+          maxWidth: "clamp(380px,50%,1000px)",
           transition: isResizing.current ? "none" : "width 0.3s ease",
         }}
       >
@@ -81,8 +81,8 @@ export default function Splitter({
         onMouseDown={isExpanded ? startResizing : undefined}
       ></div>
       {/* Right Panel */}
-      <div className="flex-1 h-full bg-gray-100 overflow-hidden flex flex-col">
-        {rightChild}
+      <div className="flex flex-col flex-1 h-full min-w-0 bg-gray-100 overflow-x-auto">
+        <div className="min-w-[300px] h-full">{rightChild}</div>
       </div>
     </div>
   );

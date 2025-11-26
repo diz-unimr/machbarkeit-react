@@ -16,10 +16,10 @@ export default function DropDown({ width, options, onSelect }: DropDownProps) {
     setSelectedValue(event.target.value);
   };
   return (
-    <div className="max-w-[130px]">
+    <div>
       <div className="flex items-center">
         <select
-          style={{ width: width || "120px" }}
+          style={{ width: width || "110px" }}
           id="comparator"
           name="comparator"
           value={selectedValue}

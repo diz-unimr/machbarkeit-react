@@ -19,7 +19,7 @@ type InputTextFieldProp = {
   className?: string;
   bodyClassName?: string;
   onChange: (text: string) => void;
-  onClearText: () => void;
+  onClearText?: () => void;
 };
 
 function InputTextField({
@@ -31,7 +31,7 @@ function InputTextField({
   width,
   className,
   onChange,
-  onClearText,
+  onClearText = () => {},
 }: InputTextFieldProp) {
   const [isFocused, setIsFocused] = useState(false);
   /* const [valueInput, setValueInput] = useState(0); */
@@ -74,7 +74,7 @@ function InputTextField({
           )}
           {type === "search" && value && value.toString().length > 0 && (
             <p
-              onClick={() => onClearText("")}
+              onClick={() => onClearText()}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 !bg-white cursor-pointer"
             >
               <img src={closeIcon} />

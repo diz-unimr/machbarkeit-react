@@ -16,13 +16,14 @@ type SelectedDate = {
 export default function TimeRangeOption({
   onChange,
 }: {
-  onChange: (timeRange: TimeRangeType | null) => void;
+  onChange: (timeRange: TimeRangeType | null, inComplete?: boolean) => void;
 }) {
   const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({
     afterDate: "",
     beforeDate: "",
   });
+  const [error, setError] = useState<string | null>(null);
 
   const dropDownOption: DropDownOption[] = [
     { code: "no filter", display: "kein Filter" },
@@ -131,11 +132,28 @@ export default function TimeRangeOption({
   };
 
   useEffect(() => {
+    const afterDate = new Date(selectedDate.afterDate);
+    const beforeDate = new Date(selectedDate.beforeDate);
+
+    const invalidBetween =
+      selectedOption === "between" &&
+      (isNaN(afterDate.getTime()) ||
+        isNaN(beforeDate.getTime()) ||
+        afterDate > beforeDate);
+
+    if (invalidBetween) {
+      const inComplete = true;
+      setError("Der minimale Wert muss kleiner als der maximale Wert sein.");
+      onChange(null, inComplete);
+      return;
+    }
+
+    setError(null);
     onChange(handleTimeRange(selectedDate, selectedOption));
   }, [onChange, selectedDate, selectedOption]);
 
   return (
-    <>
+    <div className="flex flex-col">
       <DropDownContainer
         selectedOption={selectedOption}
         dropDownOption={dropDownOption}
@@ -143,6 +161,7 @@ export default function TimeRangeOption({
       >
         {getInputOption(selectedOption)}
       </DropDownContainer>
-    </>
+      {error ? <p className="text-xs text-red-500 m-1">{error}</p> : null}
+    </div>
   );
 }

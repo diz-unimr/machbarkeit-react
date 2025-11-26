@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import arrowImg from "@assets/tree-arrow.png";
+import accordionArrow from "@assets/accordion-arrow.svg";
 
 type ArrowButtonProp = {
   id: string;
@@ -16,7 +16,7 @@ type ArrowButtonProp = {
 
 export function ArrowButton({
   id,
-  image = arrowImg,
+  image = accordionArrow,
   width = "14",
   height = "14",
   mode = "rotate-right",
@@ -29,7 +29,7 @@ export function ArrowButton({
       disabled={!hasChildren}
       onClick={onClick}
       aria-expanded={isExpanded}
-      className={`!p-0 ${!hasChildren && "!opacity-0"}`}
+      className={`!p-0 !mr-0 ${!hasChildren && "!opacity-0"}`}
     >
       <img
         key={id}

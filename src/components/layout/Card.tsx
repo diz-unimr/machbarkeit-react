@@ -46,7 +46,7 @@ export default function Card({
           className={`flex justify-center items-center p-2 px-4
         h-[clamp(40px,10%,60px)]
         rounded-t-sm
-        font-medium text-md text-[#5e5e5e]
+        font-medium text-[#5e5e5e]
         ${headerClassName}`}
         >
           {header}
