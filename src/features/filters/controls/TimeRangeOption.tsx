@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -14,9 +15,14 @@ type SelectedDate = {
 };
 
 export default function TimeRangeOption({
+  size = "md",
   onChange,
 }: {
-  onChange: (timeRange: TimeRangeType | null, inComplete?: boolean) => void;
+  size?: "sm" | "md";
+  onChange: (
+    timeRange: TimeRangeType["timeRestriction"] | null,
+    completeFilter: boolean
+  ) => void;
 }) {
   const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({
@@ -44,6 +50,7 @@ export default function TimeRangeOption({
             id={option}
             label={selected?.display || ""}
             value={selectedDate.afterDate || selectedDate.beforeDate}
+            size={size}
             onChange={(date) =>
               setSelectedDate((prev) => ({
                 ...prev,
@@ -59,6 +66,7 @@ export default function TimeRangeOption({
             id={option}
             label={selected?.display || ""}
             value={selectedDate.beforeDate}
+            size={size}
             onChange={(date) =>
               setSelectedDate((prev) => ({ ...prev, beforeDate: date }))
             }
@@ -70,6 +78,7 @@ export default function TimeRangeOption({
             id={option}
             label={selected?.display || ""}
             value={selectedDate.afterDate}
+            size={size}
             onChange={(date) =>
               setSelectedDate((prev) => ({ ...prev, afterDate: date }))
             }
@@ -82,6 +91,7 @@ export default function TimeRangeOption({
               id={option}
               label="von"
               value={selectedDate.afterDate}
+              size={size}
               onChange={(date) =>
                 setSelectedDate((prev) => ({ ...prev, afterDate: date }))
               }
@@ -90,6 +100,7 @@ export default function TimeRangeOption({
               id={option}
               label="bis"
               value={selectedDate.beforeDate}
+              size={size}
               onChange={(date) =>
                 setSelectedDate((prev) => ({ ...prev, beforeDate: date }))
               }
@@ -127,34 +138,35 @@ export default function TimeRangeOption({
       return timeRestriction.beforeDate === null &&
         timeRestriction.afterDate === null
         ? null
-        : { timeRestriction };
+        : timeRestriction;
     }
   };
 
   useEffect(() => {
     const afterDate = new Date(selectedDate.afterDate);
     const beforeDate = new Date(selectedDate.beforeDate);
-
+    let completeFilter = true;
     const invalidBetween =
       selectedOption === "between" &&
       (isNaN(afterDate.getTime()) ||
         isNaN(beforeDate.getTime()) ||
-        afterDate > beforeDate);
+        afterDate >= beforeDate);
 
     if (invalidBetween) {
-      const inComplete = true;
+      completeFilter = false;
       setError("Der minimale Wert muss kleiner als der maximale Wert sein.");
-      onChange(null, inComplete);
+      onChange(null, completeFilter);
       return;
     }
 
     setError(null);
-    onChange(handleTimeRange(selectedDate, selectedOption));
-  }, [onChange, selectedDate, selectedOption]);
+    onChange(handleTimeRange(selectedDate, selectedOption), completeFilter);
+  }, [selectedDate, selectedOption]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-x-auto">
       <DropDownContainer
+        size={size}
         selectedOption={selectedOption}
         dropDownOption={dropDownOption}
         onSelectOption={(option) => setSelectedOption(option as OptionCode)}

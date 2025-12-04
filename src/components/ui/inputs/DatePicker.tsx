@@ -7,12 +7,14 @@ type DatePickerProps = {
   id?: string;
   label: string;
   value: string;
+  size?: "sm" | "md";
   onChange: (date: string) => void;
 };
 export default function DatePicker({
   id,
   label,
   value,
+  size = "md",
   onChange,
 }: DatePickerProps) {
   return (
@@ -23,7 +25,7 @@ export default function DatePicker({
         value={value}
         type="date"
         aria-label="date"
-        className="m-[3px] px-3 border rounded-md"
+        className={`m-[3px] px-3 border rounded-md ${size === "sm" ? "w-[100px] !text-[clamp(10px,1vw+0.3rem,12px)]" : "w-[110px]"} `}
       />
       <TextFloating id={id} label={label} />
     </div>

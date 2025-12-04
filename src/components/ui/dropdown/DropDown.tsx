@@ -5,11 +5,15 @@ import { useState } from "react";
 import type { DropDownOption } from "@components/ui/dropdown/type";
 
 type DropDownProps = {
-  width?: string;
+  size?: "sm" | "md";
   options: DropDownOption[] | null;
   onSelect: (selectedValue: string) => void;
 };
-export default function DropDown({ width, options, onSelect }: DropDownProps) {
+export default function DropDown({
+  size = "md",
+  options,
+  onSelect,
+}: DropDownProps) {
   const [selectedValue, setSelectedValue] = useState("no filter");
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onSelect(event.target.value);
@@ -19,7 +23,7 @@ export default function DropDown({ width, options, onSelect }: DropDownProps) {
     <div>
       <div className="flex items-center">
         <select
-          style={{ width: width || "110px" }}
+          className={`${size === "sm" ? "w-[95px] !text-[clamp(10px,1vw+0.3rem,12px)]" : "w-[110px]"}`}
           id="comparator"
           name="comparator"
           value={selectedValue}

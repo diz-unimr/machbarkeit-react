@@ -10,6 +10,7 @@ type DropDownContainerProps = {
   selectedOption: string;
   dropDownOption: DropDownOption[];
   unitOptions?: Criterion["filterOptions"];
+  size?: "sm" | "md";
   onSelectOption: (option: string) => void;
   onSelectUnit?: (unit: string) => void;
 };
@@ -18,20 +19,21 @@ export default function DropDownContainer({
   selectedOption = "no filter",
   dropDownOption,
   unitOptions,
+  size = "md",
   onSelectOption,
   onSelectUnit,
 }: DropDownContainerProps) {
   return (
-    <div className="flex items-center gap-4 pt-1.5 overflow-x-auto">
-      <DropDown options={dropDownOption} onSelect={onSelectOption} />
+    <div className="flex items-center gap-3 pt-1.5 overflow-x-auto">
+      <DropDown
+        size={size}
+        options={dropDownOption}
+        onSelect={onSelectOption}
+      />
       <div className="flex gap-2.5 items-center">
         {children}
         {unitOptions && onSelectUnit && selectedOption !== "no filter" && (
-          <DropDown
-            width="100px"
-            options={unitOptions}
-            onSelect={onSelectUnit}
-          />
+          <DropDown size={size} options={unitOptions} onSelect={onSelectUnit} />
         )}
       </div>
     </div>

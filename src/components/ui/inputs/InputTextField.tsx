@@ -2,8 +2,6 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-// import CloseIcon from "@components/ui/icons/CloseIcon";
-//import CloseIcon from "@assets/close-icon.svg";
 import closeIcon from "@assets/close-icon.svg";
 import searchIcon from "@assets/search-icon.svg";
 import { twMerge } from "tailwind-merge";
