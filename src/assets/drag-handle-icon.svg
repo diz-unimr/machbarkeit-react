@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  width="12"
+  height="16"
+  viewBox="0 0 12 14"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- shift y from 1→2 to avoid clipping -->
+  <g>
+    <circle cx="3" cy="2" r="1.25" fill="#6B7280" />
+    <circle cx="9" cy="2" r="1.25" fill="#6B7280" />
+  </g>
+  <g>
+    <circle cx="3" cy="6" r="1.25" fill="#6B7280" />
+    <circle cx="9" cy="6" r="1.25" fill="#6B7280" />
+  </g>
+  <g>
+    <circle cx="3" cy="10" r="1.25" fill="#6B7280" />
+    <circle cx="9" cy="10" r="1.25" fill="#6B7280" />
+  </g>
+</svg>

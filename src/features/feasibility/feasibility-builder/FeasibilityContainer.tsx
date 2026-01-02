@@ -1,117 +1,67 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useState, type DragEvent } from "react";
-import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
-import { Button } from "@components/ui/buttons/Button";
-import Card from "@components/layout/Card";
-import type { MachbarkeitQueryData } from "@features/feasibility/feasibility-builder/type";
-import { AxiosError } from "axios";
-import type { Criterion } from "@app/types/ontology";
-import type { Attribute } from "@features/data-selection/attribute-list/type";
-import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
-
-type DroppedCriterion = {
-  uid: string;
-  criterion: Criterion;
-};
-
-type DroppedAttribute = {
-  uid: string;
-  attribute: Attribute;
-};
-
-type DropZone = "inclusion" | "exclusion" | "attribute";
+import { useEffect, useState } from "react";
+import Card from "@components/ui/Card";
+import type {
+  DropZone,
+  SelectedAttribute,
+  CriterionNode,
+  SelectedCriteria,
+  FeasibilityQueryData,
+} from "./type";
+import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQueryControl";
+import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
+import GlobalFilterPanel, {
+  type GlobalFilterName,
+} from "@features/filters/globalFilterPanel";
+import PopupModal from "@components/ui/PopupModal";
+import type { TimeRangeType } from "@features/filters/controls/type";
+import { useSelectedCriteriaStore } from "@app/store/selectedCriteria/selected-criteria-store";
+import { useGlobalFilterStore } from "@app/store/selectedCriteria/global-filter-store";
+import { useFilterValidationStore } from "@app/store/filter-validation-store";
 
 function FeasibilityContainer() {
-  const [inclusionCriteria, setInclusionCriteria] = useState<
-    DroppedCriterion[]
-  >([]);
+  const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
+    useState<boolean>(true);
+  const [inclusionCriteria, setInclusionCriteria] = useState<SelectedCriteria>({
+    criteriaType: "inclusion",
+    criteria: [],
+    logics: [],
+  });
+  /* const [isExclusionCriteriaOpen, setIsExclusionCriteriaOpen] =
+    useState<boolean>(true);
   const [exclusionCriteria, setExclusionCriteria] = useState<
     DroppedCriterion[]
-  >([]);
-  const [attributeList, setAttributeList] = useState<DroppedAttribute[]>([]);
-  const [activeZone, setActiveZone] = useState<DropZone | null>(null);
+  >([]); */
+  const selectedInclusionCriteria = useSelectedCriteriaStore(
+    (s) => s.selectedInclusionCriteria
+  );
+  const applyGlobalFilter = useSelectedCriteriaStore(
+    (s) => s.applyGlobalFilter
+  );
+  const { validityItems } = useFilterValidationStore();
+  const { updateGlobalFilter } = useGlobalFilterStore();
 
-  const generateId = () =>
-    typeof crypto !== "undefined" && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `drop-${Date.now()}-${Math.random()}`;
+  const [feasibilityQueryData, setFeasibilityQueryData] =
+    useState<FeasibilityQueryData | null>(null);
+  // const [attributeList, setAttributeList] = useState<SelectedAttribute[]>([]);
+  // const [activeZone, setActiveZone] = useState<DropZone | null>(null);
+  const { globalFilter } = useGlobalFilterStore();
+  const [timeRangeDraft, setTimeRangeDraft] = useState<
+    TimeRangeType["timeRestriction"] | null
+  >(globalFilter.timeRange);
+  const [completeFilter, setCompleteFilter] = useState<boolean>(true);
+  const [isGlobalFilterWarning, setIsGlobalFilterWarning] =
+    useState<boolean>(false);
+  const [hasGlobalFilterConflict, setHasGlobalFilterConflict] =
+    useState<boolean>(false);
+  const [warningModal, setWarningModal] = useState<{
+    open: boolean;
+    resolver?: (ok: boolean) => void;
+  }>({ open: false });
 
-  const handleDragOver =
-    (zone: DropZone) => (event: DragEvent<HTMLDivElement>) => {
-      const expectedType =
-        zone === "attribute"
-          ? DRAG_DATA_FORMATS.ATTRIBUTE
-          : DRAG_DATA_FORMATS.CRITERION;
-      if (event.dataTransfer.types.includes(expectedType)) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
-        setActiveZone(zone);
-      } else {
-        event.dataTransfer.dropEffect = "none";
-      }
-    };
-
-  const handleDragLeave =
-    (zone: DropZone) => (event: DragEvent<HTMLDivElement>) => {
-      const related = event.relatedTarget as Node | null;
-      if (!related || !event.currentTarget.contains(related)) {
-        setActiveZone((current) => (current === zone ? null : current));
-      }
-    };
-
-  const handleCriteriaDrop =
-    (zone: Exclude<DropZone, "attribute">) =>
-    (event: DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      setActiveZone(null);
-      const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.CRITERION);
-      event.dataTransfer.clearData(DRAG_DATA_FORMATS.CRITERION);
-      if (!data) return;
-      const criterion = JSON.parse(data) as Criterion;
-      const newEntry: DroppedCriterion = { uid: generateId(), criterion };
-      if (zone === "inclusion") {
-        setInclusionCriteria((prev) => [...prev, newEntry]);
-      } else {
-        setExclusionCriteria((prev) => [...prev, newEntry]);
-      }
-    };
-
-  const handleAttributeDrop = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setActiveZone(null);
-    const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.ATTRIBUTE);
-    event.dataTransfer.clearData(DRAG_DATA_FORMATS.ATTRIBUTE);
-    if (!data) return;
-    const attribute = JSON.parse(data) as Attribute;
-    const newEntry: DroppedAttribute = { uid: generateId(), attribute };
-    setAttributeList((prev) => [...prev, newEntry]);
-  };
-
-  const removeCriterion = (
-    zone: Exclude<DropZone, "attribute">,
-    uid: string
-  ) => {
-    if (zone === "inclusion") {
-      setInclusionCriteria((prev) => prev.filter((item) => item.uid !== uid));
-    } else {
-      setExclusionCriteria((prev) => prev.filter((item) => item.uid !== uid));
-    }
-  };
-
-  const removeAttribute = (uid: string) => {
-    setAttributeList((prev) => prev.filter((item) => item.uid !== uid));
-  };
-
-  const dropZoneClasses = (zone: DropZone) =>
-    `flex flex-col gap-3 min-h-[160px] border-2 border-dashed rounded-md px-4 py-5 transition-colors ${
-      activeZone === zone
-        ? "border-blue-500 bg-blue-50"
-        : "border-[var(--color-border)] bg-white"
-    }`;
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /* const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -123,7 +73,7 @@ function FeasibilityContainer() {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const uploadedCriteria: MachbarkeitQueryData = JSON.parse(
+        const uploadedCriteria: FeasibilityQueryData = JSON.parse(
           e.target?.result as string
         );
         const isJsonDataValid =
@@ -134,7 +84,7 @@ function FeasibilityContainer() {
           (uploadedCriteria.exclusionCriteria &&
             uploadedCriteria.exclusionCriteria!.length > 0);
         if (isJsonDataValid) {
-          convertToCharacteristicsDisplay(uploadedCriteria);
+          convertToCriteriaDisplay(uploadedCriteria);
         } else {
           alert("Invalid JSON Format");
         }
@@ -143,184 +93,229 @@ function FeasibilityContainer() {
       }
     };
     reader.readAsText(file);
+  }; */
+
+  const requestWarningConfirmation = () =>
+    new Promise<boolean>((resolve) => {
+      setWarningModal({ open: true, resolver: resolve });
+    });
+
+  const handleConfirmWarning = () => {
+    warningModal.resolver?.(true);
+    setWarningModal({ open: false });
   };
 
-  const convertToCharacteristicsDisplay = (x) => {};
+  const handleCancelWarning = () => {
+    warningModal.resolver?.(false);
+    setWarningModal({ open: false });
+    setTimeRangeDraft(globalFilter.timeRange);
+  };
+
+  const toggleCriterionItem = (criterion: CriterionNode) => {
+    setInclusionCriteria((prev) => {
+      return {
+        ...prev,
+        criteria: prev.criteria.map((c) =>
+          c.uid === criterion.uid ? { ...c, isExpanded: !c.isExpanded } : c
+        ),
+      };
+    });
+  };
+
+  const handleGlobalFilterChange = (
+    filterName: GlobalFilterName,
+    value: string | (TimeRangeType["timeRestriction"] | null)
+  ) => {
+    updateGlobalFilter(filterName, value);
+  };
+
+  const handleGlobalFilterConflict = async (
+    hasConflict: boolean,
+    timeRange: TimeRangeType["timeRestriction"] | null
+  ) => {
+    setTimeRangeDraft(timeRange);
+    if (hasConflict) {
+      const ok = await requestWarningConfirmation();
+      if (!ok) return; // ผู้ใช้กด Cancel -> ออกทันที
+    }
+
+    // เมื่อ isAnyLocalFilter = true ต้องการใช้มีป๊อปอัพเด้งขึ้นมาให้ผู้ใช้กดเลือก
+    // ถ้าผู้ใช้กดเลือก ok ถึงจะไปต่อในส่วนนี้ได้ ถ้ากด cancel ให้ออกจาก function นี้
+    updateGlobalFilter("timeRange", timeRange);
+    applyGlobalFilter("timeRange");
+  };
+
+  const applyGlobalTime = async (selectedCriteria: SelectedCriteria) => {
+    // check for overwrite global filter
+    const isAnyLocalFilter = selectedCriteria.criteria.some((c) => {
+      const current = c.criterion.timeRestriction;
+      const global = globalFilter.timeRange;
+
+      return (
+        current?.afterDate !== global?.afterDate &&
+        current?.beforeDate !== global?.beforeDate
+      );
+    });
+
+    setIsGlobalFilterWarning(isAnyLocalFilter);
+    if (isAnyLocalFilter) {
+      const ok = await requestWarningConfirmation();
+      if (!ok) return; // ผู้ใช้กด Cancel -> ออกทันที
+    }
+    // เมื่อ isAnyLocalFilter = true ต้องการใช้มีป๊อปอัพเด้งขึ้นมาให้ผู้ใช้กดเลือก
+    // ถ้าผู้ใช้กดเลือก ok ถึงจะไปต่อในส่วนนี้ได้ ถ้ากด cancel ให้ออกจาก function นี้
+    /* return {
+      ...selectedCriteria,
+      criteria: selectedCriteria.criteria.map((c) =>
+        c.criterion.timeRestrictionAllowed
+          ? {
+              ...c,
+              criterion: {
+                ...c.criterion,
+                timeRestriction: globalFilter.timeRange ?? undefined,
+              },
+            }
+          : c
+      ),
+    }; */
+  };
+
+  // drag Markmale into Einschlusskriterien and logic change
+  const handleCriteriaChange = ({
+    items,
+    isIndividualChange = false,
+  }: {
+    items: React.SetStateAction<SelectedCriteria> | null;
+    isIndividualChange?: boolean;
+  }) => {
+    //setCompleteFilter(completeFilter);
+    if (!items) return;
+    setInclusionCriteria((prev) => {
+      (async () => {
+        const next = typeof items === "function" ? items(prev) : items;
+        if (!isIndividualChange) {
+          const updated = await applyGlobalTime(next);
+          if (updated) setInclusionCriteria(updated);
+        } else {
+          setInclusionCriteria(next);
+        }
+        return setInclusionCriteria(next);
+      })();
+      return prev;
+    });
+  };
+
+  const removeCriterion = (uid: string) => {
+    setInclusionCriteria((prev) => {
+      const index = prev.criteria.findIndex((c) => c.uid === uid);
+      return {
+        ...prev,
+        criteria: prev.criteria.filter((item) => item.uid !== uid),
+        logics: prev.logics.filter((_, i) => {
+          if (index === prev.criteria.length - 1) return i;
+          else if (prev.logics[index - 1] === "OR") return i != index - 1;
+          else return i != index;
+          /* if (index > 0 && prev.logics[index - 1] === "OR") {
+            return i != index - 1;
+          } else return i != index; */
+        }),
+      };
+    });
+  };
+
+  const handleFeasibilityQueryData = (data: SelectedCriteria) => {
+    const criteria = data.criteria.map((criterion) => {});
+    const queryData: FeasibilityQueryData = {
+      display: "Feasibility Query",
+      version: "1.0.0",
+    };
+  };
+
+  const convertToCriteriaDisplay = (x) => {};
+
+  useEffect(() => {
+    console.log("UseEffect: ", validityItems);
+    const allValid = validityItems.every((item) => item.isValid);
+    if (allValid) setCompleteFilter(true);
+    else setCompleteFilter(false);
+  }, [validityItems]);
+  /* useEffect(() => {
+    console.log("Criteria from Store: ", selectedInclusionCriteria);
+    if (!globalFilter.timeRange) return;
+    setInclusionCriteria((prev) => {
+      (async () => {
+        const updated = await applyGlobalTime(prev);
+        if (updated) setInclusionCriteria(updated);
+      })();
+      return prev;
+    });
+  }, [globalFilter.timeRange, selectedInclusionCriteria]); */
 
   return (
-    <div className="flex-grow flex-col h-full bg-[#fafafa]">
-      <div className="flex h-[60px] bg-white border-b-[1.5px] border-[var(--color-border)]">
-        <div className="flex w-full max-w-[960px] justify-between m-auto px-8">
-          <div className="flex w-full h-[50px] items-center px-2">
-            <p>
-              Anzahl der Patienten: <span>-</span>
-            </p>
-          </div>
-          <ButtonContainer className="p-0">
-            <Button
-              id="reset-query"
-              type="secondary"
-              label="ZURAoCKSETZEN"
-              isActive={true}
-            />
-            <Button
-              id="save-query"
-              type="primary"
-              label="ABFRAGE STARTEN"
-              isActive={true}
-            />
-          </ButtonContainer>
+    <>
+      <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
+        <FeasibilityQueryControl
+          completeFilter={completeFilter}
+          data={feasibilityQueryData}
+        />
+        <div
+          id="feasibility-container"
+          className="flex flex-col flex-1 min-h-0 max-w-[960px] w-full px-5 py-8 mx-auto overflow-hidden"
+        >
+          <Card
+            className="flex flex-col flex-1 min-h-0"
+            bodyClassName="p-0 flex flex-col flex-1 min-h-0 gap-1"
+          >
+            <div className="flex justify-end items-center py-3 border-b-[1.5px] border-[var(--color-border)]">
+              <menu className="flex gap-8 pr-5">
+                <li className="flex gap-7 m-auto">
+                  <div className="font-medium text-sm text-gray-500 cursor-pointer">
+                    Abfragen Laden
+                  </div>
+                  <div className="font-medium text-sm text-gray-500 cursor-pointer">
+                    Abfragen Speichen
+                  </div>
+                </li>
+              </menu>
+            </div>
+            <div className="flex flex-col h-full min-h-0 gap-4 p-4">
+              <GlobalFilterPanel
+                // timeRangeValue={timeRangeDraft}
+                onHandleGlobalFilterChange={handleGlobalFilterChange}
+                // onConflict={handleGlobalFilterConflict}
+              />
+              <div className="flex-1 min-h-0">
+                {inclusionCriteria.criteria.map((c, i) => (
+                  <div key={i}>
+                    {c.criterion.timeRestriction?.afterDate} |{" "}
+                    {c.criterion.timeRestriction?.beforeDate}
+                  </div>
+                ))}
+                <FeasibilityCriteriaPanel
+                  key="inclusionCriteria"
+                  label="Einschlusskriterien"
+                  selectedCriteria={selectedInclusionCriteria}
+                  isPanelExpanded={isInclusionCriteriaOpen}
+                  onToggleCriteriaPanel={() =>
+                    setIsInclusionCriteriaOpen((prev) => !prev)
+                  }
+                  onToggleCriterionItem={toggleCriterionItem}
+                  onCriteriaChange={handleCriteriaChange}
+                  onRemoveCriterion={removeCriterion}
+                />
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
-      <div
-        id="feasibility-container"
-        className="flex flex-col max-w-[960px] px-5 py-8 mx-auto overflow-y-auto"
-      >
-        <Card bodyClassName="p-0">
-          <div className="flex justify-end items-center py-3 border-b-[1.5px] border-[var(--color-border)]">
-            <menu className="flex gap-8 pr-5">
-              <li className="flex gap-7 m-auto">
-                <div className="font-medium text-sm text-gray-500 cursor-pointer">
-                  Abfragen Laden
-                </div>
-                <div className="font-medium text-sm text-gray-500 cursor-pointer">
-                  Abfragen Speichen
-                </div>
-              </li>
-            </menu>
-          </div>
-          <div className="flex flex-col p-4 pt-2">
-            <p className="text-lg font-medium p-2">Einschlusskriterien</p>
-            <Card bodyClassName="bg-gray-50">
-              <div
-                className={`${dropZoneClasses("inclusion")} ${inclusionCriteria.length === 0 ? "justify-center" : undefined}`}
-                onDragOver={handleDragOver("inclusion")}
-                onDragLeave={handleDragLeave("inclusion")}
-                onDrop={handleCriteriaDrop("inclusion")}
-              >
-                {inclusionCriteria.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center">
-                    Merkmale hierher ziehen, um sie als Einschlusskriterien zu
-                    übernehmen.
-                  </p>
-                ) : (
-                  <ul className="flex flex-col gap-2">
-                    {inclusionCriteria.map((item) => (
-                      <li
-                        key={item.uid}
-                        className="flex justify-between items-center rounded border border-gray-200 bg-white px-3 py-2 text-sm"
-                      >
-                        <div className="flex gap-3 items-center">
-                          <p className="font-medium text-gray-800">
-                            {item.criterion.termCodes?.[0]?.code}
-                          </p>
-                          <p className="text-sx text-gray-500">
-                            {item.criterion.display}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          className="text-xs text-red-500 hover:underline"
-                          onClick={() => removeCriterion("inclusion", item.uid)}
-                        >
-                          Entfernen
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </Card>
-          </div>
-          <div className="flex flex-col p-4 pt-2">
-            <p className="text-lg font-medium p-2">Ausschlusskriterien</p>
-            <Card bodyClassName="bg-gray-50">
-              <div
-                className={`${dropZoneClasses("exclusion")} ${exclusionCriteria.length === 0 ? "justify-center" : undefined}`}
-                onDragOver={handleDragOver("exclusion")}
-                onDragLeave={handleDragLeave("exclusion")}
-                onDrop={handleCriteriaDrop("exclusion")}
-              >
-                {exclusionCriteria.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center">
-                    Merkmale hierher ziehen, um sie als Ausschlusskriterien zu
-                    übernehmen.
-                  </p>
-                ) : (
-                  <ul className="flex flex-col gap-2">
-                    {exclusionCriteria.map((item) => (
-                      <li
-                        key={item.uid}
-                        className="flex justify-between items-center rounded border border-gray-200 bg-white px-3 py-2 text-sm"
-                      >
-                        <div className="flex gap-3 items-center">
-                          <p className="font-medium text-gray-800">
-                            {item.criterion.termCodes?.[0]?.code}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {item.criterion.display}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          className="text-xs text-red-500 hover:underline"
-                          onClick={() => removeCriterion("exclusion", item.uid)}
-                        >
-                          Entfernen
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </Card>
-          </div>
-          <div className="flex flex-col p-4 pt-2">
-            <p className="text-lg font-medium p-2">Attributeliste</p>
-            <Card bodyClassName="bg-gray-50">
-              <div
-                className={`${dropZoneClasses("attribute")} ${attributeList.length === 0 ? "justify-center" : undefined}`}
-                onDragOver={handleDragOver("attribute")}
-                onDragLeave={handleDragLeave("attribute")}
-                onDrop={handleAttributeDrop}
-              >
-                {attributeList.length === 0 ? (
-                  <p className="text-sm text-gray-500">
-                    Attribute hierhin ziehen, um sie als Attributliste zu
-                    übernehmen.
-                  </p>
-                ) : (
-                  <ul className="flex flex-col gap-2">
-                    {attributeList.map((item) => (
-                      <li
-                        key={item.uid}
-                        className="flex justify-between items-start rounded border border-gray-200 bg-white px-3 py-2 text-sm"
-                      >
-                        <div>
-                          <p className="font-medium text-gray-800">
-                            {item.attribute.attributeName}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {item.attribute.kdsModule}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          className="text-xs text-red-500 hover:underline"
-                          onClick={() => removeAttribute(item.uid)}
-                        >
-                          Entfernen
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </Card>
-          </div>
-        </Card>
-      </div>
-    </div>
+      <PopupModal
+        open={warningModal.open}
+        title="Global Filter Warning"
+        message="Auf Filter in allen Elemente ersetzen"
+        onConfirm={handleConfirmWarning}
+        onCancel={handleCancelWarning}
+      />
+    </>
   );
 }
 

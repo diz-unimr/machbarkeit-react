@@ -3,20 +3,17 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
 import { ModulesPanel } from "../modules/ModulesPanel";
-import type { Module } from "@app/types/ontology";
+import type { Module } from "@app/types/ontologyType";
 import OntologyTreePanel from "../ontology/OntologyTreePanel";
-import { ArrowButton } from "@components/ui/buttons/ArrowButton";
-import accordionArrow from "@assets/accordion-arrow.svg";
 
-type FeaturePanelProps = {
+type OntologyContainerProps = {
   onSetPanelStatus: () => void;
-  isFeaturePanelOpen: boolean;
+  isOntologyContainerOpen: boolean;
 };
 
-export default function FeaturePanel({
-  onSetPanelStatus,
-  isFeaturePanelOpen,
-}: FeaturePanelProps) {
+export default function OntologyContainer({
+  isOntologyContainerOpen,
+}: OntologyContainerProps) {
   const [activeModule, setActiveModule] = useState<Module | null>(null);
 
   return (
@@ -30,14 +27,14 @@ export default function FeaturePanel({
           image={accordionArrow}
           mode="rotate-left"
           width="28"
-          isExpanded={isFeaturePanelOpen}
+          isExpanded={isOntologyContainerOpen}
           onClick={onSetPanelStatus}
         /> */}
       </div>
       <div
         className="flex flex-col w-full flex-1 min-h-0 p-2 pb-3"
         style={{
-          display: isFeaturePanelOpen ? "flex" : "none",
+          display: isOntologyContainerOpen ? "flex" : "none",
         }}
       >
         <ModulesPanel

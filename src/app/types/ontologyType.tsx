@@ -1,12 +1,16 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { ModuleColorProps } from "@app/utils/utilities";
 import type {
   ConceptType,
   QuantityType,
   TimeRangeType,
 } from "@features/filters/controls/type";
+
+export type ModuleColorProps = {
+  btnColor: string;
+  bgColor: string;
+};
 
 export type Module = {
   id: string;
@@ -51,7 +55,6 @@ export type Criterion = {
     | null;
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
   timeRestriction?: TimeRangeType["timeRestriction"];
-  filterCompleteStatus?: boolean;
   color?: ModuleColorProps;
   version: string | null;
 };

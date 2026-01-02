@@ -4,6 +4,7 @@
 export const API_ONTOLOGY_URL =
   "https://mdr.diz.uni-marburg.de/api/ontology/tree/";
 export const API_SEARCH_ONTOLOGY_URL =
+  /* "https://machbarkeit.diz.uni-marburg.de/mdr/ontology/concepts/search" */ //backend
   "https://mdr.diz.uni-marburg.de/api/ontology/concepts/search";
 export const API_MODULES_URL =
   "https://mdr.diz.uni-marburg.de/api/ontology/modules";

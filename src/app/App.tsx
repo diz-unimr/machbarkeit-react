@@ -5,8 +5,10 @@ import "@app/App.css";
 import Splitter from "@components/ui/Splitter";
 import DataSelectionContainer from "@features/data-selection/DataSelectionContainer";
 import FeasibilityContainer from "@features/feasibility/feasibility-builder/FeasibilityContainer";
+// import { login } from "./services/loginService";
 
 function App() {
+  /* login(); */
   return (
     <>
       <main>

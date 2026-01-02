@@ -1,19 +1,24 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "@app/types/ontology";
+import type { Criterion } from "@app/types/ontologyType";
 import type { DropDownOption } from "@components/ui/dropdown/type";
 import { useEffect, useState } from "react";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
 import type { QuantityType } from "@features/filters/controls/type";
+import { invalidBetweenMessage } from "@app/constants/constantText";
+import type { OptionCode } from "./TimeRangeOption";
 
 type QuantityOptionProps = {
   criterion: Criterion;
-  onChange: (value: QuantityType | null) => void;
+  onChange: (
+    filterValue: QuantityType["valueFilter"] | null,
+    completeFilter?: boolean
+  ) => void;
 };
 
-const dropDownOption: DropDownOption[] = [
+const dropDownOptions: DropDownOption[] = [
   { code: "no filter", display: "kein Filter" },
   { code: "eq", display: "gleich" },
   { code: "lt", display: "kleine" },
@@ -25,7 +30,7 @@ export default function QuantityOption({
   criterion,
   onChange,
 }: QuantityOptionProps) {
-  const [selectedOption, setSelectedOption] = useState("no filter");
+  const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedUnit, setSelectedUnit] = useState(
     criterion.filterOptions?.[0].display || ""
   );
@@ -34,6 +39,7 @@ export default function QuantityOption({
     min: "0",
     max: "0",
   });
+  const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
 
   const getInputOption = (option: string) => {
     switch (option) {
@@ -89,8 +95,19 @@ export default function QuantityOption({
         return;
       }
 
-      onChange({
-        valueFilter: {
+      let completeFilter = true;
+      const invalidBetween =
+        selectedOption === "between" &&
+        Number(selectedValue["min"]) &&
+        Number(selectedValue["max"]) &&
+        Number(selectedValue["min"]) >= Number(selectedValue["max"]);
+
+      if (invalidBetween) {
+        completeFilter = false;
+        setIsFilterCompleted(completeFilter);
+        onChange(null, completeFilter);
+      } else {
+        const valueFilter = {
           unit: criterion.filterOptions?.filter(
             (option) => option.code === selectedUnit
           )[0],
@@ -107,8 +124,10 @@ export default function QuantityOption({
             selectedOption === "between"
               ? "quantity-range"
               : "quantity-comparator",
-        },
-      });
+        };
+
+        onChange(valueFilter, completeFilter);
+      }
     }
   }, [
     criterion.filterOptions,
@@ -119,14 +138,19 @@ export default function QuantityOption({
   ]);
 
   return (
-    <DropDownContainer
-      selectedOption={selectedOption}
-      dropDownOption={dropDownOption}
-      unitOptions={criterion.filterOptions}
-      onSelectOption={(option) => setSelectedOption(option)}
-      onSelectUnit={(unit) => setSelectedUnit(unit)}
-    >
-      {getInputOption(selectedOption)}
-    </DropDownContainer>
+    <div className="flex flex-col overflow-x-auto">
+      <DropDownContainer
+        selectedOption={selectedOption}
+        dropDownOptions={dropDownOptions}
+        unitOptions={criterion.filterOptions}
+        onSelectOption={(option) => setSelectedOption(option)}
+        onSelectUnit={(unit) => setSelectedUnit(unit)}
+      >
+        {getInputOption(selectedOption)}
+      </DropDownContainer>
+      {!isFilterCompleted ? (
+        <p className="text-xs text-red-500 m-1">{invalidBetweenMessage}</p>
+      ) : null}
+    </div>
   );
 }

@@ -4,8 +4,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import sidebarCollapse from "@assets/sidebar-arrow.svg";
 import { ArrowButton } from "@components/ui/buttons/ArrowButton";
 import appIcon from "@assets/app-icon.svg";
-import FeaturePanel from "./feature-container/layout/FeaturePanel";
-import { useEffect, useState } from "react";
+import OntologyContainer from "./ontology-container/layout/OntologyContainer";
+import { useState } from "react";
 import AttributeListPanel from "./attribute-list/layout/AttributeListPanel";
 
 type DataSelectionProps = {
@@ -19,20 +19,21 @@ export default function DataSelectionContainer({
   const [isExpanded, setIsExpanded] = useState(true);
   const [isAttributeListPanelOpen, setIsAttributeListPanelOpen] =
     useState<boolean>(false);
-  const [isFeaturePanelOpen, setIsFeaturePanelOpen] = useState<boolean>(true);
+  const [isOntologyContainerOpen, setIsOntologyContainerOpen] =
+    useState<boolean>(true);
 
   const handleTextChange = (text: string | number) => {
     setTextInput(text);
   };
 
-  const toggleFeaturePanel = () => {
-    setIsFeaturePanelOpen((prev) => !prev);
+  const toggleOntologyContainer = () => {
+    setIsOntologyContainerOpen((prev) => !prev);
     if (isAttributeListPanelOpen) setIsAttributeListPanelOpen(false);
   };
 
   const toggleAttributeListPanel = () => {
     setIsAttributeListPanelOpen((prev) => !prev);
-    if (isFeaturePanelOpen) setIsFeaturePanelOpen(false);
+    if (isOntologyContainerOpen) setIsOntologyContainerOpen(false);
   };
 
   const toggleContainer = () => {
@@ -41,10 +42,7 @@ export default function DataSelectionContainer({
     onToggle(expandedState);
   };
 
-  useEffect(() => {
-    console.log("isFeaturePanelOpen: ", isFeaturePanelOpen);
-    console.log("isAttributeListPanelOpen: ", isAttributeListPanelOpen);
-  }, [isAttributeListPanelOpen, isFeaturePanelOpen]);
+  // useEffect(() => {}, [isAttributeListPanelOpen, isOntologyContainerOpen]);
 
   return (
     <div className="flex flex-col h-full border-[var(--color-border)]">
@@ -65,9 +63,9 @@ export default function DataSelectionContainer({
         />
       </div>
       {isExpanded ? (
-        <FeaturePanel
-          onSetPanelStatus={toggleFeaturePanel}
-          isFeaturePanelOpen={isFeaturePanelOpen}
+        <OntologyContainer
+          onSetPanelStatus={toggleOntologyContainer}
+          isOntologyContainerOpen={isOntologyContainerOpen}
         />
       ) : (
         <div className="px-3">

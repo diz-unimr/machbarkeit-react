@@ -1,11 +1,12 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "@app/types/ontology";
+import type { Criterion } from "@app/types/ontologyType";
 export type ConceptType = {
   valueFilter: {
     selectedConcepts: NonNullable<Criterion["filterOptions"]> | [];
     type: string;
+    isLocalFilter?: boolean;
   };
 };
 
@@ -18,14 +19,14 @@ export type QuantityType = {
     minValue: number | null;
     maxValue: number | null;
     type: string;
+    isLocalFilter?: boolean;
   };
-  isFilterComplete?: boolean;
 };
 
 export type TimeRangeType = {
   timeRestriction: {
-    beforeDate: string | null;
-    afterDate: string | null;
+    beforeDate?: string;
+    afterDate?: string;
+    isLocalFilter?: boolean;
   };
-  isFilterComplete?: boolean;
 };

@@ -5,7 +5,7 @@ import Papa from "papaparse";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import { type Attribute } from "@features/data-selection/attribute-list/type";
 import { useEffect, useState, type DragEvent } from "react";
-import TreePanel from "@features/data-selection/feature-container/ontology/TreePanel";
+import TreePanel from "@features/data-selection/ontology-container/ontology/TreePanel";
 import { ArrowButton } from "@components/ui/buttons/ArrowButton";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 

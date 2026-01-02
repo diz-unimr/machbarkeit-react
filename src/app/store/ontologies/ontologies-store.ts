@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { Criterion } from "@app/types/ontology";
+import type { Criterion } from "@app/types/ontologyType";
 import { sortOntologyTree } from "./sorting";
 import { flattenTree } from "./flatten";
 
@@ -32,7 +32,6 @@ export const useOntologiesStore = create<OntologyStore>((set, get) => ({
   },
 
   setFlattenCriterion: (tree) => {
-    console.log("flatten");
     const currentFlattenCriterion = get().flattenCriteria;
     // const modules = Object.keys(currentFlattenCriterion);
     // if (modules.length >= 3) delete currentFlattenCriterion[modules[0]];

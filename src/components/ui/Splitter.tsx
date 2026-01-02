@@ -59,13 +59,13 @@ export default function Splitter({
     <div ref={containerRef} className="flex w-full h-screen overflow-hidden">
       {/* Left Panel */}
       <div
-        className="w-[50%] h-full bg-white flex flex-col overflow-x-auto"
+        className="w-[45%] h-full bg-white flex flex-col overflow-x-auto"
         style={{
           width: isExpanded
             ? (leftWidth ?? `${startLeftPercent}%`)
             : "fit-content",
           minWidth: isExpanded ? "380px" : undefined,
-          maxWidth: "clamp(380px,50%,1000px)",
+          maxWidth: "clamp(380px,45%,1000px)",
           transition: isResizing.current ? "none" : "width 0.3s ease",
         }}
       >

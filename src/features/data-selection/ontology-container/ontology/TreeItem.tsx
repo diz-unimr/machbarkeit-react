@@ -3,9 +3,11 @@
 
 import { useState, type ChangeEvent, type DragEvent } from "react";
 import Highlighter from "react-highlight-words";
-import { type Criterion } from "@app/types/ontology";
+import { type Criterion } from "@app/types/ontologyType";
 import { ArrowButton } from "@components/ui/buttons/ArrowButton";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
+import arrowImg from "@assets/tree-arrow.png";
+import dragHandleIcon from "@assets/drag-handle-icon.svg";
 
 type TreeItemProps = {
   criterion: Criterion;
@@ -23,6 +25,7 @@ export default function TreeItem({
   searchTerm,
 }: TreeItemProps) {
   const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   const draggable = !!criterion.selectable;
   const searchWords = searchTerm?.trim() ? [searchTerm.trim()] : [];
 
@@ -37,18 +40,20 @@ export default function TreeItem({
       DRAG_DATA_FORMATS.CRITERION,
       JSON.stringify(criterion)
     );
-    console.log("event.dataTransfer: ", event.dataTransfer.types);
+    event.dataTransfer.dropEffect = "copy";
     event.dataTransfer.effectAllowed = "copy";
+    setIsDragging(true);
   };
 
   const handleDragEnd = (event: DragEvent<HTMLDivElement>) => {
     event.dataTransfer.clearData();
+    setIsDragging(false);
   };
 
   return (
     <div
       key={criterion.id}
-      className={`flex gap-2 items-start bg-white border border-[var(--color-border)] rounded px-3 py-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab" : "cursor-auto"}`}
+      className={`flex gap-2 items-start bg-white border border-[var(--color-border)] rounded p-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab active:cursor-grabbing" : "cursor-auto"}`} /* (isDragging ? "cursor-grabbing" : "cursor-grab") */
       draggable={draggable}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
@@ -56,12 +61,16 @@ export default function TreeItem({
     >
       <ArrowButton
         id={criterion.id}
+        image={arrowImg}
         isExpanded={isExpanded}
         /* onClick={onArrowClick} */
         hasChildren={
           (criterion.children && criterion.children.length > 0) || false
         }
       />
+      {criterion.selectable ? (
+        <img src={dragHandleIcon} width={12} height={14} className="mt-1.5" />
+      ) : null}
       {/* {criterion.selectable && (
         <input
           type="checkbox"
@@ -83,7 +92,7 @@ export default function TreeItem({
           </>
         ) : undefined}
         <Highlighter
-          className="" /* line-clamp-1 */
+          className="" /* lg:line-clamp-1 */
           searchWords={searchWords}
           textToHighlight={criterion.display}
           highlightClassName="bg-yellow-200 rounded"

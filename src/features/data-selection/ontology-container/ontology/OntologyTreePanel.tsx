@@ -5,7 +5,7 @@ import TreePanel from "./TreePanel";
 import TreeNode from "./TreeNode";
 import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
 import { CancelButton, SubmitButton } from "@components/ui/buttons/Button";
-import { type Criterion, type Module } from "@app/types/ontology";
+import { type Criterion, type Module } from "@app/types/ontologyType";
 import { useEffect, useState } from "react";
 import useOntology from "@app/hooks/useOntology";
 import InputTextField from "@components/ui/inputs/InputTextField";

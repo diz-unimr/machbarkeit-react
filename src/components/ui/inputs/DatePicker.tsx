@@ -25,7 +25,7 @@ export default function DatePicker({
         value={value}
         type="date"
         aria-label="date"
-        className={`m-[3px] px-3 border rounded-md ${size === "sm" ? "w-[100px] !text-[clamp(10px,1vw+0.3rem,12px)]" : "w-[110px]"} `}
+        className={`m-[3px] px-2 border rounded-md ${size === "sm" ? "w-[100px] !text-[clamp(10px,1vw+0.3rem,12px)]" : "w-[110px]"} `}
       />
       <TextFloating id={id} label={label} />
     </div>

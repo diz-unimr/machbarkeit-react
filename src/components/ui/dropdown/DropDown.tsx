@@ -1,30 +1,41 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { DropDownOption } from "@components/ui/dropdown/type";
+import type { OptionCode } from "@features/filters/controls/TimeRangeOption";
 
 type DropDownProps = {
+  id?: string;
   size?: "sm" | "md";
+  selectedOption?: OptionCode;
   options: DropDownOption[] | null;
-  onSelect: (selectedValue: string) => void;
+  onSelect: (selectedValue: OptionCode) => void;
 };
 export default function DropDown({
+  id,
   size = "md",
+  selectedOption = "no filter",
   options,
   onSelect,
 }: DropDownProps) {
-  const [selectedValue, setSelectedValue] = useState("no filter");
+  const [selectedValue, setSelectedValue] =
+    useState<OptionCode>(selectedOption);
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onSelect(event.target.value);
-    setSelectedValue(event.target.value);
+    onSelect(event.target.value as OptionCode);
+    setSelectedValue(event.target.value as OptionCode);
   };
+
+  useEffect(() => {
+    setSelectedValue(selectedOption);
+  }, [selectedOption]);
+
   return (
     <div>
       <div className="flex items-center">
         <select
           className={`${size === "sm" ? "w-[95px] !text-[clamp(10px,1vw+0.3rem,12px)]" : "w-[110px]"}`}
-          id="comparator"
+          id={id ? "comparator-" + id : "comparator"}
           name="comparator"
           value={selectedValue}
           onChange={handleChange}

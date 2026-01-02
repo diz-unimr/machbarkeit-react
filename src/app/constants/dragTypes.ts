@@ -5,6 +5,3 @@ export const DRAG_DATA_FORMATS = {
   CRITERION: "application/ontology-criterion",
   ATTRIBUTE: "application/attribute",
 } as const;
-
-/* export type DragDataFormat =
-	(typeof DRAG_DATA_FORMATS)[keyof typeof DRAG_DATA_FORMATS]; */

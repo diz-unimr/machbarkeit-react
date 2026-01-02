@@ -1,8 +1,8 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "@app/types/ontology";
-import { getModuleName } from "@app/utils/utilities";
+import type { Criterion } from "@app/types/ontologyType";
+import { getModuleName } from "@app/utils/moduleUtils";
 
 export const sortOntologyTree = (
   ontologyTree: Criterion[]
@@ -41,9 +41,9 @@ const sortLaboruntersuchung = (
 ) => {
   let merged: Criterion[] = [];
 
-  const loinc = selectable.filter((i) =>
+  /* const loinc = selectable.filter((i) =>
     i.termCodes?.some((c) => c.system === "http://loinc.org")
-  );
+  ); */
   const swisslab = selectable.filter((i) =>
     i.termCodes?.every(
       (c) =>
@@ -51,13 +51,14 @@ const sortLaboruntersuchung = (
     )
   );
 
-  loinc.sort((a, b) =>
+  /* loinc.sort((a, b) =>
     (a.termCodes?.[1]?.code ?? "").localeCompare(b.termCodes?.[1]?.code ?? "")
-  );
+  ); */
   swisslab.sort((a, b) =>
     (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? "")
   );
 
-  merged = [...nonSelectable, ...loinc, ...swisslab];
+  // merged = [...nonSelectable, ...loinc, ...swisslab];
+  merged = [...nonSelectable, ...swisslab];
   return merged;
 };

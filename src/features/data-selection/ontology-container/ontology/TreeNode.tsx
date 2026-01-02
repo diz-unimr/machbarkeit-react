@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import { type Criterion } from "@app/types/ontology";
+import { type Criterion } from "@app/types/ontologyType";
 
 import TreeItem from "./TreeItem";
 
@@ -27,7 +27,7 @@ export default function TreeNode({
     <>
       {((criterion.children && criterion.children.length > 0) ||
         criterion.selectable) && (
-        <li className="list-none pl-3.5 pr-2">
+        <li className="list-none pl-3">
           <div className="flex gap-[clamp(10px,1.5%,15px)] items-center mb-2.5">
             <TreeItem
               criterion={criterion}

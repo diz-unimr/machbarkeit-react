@@ -14,23 +14,35 @@ import type {
   QuantityType,
   TimeRangeType,
 } from "@features/filters/controls/type";
-import { useFilterStore } from "./filter-store";
+import { useGlobalFilterStore } from "./global-filter-store";
+import { useFilterValidationStore } from "../filter-validation-store";
+
+export type FilterType =
+  | {
+      uid: string;
+      filterType: "conceptType";
+      filterValue: ConceptType["valueFilter"] | null;
+    }
+  | {
+      uid: string;
+      filterType: "quantityType";
+      filterValue: QuantityType["valueFilter"] | null;
+    }
+  | {
+      uid: string;
+      filterType: "timeRangeType";
+      filterValue: TimeRangeType["timeRestriction"] | null;
+    };
 
 type selectedCriteriaStore = {
   selectedInclusionCriteria: SelectedCriteria;
   selectedExclusionCriteria: SelectedCriteria;
   addNewCriteria: (newCriterion: CriterionNode, zone: DropZone) => void;
   removeCriterion: (idex: number, uid: string, zone: string) => void;
-  updateCriteriaFilter: (
-    filterValue:
-      | ConceptType["valueFilter"]
-      | TimeRangeType["timeRestriction"]
-      | QuantityType["valueFilter"]
-      | null,
-    uid?: string
-  ) => void;
+  updateCriterionFilter: (filterInfo: FilterType | null) => void;
+  applyGlobalFilter: (filterName: "timeRange") => void;
   toggleLogic: (logicIndex: number) => void;
-  toggleCriterionExpansion: (uid: string, zone: string) => void;
+  // toggleCriterionExpansion: (uid: string, zone: string) => void;
   reOrderCriteria: (active: Active, over: Over, zone: string) => void;
   setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
 };
@@ -49,7 +61,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
     },
     addNewCriteria: (newCriterion, zone) => {
       set((state) => {
-        const { globalFilter } = useFilterStore.getState();
+        const { globalFilter } = useGlobalFilterStore.getState();
         const nextCriteria = [
           ...state.selectedInclusionCriteria.criteria,
           newCriterion.criterion.timeRestrictionAllowed &&
@@ -63,6 +75,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
               }
             : newCriterion,
         ];
+
         const nextLogics =
           nextCriteria.length > 1
             ? [...state.selectedInclusionCriteria.logics, "AND"]
@@ -91,10 +104,10 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
         return state;
       });
     },
+
     removeCriterion: (index, uid, zone) => {
-      console.log(index);
-      console.log(uid);
       set((state) => {
+        const { deleteItem } = useFilterValidationStore.getState();
         const currentCriteria = state.selectedInclusionCriteria;
         const nextCriteria = currentCriteria.criteria.filter(
           (c) => c.uid !== uid
@@ -105,6 +118,9 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
             return i != index - 1;
           else return i != index;
         });
+
+        deleteItem(uid);
+
         if (zone === "inclusion") {
           return {
             selectedInclusionCriteria: {
@@ -128,33 +144,77 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
         return state;
       });
     },
-
-    updateCriteriaFilter: (filterValue, uid) => {
+    // update local filter
+    updateCriterionFilter: (filterInfo) => {
+      console.log("filterInfo: ", filterInfo);
       set((state) => {
-        if (!uid) {
-          // global filter
-          const updatedCriteria: SelectedCriteria = {
-            ...state.selectedInclusionCriteria,
-            criteria: state.selectedInclusionCriteria.criteria.map((c) => {
-              c.criterion.timeRestriction =
-                filterValue as TimeRangeType["timeRestriction"];
-              return c;
-            }),
-          };
-          return {
-            selectedInclusionCriteria: updatedCriteria,
-          };
-        } else {
-          // local filter
-          return {
-            selectedInclusionCriteria: { ...state.selectedInclusionCriteria },
-          };
+        const selectedCriteria = state.selectedInclusionCriteria;
+        switch (filterInfo?.filterType) {
+          case "conceptType":
+          case "quantityType":
+            return {
+              selectedInclusionCriteria: {
+                ...selectedCriteria,
+                criteria: selectedCriteria.criteria.map((c) =>
+                  c.uid === filterInfo.uid
+                    ? {
+                        ...c,
+                        criterion: {
+                          ...c.criterion,
+                          valueFilter: filterInfo.filterValue ?? undefined,
+                        },
+                      }
+                    : c
+                ),
+              },
+            };
+          case "timeRangeType": {
+            console.log(filterInfo.filterValue ?? undefined);
+            const updatedCriteria: SelectedCriteria = {
+              ...selectedCriteria,
+              criteria: selectedCriteria.criteria.map((c) =>
+                c.uid === filterInfo.uid
+                  ? {
+                      ...c,
+                      criterion: {
+                        ...c.criterion,
+                        timeRestriction: filterInfo.filterValue ?? undefined,
+                      },
+                    }
+                  : c
+              ),
+            };
+            return {
+              selectedInclusionCriteria: updatedCriteria,
+            };
+          }
+          default:
+            return {
+              selectedInclusionCriteria: { ...selectedCriteria },
+            };
         }
       });
     },
 
+    applyGlobalFilter: (filterName) => {
+      set((state) => {
+        const { globalFilter } = useGlobalFilterStore.getState();
+        const selectedCriteria = state.selectedInclusionCriteria;
+        const updatedCriteria: SelectedCriteria = {
+          ...selectedCriteria,
+          criteria: selectedCriteria.criteria.map((c) => {
+            c.criterion.timeRestriction =
+              globalFilter.timeRange as TimeRangeType["timeRestriction"];
+            return c;
+          }),
+        };
+        return {
+          selectedInclusionCriteria: updatedCriteria,
+        };
+      });
+    },
+
     toggleLogic: (logicIndex: number) => {
-      console.log(logicIndex);
       set((state) => {
         const nextLogics = state.selectedInclusionCriteria.logics.map(
           (logic, i) =>
@@ -169,7 +229,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       });
     },
 
-    toggleCriterionExpansion: (uid, zone) => {
+    /* toggleCriterionExpansion: (uid, zone) => {
       set((state) => {
         const currentCriteria = state.selectedInclusionCriteria;
         const updatedCriteria = {
@@ -187,7 +247,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
           selectedInclusionCriteria: updatedCriteria,
         };
       });
-    },
+    }, */
 
     reOrderCriteria: (active, over, zone) => {
       set((state) => {

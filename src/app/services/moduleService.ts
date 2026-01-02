@@ -2,8 +2,8 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import axios, { type AxiosResponse, AxiosError } from "axios";
-import type { Module } from "@app/types/ontology";
-import { getTabColor } from "@app/utils/utilities";
+import type { Module } from "@app/types/ontologyType";
+import { getTabColor } from "@app/utils/moduleUtils";
 import { API_MODULES_URL } from "@app/constants/appConfig";
 import lodash from "lodash";
 

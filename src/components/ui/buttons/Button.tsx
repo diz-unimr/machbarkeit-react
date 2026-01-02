@@ -39,7 +39,7 @@ export function Button({
       typeClass = "bg-transparent text-black px-2.5 py-1.5 hover:text-white";
       break;
     case "tertiary":
-      typeClass = "border-none bg-gray-200 hover:underline hover:bg-gray-300";
+      typeClass = `border-none bg-gray-200 ${isActive ? "hover:underline" : null} hover:bg-gray-300`;
       break;
     case "danger":
       typeClass = "flex items-center gap-1 border-none hover:text-red-700";

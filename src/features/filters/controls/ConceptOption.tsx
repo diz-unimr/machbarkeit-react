@@ -2,12 +2,15 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import type { Criterion } from "@app/types/ontology";
+import type { Criterion } from "@app/types/ontologyType";
 import type { ConceptType } from "@features/filters/controls/type";
 
 type ConceptOptionProps = {
   criterion: Criterion;
-  onChange: (concept: ConceptType | null) => void;
+  onChange: (
+    filterValue: ConceptType["valueFilter"] | null,
+    completeFilter?: boolean
+  ) => void;
 };
 type Concept = ConceptType["valueFilter"]["selectedConcepts"][number];
 
@@ -24,12 +27,12 @@ export default function ConceptOption({
 
     setSelectedValue(newSelectedValues);
 
-    onChange({
-      valueFilter: {
-        type: "concept",
-        selectedConcepts: newSelectedValues,
-      },
-    });
+    const valueFilter = {
+      selectedConcepts: newSelectedValues,
+      type: "concept",
+    };
+
+    onChange(valueFilter);
   };
 
   return (
