@@ -3,7 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { twMerge } from "tailwind-merge";
 
-type ButtonProp = {
+export type ButtonProp = {
   id: string;
   type?: "primary" | "secondary" | "tertiary" | "danger";
   label: string;
@@ -65,6 +65,28 @@ export function Button({
         <img src="/delete.png" className="!w-[22px] !h-[16px]" />
       )}
     </button>
+  );
+}
+
+export function TertiaryButton({
+  id,
+  label,
+  className,
+  onClick,
+}: {
+  id: string;
+  label: string;
+  className?: string;
+  onClick: () => void;
+}) {
+  return (
+    <span
+      id={id}
+      onClick={onClick}
+      className={`flex text-sm font-medium text-gray-500 cursor-pointer hover:underline hover:text-gray-800 ${className}`}
+    >
+      {label}
+    </span>
   );
 }
 

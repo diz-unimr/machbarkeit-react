@@ -43,7 +43,7 @@ export default function Card({
       {/* header */}
       {header && (
         <div
-          className={`flex justify-center items-center p-2 px-4
+          className={`flex item-center p-2 px-4
         h-[clamp(40px,10%,60px)]
         rounded-t-sm
         font-medium text-[#5e5e5e]
