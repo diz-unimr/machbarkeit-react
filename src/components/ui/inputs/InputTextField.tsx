@@ -11,7 +11,7 @@ type InputTextFieldProp = {
   id: string;
   label: string;
   value?: string;
-  type?: "search" | "number";
+  type?: "search" | "number" | "text";
   resultStatus?: number;
   width?: string;
   className?: string;
@@ -69,7 +69,7 @@ function InputTextField({
               <img src={searchIcon} />
             </div>
           )}
-          {type === "search" && value && value.toString().length > 0 && (
+          {type !== "number" && value && value.toString().length > 0 && (
             <p
               onClick={() => onClearText()}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 !bg-white cursor-pointer"
