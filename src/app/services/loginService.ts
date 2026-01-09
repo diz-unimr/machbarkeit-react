@@ -4,7 +4,7 @@
 */
 
 export async function login() {
-  const loginUrl = `${process.env.BACKEND_API_BASE}/login?next=${process.env.BASE_URL}`;
+  const loginUrl = `${import.meta.env.VITE_BACKEND_API_BASE}/login?next=${import.meta.env.VITE_BASE_URL}`;
   const res = await fetch(loginUrl, {
     credentials: "include",
     redirect: "manual",
