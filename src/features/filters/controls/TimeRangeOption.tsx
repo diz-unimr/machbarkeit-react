@@ -20,9 +20,9 @@ type TimeRangeOptionProps = {
   size?: "sm" | "md";
   timeRestrictionData?: TimeRangeType["timeRestriction"] | null;
   onValidityChange: (isValid: boolean) => void;
-  onCompleteChange: (timeRange: {
-    filterValue: TimeRangeType["timeRestriction"] | null;
-  }) => void;
+  onCompleteChange: (
+    timeRange: TimeRangeType["timeRestriction"] | null
+  ) => void;
 };
 
 export default function TimeRangeOption({
@@ -32,10 +32,32 @@ export default function TimeRangeOption({
   onValidityChange,
   onCompleteChange,
 }: TimeRangeOptionProps) {
-  const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
+  const syncSelectedOption = (
+    next: TimeRangeType["timeRestriction"] | null
+  ) => {
+    if (!next) {
+      return "no filter";
+    }
+    let option: OptionCode = "no filter";
+    const hasAfter = !!next.afterDate;
+    const hasBefore = !!next.beforeDate;
+
+    if (hasAfter && hasBefore) {
+      option = next.afterDate === next.beforeDate ? "at" : "between";
+    } else if (hasAfter) {
+      option = "after";
+    } else if (hasBefore) {
+      option = "before";
+    }
+    return option;
+  };
+
+  const [selectedOption, setSelectedOption] = useState<OptionCode>(
+    () => syncSelectedOption(timeRestrictionData) ?? "no filter"
+  );
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({
-    afterDate: undefined,
-    beforeDate: undefined,
+    afterDate: timeRestrictionData?.afterDate ?? undefined,
+    beforeDate: timeRestrictionData?.beforeDate ?? undefined,
   });
   const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
 
@@ -119,7 +141,7 @@ export default function TimeRangeOption({
 
   /* const convertJsonToTimeRange = (jsonObject: SelectedDate) => {
     if (jsonObject.afterDate) {
-      console.log();
+
     }
   }; */
 
@@ -205,7 +227,7 @@ export default function TimeRangeOption({
     return { timeRestriction, isValid };
   };
 
-  const syncTimeRestrictionData = (
+  /* const syncTimeRestrictionData = (
     next: TimeRangeType["timeRestriction"] | null
   ) => {
     if (!next) {
@@ -238,12 +260,12 @@ export default function TimeRangeOption({
         afterDate: next.afterDate,
         beforeDate: next.beforeDate,
       });
-  };
+  }; */
 
-  useEffect(() => {
+  /* useEffect(() => {
     // if (!timeRestrictionData) return;
     syncTimeRestrictionData(timeRestrictionData);
-  }, []);
+  }, []); */
 
   useEffect(() => {
     const { timeRestriction, isValid } = handleTimeRange(
@@ -252,10 +274,7 @@ export default function TimeRangeOption({
     );
     // setIsFilterCompleted(isValid);
     onValidityChange(isValid);
-    if (isValid)
-      onCompleteChange({
-        filterValue: timeRestriction,
-      });
+    if (isValid) onCompleteChange(timeRestriction);
   }, [selectedDate, selectedOption]);
 
   /* useEffect(() => {

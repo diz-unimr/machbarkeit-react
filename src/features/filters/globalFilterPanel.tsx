@@ -12,14 +12,13 @@ import { Button } from "@components/ui/buttons/Button";
 import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
 
 export type GlobalFilterName = "timeRange" | "caseType";
+export type CaseType = "no filter" | "imp" | "amb";
 
 type GlobalFilterPanelProps = {
-  // onSetValidity: (data: { id: string; isValid: boolean }) => void;
   onHandleGlobalFilterChange: (
     filterName: GlobalFilterName,
-    value: string | (TimeRangeType["timeRestriction"] | null),
-    completeFilter?: boolean
-  ) => void;
+    value: TimeRangeType["timeRestriction"] | null
+  ) => Promise<void>;
 };
 
 export default function GlobalFilterPanel({
@@ -27,15 +26,14 @@ export default function GlobalFilterPanel({
   onHandleGlobalFilterChange,
 }: GlobalFilterPanelProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const { globalFilter } = useGlobalFilterStore();
+  const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
+  const updateGlobalFilter = useGlobalFilterStore((s) => s.updateGlobalFilter);
   const [isGlobalFilterEditing, setIsGlobalFilterEditing] =
     useState<boolean>(false);
+  const [globalFilterTemp, setGlobalFilterTemp] = useState<
+    TimeRangeType["timeRestriction"] | null
+  >(null);
   const [isFilterComplete, setIsFilterCompleted] = useState<boolean>(true);
-  const handleGlobalTimeRangeChange = (timeRange: {
-    filterValue: TimeRangeType["timeRestriction"] | null;
-  }) => {
-    onHandleGlobalFilterChange("timeRange", timeRange.filterValue);
-  };
   const updateValidityItem = useFilterValidationStore(
     (s) => s.updateValidityItem
   );
@@ -71,12 +69,19 @@ export default function GlobalFilterPanel({
                     timeRestrictionData={globalFilter.timeRange} //data from file just on first time
                     onValidityChange={(isValid) => {
                       setIsFilterCompleted(isValid);
-                      updateValidityItem({
-                        id: "global-time-range",
-                        isValid,
-                      });
+                      if (!isValid) {
+                        updateValidityItem({
+                          id: "global-time-range",
+                          isValid,
+                        });
+                      }
                     }}
-                    onCompleteChange={handleGlobalTimeRangeChange}
+                    onCompleteChange={(timeRange) =>
+                      setGlobalFilterTemp({
+                        ...timeRange,
+                        isLocalFilter: false,
+                      })
+                    }
                   />
                   <Button
                     id={"global-btn"}
@@ -84,7 +89,15 @@ export default function GlobalFilterPanel({
                     type="tertiary"
                     className="!m-0 !mt-2 text-white bg-[var(--btn-bg)] hover:text-[#213547]"
                     isActive={isFilterComplete}
-                    onClick={() => {
+                    onClick={async () => {
+                      updateValidityItem({
+                        id: "global-time-range",
+                        isValid: isFilterComplete,
+                      });
+                      await onHandleGlobalFilterChange(
+                        "timeRange",
+                        globalFilterTemp
+                      );
                       setIsGlobalFilterEditing((prev) => !prev);
                     }}
                   />
@@ -98,9 +111,13 @@ export default function GlobalFilterPanel({
                     id={"global-btn"}
                     label="Globaler Filter bearbeiten"
                     type="tertiary"
-                    className="!m-0 !mt-2"
+                    className="!m-0 !mt-2 "
                     onClick={() => {
                       setIsGlobalFilterEditing((prev) => !prev);
+                      updateValidityItem({
+                        id: "global-time-range",
+                        isValid: false,
+                      });
                     }}
                   />
                 </div>
@@ -111,10 +128,10 @@ export default function GlobalFilterPanel({
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
-                  name="all"
-                  value="all"
-                  checked={true}
-                  onChange={() => {}}
+                  name="no filter"
+                  value="no filter"
+                  checked={globalFilter.caseType === "no filter"}
+                  onChange={() => updateGlobalFilter("caseType", "no filter")}
                 />
                 Kein Filter
               </label>
@@ -123,8 +140,8 @@ export default function GlobalFilterPanel({
                   type="radio"
                   name="inpatient"
                   value="inpatient"
-                  checked={false}
-                  onChange={() => {}}
+                  checked={globalFilter.caseType === "imp"}
+                  onChange={() => updateGlobalFilter("caseType", "imp")}
                 />
                 Stationär
               </label>
@@ -133,8 +150,8 @@ export default function GlobalFilterPanel({
                   type="radio"
                   name="outpatient"
                   value="outpatient"
-                  checked={false}
-                  onChange={() => {}}
+                  checked={globalFilter.caseType === "amb"}
+                  onChange={() => updateGlobalFilter("caseType", "amb")}
                 />
                 Ambulant
               </label>
