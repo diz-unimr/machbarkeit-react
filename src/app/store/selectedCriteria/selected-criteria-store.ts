@@ -41,6 +41,10 @@ type selectedCriteriaStore = {
   removeCriterion: (idex: number, uid: string, zone: string) => void;
   updateCriterionFilter: (filterInfo: FilterType | null) => void;
   applyGlobalFilter: (filterName: "timeRange") => void;
+  applyGlobalTimeRange: (
+    next: TimeRangeType["timeRestriction"] | null,
+    includeLocal: boolean
+  ) => void;
   toggleLogic: (logicIndex: number) => void;
   // toggleCriterionExpansion: (uid: string, zone: string) => void;
   reOrderCriteria: (active: Active, over: Over, zone: string) => void;
@@ -146,7 +150,6 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
     },
     // update local filter
     updateCriterionFilter: (filterInfo) => {
-      console.log("filterInfo: ", filterInfo);
       set((state) => {
         const selectedCriteria = state.selectedInclusionCriteria;
         switch (filterInfo?.filterType) {
@@ -169,7 +172,6 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
               },
             };
           case "timeRangeType": {
-            console.log(filterInfo.filterValue ?? undefined);
             const updatedCriteria: SelectedCriteria = {
               ...selectedCriteria,
               criteria: selectedCriteria.criteria.map((c) =>
@@ -178,7 +180,11 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
                       ...c,
                       criterion: {
                         ...c.criterion,
-                        timeRestriction: filterInfo.filterValue ?? undefined,
+                        timeRestriction:
+                          filterInfo.filterValue?.beforeDate ||
+                          filterInfo.filterValue?.afterDate
+                            ? filterInfo.filterValue
+                            : undefined,
                       },
                     }
                   : c
@@ -210,6 +216,32 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
         };
         return {
           selectedInclusionCriteria: updatedCriteria,
+        };
+      });
+    },
+
+    applyGlobalTimeRange: (next, includeLocal) => {
+      set((state) => {
+        const current = state.selectedInclusionCriteria;
+        return {
+          selectedInclusionCriteria: {
+            ...current,
+            criteria: current.criteria.map((c) => {
+              if (!c.criterion.timeRestrictionAllowed) return c;
+              const tr = c.criterion.timeRestriction;
+              const isLocal = tr?.isLocalFilter === true;
+              if (!includeLocal && isLocal) return c; // skips local
+              return {
+                ...c,
+                criterion: {
+                  ...c.criterion,
+                  timeRestriction: next
+                    ? { ...next, isLocalFilter: false }
+                    : undefined,
+                },
+              };
+            }),
+          },
         };
       });
     },

@@ -27,7 +27,6 @@ export const useFilterValidationStore = create<FilterValidationStore>(
       }));
     },
     deleteItem: (id) => {
-      console.log(id);
       set((state) => ({
         validityItems: state.validityItems.filter((item) => item.id !== id),
       }));

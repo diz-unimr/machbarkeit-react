@@ -36,7 +36,7 @@ export const checkGlobalConflicts = (
 export const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
   globalFilter: {
     timeRange: null,
-    caseType: null,
+    caseType: "no filter",
   },
 
   updateGlobalFilter: (filterName, value) => {
