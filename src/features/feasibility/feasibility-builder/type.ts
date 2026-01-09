@@ -22,21 +22,25 @@ export type CriterionNode = {
   isExpanded: boolean;
 };
 
+export type SelectedChoice = "replace all" | "replace global" | "cancel";
+
+type LogicOperator = "AND" | "OR";
+
 export type SelectedCriteria = {
   criteriaType: string;
   criteria: CriterionNode[];
-  logics: string[];
+  logics: LogicOperator[];
 };
 
-type QueryCriterion = {
+export type QueryCriterion = {
   id: Criterion["id"];
   termCodes: Criterion["termCodes"];
   context: Criterion["context"];
 } & Partial<ConceptType | QuantityType | TimeRangeType>;
 
 export type FeasibilityQueryData = {
-  display: string;
   version: string;
-  inclusionCriteria?: QueryCriterion[][] | [];
-  exclusionCriteria?: QueryCriterion[][] | [];
+  display: string;
+  inclusionCriteria?: QueryCriterion[][];
+  exclusionCriteria?: QueryCriterion[][];
 };

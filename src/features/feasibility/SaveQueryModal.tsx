@@ -1,11 +1,56 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-export default function SaveQueryModal() {
+import { Button } from "@/components/ui/buttons/Button";
+import PopupModal from "@/components/ui/PopupModal";
+import InputTextField from "@components/ui/inputs/InputTextField";
+import { useState } from "react";
+
+type SaveQueryModalProps = {
+  open: boolean;
+  onSaveFile: (fileName: string) => void;
+  onCancel: () => void;
+};
+
+export default function SaveQueryModal({
+  open,
+  onSaveFile,
+  onCancel,
+}: SaveQueryModalProps) {
+  const [saveFileName, setSaveFileName] = useState<string>("");
   return (
-    <dialog open>
-      <h1>Save Query</h1>
-      <button>Save</button>
-    </dialog>
+    <PopupModal open={open} title="Abspeichern der aktuellen Suchanfrage">
+      <div className="flex flex-col w-full gap-3">
+        <InputTextField
+          id="save-query-name"
+          label="Dateiname"
+          type="text"
+          value={saveFileName}
+          onChange={setSaveFileName}
+          onClearText={() => setSaveFileName("")}
+        />
+        <div className="flex gap-3 justify-end">
+          <Button
+            id="cancel-save-btn"
+            label="ABBRECHEN"
+            type="secondary"
+            onClick={() => {
+              onCancel();
+              setSaveFileName("");
+            }}
+          />
+          <Button
+            isActive={saveFileName.length > 0}
+            id="confirm-save-btn"
+            label="speichern"
+            type="primary"
+            onClick={() => {
+              onSaveFile(saveFileName);
+              setSaveFileName("");
+            }}
+          />
+        </div>
+      </div>
+    </PopupModal>
   );
 }
