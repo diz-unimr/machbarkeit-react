@@ -7,7 +7,6 @@ export default function formatTimeRangeLabel(
   filterValue: TimeRangeType["timeRestriction"] | null
 ): React.ReactNode {
   if (!filterValue) return "Kein Filter";
-  console.log(filterValue);
   const after = filterValue.afterDate ? new Date(filterValue.afterDate) : null;
   const before = filterValue.beforeDate
     ? new Date(filterValue.beforeDate)
@@ -29,5 +28,5 @@ export default function formatTimeRangeLabel(
 
   if (after && !before) return <p>Nach {afterDate}</p>;
   if (before && !after) return <p>Vor {beforeDate}</p>;
-  return <p>"Kein Filter"</p>;
+  return <p>Kein Filter</p>;
 }
