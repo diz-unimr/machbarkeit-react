@@ -1,0 +1,30 @@
+name: "machbarkeit"
+
+services:
+  backend:
+    image: ghcr.io/diz-unimr/machbarkeit-backend:1.2.11
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=debug
+      - BASE_URL=http://localhost:3000
+      - AUTH__OIDC__ISSUER_URL
+      - AUTH__OIDC__CLIENT_ID
+      - AUTH__OIDC__CLIENT_SECRET
+      - CORS__ALLOW_ORIGIN=http://localhost:5173
+      - SESSION__CROSS_DOMAIN=false
+      - MDR__ENDPOINT=https://mdr.diz.uni-marburg.de/api
+      - DATABASE__URL=sqlite://db.sqlite?mode=rwc
+    ports:
+      - "3000:3000"
+
+  query:
+    image: ghcr.io/diz-unimr/machbarkeit-query:1.1.3
+    environment:
+      APP__LOG_LEVEL: debug
+      FEASIBILITY__BASE_URL: https://feasibility-test.diz.uni-marburg.de/query/execute
+      BROKER__URL: ws://backend:3000/feasibility/ws
+      BROKER__AUTH__CLIENT_CREDENTIALS__CLIENT_ID: machbarkeit
+      BROKER__AUTH__CLIENT_CREDENTIALS__CLIENT_SECRET: ${AUTH__OIDC__CLIENT_SECRET}
+      BROKER__AUTH__CLIENT_CREDENTIALS__TOKEN_URL: ${AUTH__OIDC__TOKEN_ENDPOINT}
+    depends_on:
+      - backend
