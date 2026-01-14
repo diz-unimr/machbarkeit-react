@@ -7,11 +7,7 @@ type UploadButtonProp = {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
 
-export default function UploadButton({
-  id,
-  label,
-  onChange,
-}: UploadButtonProp) {
+const UploadButton = ({ id, label, onChange }: UploadButtonProp) => {
   return (
     <>
       <input
@@ -29,4 +25,5 @@ export default function UploadButton({
       </label>
     </>
   );
-}
+};
+export default UploadButton;

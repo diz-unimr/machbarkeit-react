@@ -5,7 +5,8 @@ type TextFloatingProps = {
   id?: string;
   label: string;
 };
-export default function TextFloating({ id, label }: TextFloatingProps) {
+
+const TextFloating = ({ id, label }: TextFloatingProps) => {
   return (
     <label
       htmlFor={id}
@@ -14,4 +15,5 @@ export default function TextFloating({ id, label }: TextFloatingProps) {
       {label}
     </label>
   );
-}
+};
+export default TextFloating;

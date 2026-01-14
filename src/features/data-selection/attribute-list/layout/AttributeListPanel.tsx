@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { ArrowButton } from "@components/ui/buttons/ArrowButton";
+import ArrowButton from "@components/ui/buttons/ArrowButton";
 import AttributeList from "../AttributeList";
 import accordionArrow from "@assets/accordion-arrow.svg";
 
@@ -10,10 +10,10 @@ type AttributeListPanelProps = {
   isAttributeListPanelOpen: boolean;
 };
 
-export default function AttributeListPanel({
+const AttributeListPanel = ({
   onSetPanelStatus,
   isAttributeListPanelOpen,
-}: AttributeListPanelProps) {
+}: AttributeListPanelProps) => {
   return (
     <div className="flex flex-col border-b-[1.5px] border-[var(--color-border)]">
       <div className="flex justify-between px-4 py-3">
@@ -35,4 +35,5 @@ export default function AttributeListPanel({
       </div>
     </div>
   );
-}
+};
+export default AttributeListPanel;

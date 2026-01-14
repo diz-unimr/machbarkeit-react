@@ -1,12 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useOntologiesStore } from "@app/store/ontologies/ontologies-store";
+import useOntologiesStore from "@/app/store/ontologies-store";
 import { getOntology } from "@app/services/ontologyService";
 import type { Criterion, ModuleColorProps } from "@app/types/ontologyType";
 import { httpStatusMessages } from "@app/constants/httpStatusMessage";
-import { useModulesStore } from "@app/store/modules-store";
+import useModulesStore from "@app/store/modules-store";
 
 const setModuleColor = (
   nodes: Criterion[],
@@ -51,16 +52,15 @@ const collectMatches = (nodes: Criterion[], term: string): Criterion[] => {
   return results;
 };
 
-export default function useOntology(
+const useOntology = (
   moduleId: string | null,
   textSearch: string
 ): {
   ontologyResult: { criteria: Criterion[] | null; status?: number };
   isLoading: boolean;
-} {
+} => {
   const fetchController = useRef<AbortController | null>(null);
-  const { ontology, setOntology, flattenCriteria, setFlattenCriterion } =
-    useOntologiesStore();
+  const { ontology, setOntology } = useOntologiesStore();
   const { modules } = useModulesStore();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -87,7 +87,6 @@ export default function useOntology(
         if (data) {
           setModuleColor(data, modules.find((m) => m.id === moduleId)?.color);
           setOntology(data);
-          setFlattenCriterion(data);
         } else if (status !== 200 && status !== 400)
           alert(httpStatusMessages[status]);
       } catch {
@@ -98,10 +97,10 @@ export default function useOntology(
         }
       }
     };
-
     fetchOntology();
+
     return () => controller.abort();
-  }, [moduleId, ontology, setOntology, setFlattenCriterion, modules]);
+  }, [moduleId, ontology, modules]);
 
   const memoizedResult = useMemo(() => {
     if (!moduleId) {
@@ -113,9 +112,6 @@ export default function useOntology(
       return { criteria: null, status: 400 };
     }
 
-    /* const isLaborModule = modules.some(
-      (m) => m.id === moduleId && m.name === "Laboruntersuchung"
-    ); */
     const baseTree = ontology[moduleId];
     const status = baseTree ? 200 : undefined;
 
@@ -126,10 +122,12 @@ export default function useOntology(
     if (!term) {
       return { criteria: baseTree, status };
     }
-
     const matchedNodes = collectMatches(baseTree, term);
+
     return { criteria: matchedNodes, status };
   }, [moduleId, textSearch, ontology]);
 
   return { ontologyResult: memoizedResult, isLoading };
-}
+};
+
+export default useOntology;

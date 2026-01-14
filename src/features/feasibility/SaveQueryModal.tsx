@@ -12,11 +12,11 @@ type SaveQueryModalProps = {
   onCancel: () => void;
 };
 
-export default function SaveQueryModal({
+const SaveQueryModal = ({
   open,
   onSaveFile,
   onCancel,
-}: SaveQueryModalProps) {
+}: SaveQueryModalProps) => {
   const [saveFileName, setSaveFileName] = useState<string>("");
   return (
     <PopupModal open={open} title="Abspeichern der aktuellen Suchanfrage">
@@ -53,4 +53,6 @@ export default function SaveQueryModal({
       </div>
     </PopupModal>
   );
-}
+};
+
+export default SaveQueryModal;

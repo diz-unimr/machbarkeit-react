@@ -1,12 +1,11 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { ArrowButton } from "@components/ui/buttons/ArrowButton";
+import ArrowButton from "@components/ui/buttons/ArrowButton";
 import accordionArrow from "@assets/accordion-arrow.svg";
 import Card from "@components/ui/Card";
-import { useCriteriaDnD } from "./hooks/useCriteriaDnD";
+import useCriteriaDnD from "./hooks/useCriteriaDnD";
 import FeasibilityCriteriaSortableList from "./FeasibilityCriteriaSortableList";
-import { useCallback, useEffect } from "react";
 import type { CriterionNode, SelectedCriteria } from "./type";
 
 type FeasibilityCriteriaPanelProps = {
@@ -15,33 +14,22 @@ type FeasibilityCriteriaPanelProps = {
   isPanelExpanded: boolean;
   onToggleCriteriaPanel: () => void;
   onToggleCriterionItem: (item: CriterionNode) => void;
-  onCriteriaChange: ({
-    items,
-    isIndividualChange,
-    completeFilter,
-  }: {
-    items: React.SetStateAction<SelectedCriteria> | null;
-    isIndividualChange?: boolean;
-    completeFilter?: boolean;
-  }) => void;
   onRemoveCriterion: (uid: string) => void;
 };
 
-export default function FeasibilityCriteriaPanel({
+const FeasibilityCriteriaPanel = ({
   label,
   selectedCriteria,
   isPanelExpanded,
   onToggleCriteriaPanel,
-  onToggleCriterionItem,
-  onCriteriaChange,
   onRemoveCriterion,
-}: FeasibilityCriteriaPanelProps) {
+}: FeasibilityCriteriaPanelProps) => {
   const {
     dropZoneClasses,
     handleDragOver,
     handleDragLeave,
     handleCriteriaDrop,
-  } = useCriteriaDnD(/* label */);
+  } = useCriteriaDnD();
 
   const removeCriterion = (
     // zone: Exclude<DropZone, "attribute">,
@@ -49,38 +37,6 @@ export default function FeasibilityCriteriaPanel({
   ) => {
     onRemoveCriterion(uid);
   };
-
-  /* const onSetFilterMode = (
-    filterMode: DroppedCriterion["filterMode"],
-    item: DroppedCriterion
-  ) => {
-    onSetCriteria((prev) =>
-      prev.map((c) => (c.uid === item.uid ? { ...c, filterMode } : c))
-    );
-  }; */
-
-  const toggleLogic = useCallback(
-    (index: number) => {
-      onCriteriaChange({
-        items: (prev) => {
-          return {
-            ...prev,
-            logics: prev.logics.map((logic, i) =>
-              i === index ? (logic === "OR" ? "AND" : "OR") : logic
-            ),
-          };
-        },
-      });
-    },
-    [onCriteriaChange]
-  );
-
-  useEffect(() => {
-    console.log(
-      "selectedInclusionCriteria FeasibilityPanel: ",
-      selectedCriteria
-    );
-  }, [selectedCriteria]);
 
   return (
     <div
@@ -106,18 +62,21 @@ export default function FeasibilityCriteriaPanel({
           onClick={onToggleCriteriaPanel}
         />
       </div>
-      <div style={{ display: isPanelExpanded ? "block" : "none" }}>
+      <div
+        className="h-full"
+        style={{ display: isPanelExpanded ? "flex" : "none" }}
+      >
         <Card
-          className="flex flex-col flex-1 min-h-0"
+          className="flex flex-col flex-1 h-full" /* min-h-0 */
           bodyClassName="bg-gray-50 flex flex-col flex-1 min-h-0 overflow-hidden"
         >
           <div
-            className={`${dropZoneClasses("inclusion")} ${
+            className={`"h-full" ${dropZoneClasses("inclusionCriteria")} ${
               selectedCriteria.criteria.length === 0 ? "justify-center" : ""
             } flex-1 overflow-y-auto`}
-            onDragOver={handleDragOver("inclusion")}
-            onDragLeave={handleDragLeave("inclusion")}
-            onDrop={handleCriteriaDrop("inclusion")}
+            onDragOver={handleDragOver("inclusionCriteria")}
+            onDragLeave={handleDragLeave("inclusionCriteria")}
+            onDrop={handleCriteriaDrop("inclusionCriteria")}
           >
             <p></p>
             {selectedCriteria.criteria.length === 0 ? (
@@ -128,27 +87,8 @@ export default function FeasibilityCriteriaPanel({
               <div className="flex flex-col">
                 <FeasibilityCriteriaSortableList
                   selectedCriteria={selectedCriteria}
-                  onToggleLogic={toggleLogic}
-                  onToggleExpand={onToggleCriterionItem}
-                  onRemove={(uid) => removeCriterion(uid)} // removeCriterion("inclusion", uid)
-                  onChange={onCriteriaChange}
+                  onRemove={(uid) => removeCriterion(uid)} // removeCriterion("inclusionCriteria", uid)
                 />
-                {/* {criteria.map((item, index) => (
-                  <FeasibilityCriterionItem
-                    key={item.uid}
-                    index={index}
-                    item={item}
-                    onToggleLogic={toggleLogic}
-                    onToggleExpand={onToggleCriterionItem}
-                    onRemove={(uid) => removeCriterion(uid)} // removeCriterion("inclusion", uid)
-                    onSetFilterMode={(mode, criterion) =>
-                      onSetFilterMode(mode, criterion)
-                    }
-                    onDragStart={handleItemDragStart(item.uid)}
-                    onDragOver={handleReorderDragOver}
-                    onDrop={handleReorderDrop(item.uid)}
-                  />
-                ))} */}
               </div>
             )}
           </div>
@@ -156,7 +96,7 @@ export default function FeasibilityCriteriaPanel({
       </div>
     </div>
   );
-}
+};
 
 {
   /* <div className="flex flex-col p-4 pt-2">
@@ -173,10 +113,10 @@ export default function FeasibilityCriteriaPanel({
         </div>
         <Card bodyClassName="bg-gray-50">
           <div
-            className={`${dropZoneClasses("exclusion")} ${exclusionCriteria.length === 0 ? "justify-center" : undefined}`}
-            onDragOver={handleDragOver("exclusion")}
-            onDragLeave={handleDragLeave("exclusion")}
-            onDrop={handleCriteriaDrop("exclusion")}
+            className={`${dropZoneClasses("exclusionCriteria")} ${exclusionCriteria.length === 0 ? "justify-center" : undefined}`}
+            onDragOver={handleDragOver("exclusionCriteria")}
+            onDragLeave={handleDragLeave("exclusionCriteria")}
+            onDrop={handleCriteriaDrop("exclusionCriteria")}
           >
             {exclusionCriteria.length === 0 ? (
               <p className="text-sm text-gray-500 text-center">
@@ -201,7 +141,7 @@ export default function FeasibilityCriteriaPanel({
                     <button
                       type="button"
                       className="text-xs text-red-500 hover:underline"
-                      onClick={() => removeCriterion("exclusion", item.uid)}
+                      onClick={() => removeCriterion("exclusionCriteria", item.uid)}
                     >
                       Entfernen
                     </button>
@@ -213,3 +153,5 @@ export default function FeasibilityCriteriaPanel({
         </Card>
       </div> */
 }
+
+export default FeasibilityCriteriaPanel;

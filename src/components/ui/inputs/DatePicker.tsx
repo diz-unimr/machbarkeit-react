@@ -10,13 +10,14 @@ type DatePickerProps = {
   size?: "sm" | "md";
   onChange: (date: string) => void;
 };
-export default function DatePicker({
+
+const DatePicker = ({
   id,
   label,
   value,
   size = "md",
   onChange,
-}: DatePickerProps) {
+}: DatePickerProps) => {
   return (
     <div className="flex relative">
       <input
@@ -30,4 +31,5 @@ export default function DatePicker({
       <TextFloating id={id} label={label} />
     </div>
   );
-}
+};
+export default DatePicker;

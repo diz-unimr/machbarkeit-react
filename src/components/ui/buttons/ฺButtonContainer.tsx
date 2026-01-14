@@ -9,11 +9,11 @@ type ButtonContainerType = {
   bgContainer?: string;
 };
 
-export default function ButtonContainer({
+const ButtonContainer = ({
   children,
   className,
   bgContainer,
-}: ButtonContainerType) {
+}: ButtonContainerType) => {
   return (
     <div
       className={twMerge(
@@ -24,4 +24,5 @@ export default function ButtonContainer({
       {children}
     </div>
   );
-}
+};
+export default ButtonContainer;

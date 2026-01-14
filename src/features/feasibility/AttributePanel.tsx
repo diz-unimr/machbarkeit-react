@@ -1,12 +1,34 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
+import { useState, type DragEvent } from "react";
+import { DRAG_DATA_FORMATS } from "@/app/constants/dragTypes";
 import Card from "@components/ui/Card";
+import type { Attribute } from "../data-selection/attribute-list/type";
+import type {
+  /* DropZone, */ SelectedAttribute,
+} from "./feasibility-builder/type";
+import generateId from "@/app/utils/generateUID";
+import useCriteriaDnD from "./feasibility-builder/hooks/useCriteriaDnD";
 
-export default function AttributePanel() {
+type DroppedAttribute = {
+  uid: string;
+  attribute: Attribute;
+};
+
+const AttributePanel = () => {
+  // const [activeZone, setActiveZone] = useState<DropZone | null>(null);
+  const [attributeList, setAttributeList] = useState<SelectedAttribute[]>([]);
+  const {
+    dropZoneClasses,
+    handleDragOver,
+    handleDragLeave,
+    // handleCriteriaDrop,
+  } = useCriteriaDnD();
+
   const handleAttributeDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    setActiveZone(null);
+    // setActiveZone(null);
     const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.ATTRIBUTE);
     event.dataTransfer.clearData(DRAG_DATA_FORMATS.ATTRIBUTE);
     if (!data) return;
@@ -62,4 +84,6 @@ export default function AttributePanel() {
       </Card>
     </div>
   );
-}
+};
+
+export default AttributePanel;

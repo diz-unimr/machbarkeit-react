@@ -5,6 +5,7 @@ import { create } from "zustand";
 import type {
   CriterionNode,
   DropZone,
+  LogicOperator,
   SelectedCriteria,
 } from "@features/feasibility/feasibility-builder/type";
 import type { Active, Over } from "@dnd-kit/core";
@@ -14,8 +15,8 @@ import type {
   QuantityType,
   TimeRangeType,
 } from "@features/filters/controls/type";
-import { useGlobalFilterStore } from "./global-filter-store";
-import { useFilterValidationStore } from "../filter-validation-store";
+import useGlobalFilterStore from "./global-filter-store";
+import useFilterValidationStore from "./filter-validation-store";
 
 export type FilterType =
   | {
@@ -40,13 +41,12 @@ type selectedCriteriaStore = {
   addNewCriteria: (newCriterion: CriterionNode, zone: DropZone) => void;
   removeCriterion: (idex: number, uid: string, zone: string) => void;
   updateCriterionFilter: (filterInfo: FilterType | null) => void;
-  applyGlobalFilter: (filterName: "timeRange") => void;
+  // applyGlobalFilter: (filterName: "timeRange") => void;
   applyGlobalTimeRange: (
     next: TimeRangeType["timeRestriction"] | null,
     includeLocal: boolean
   ) => void;
   toggleLogic: (logicIndex: number) => void;
-  // toggleCriterionExpansion: (uid: string, zone: string) => void;
   reOrderCriteria: (active: Active, over: Over, zone: string) => void;
   setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
 };
@@ -54,12 +54,12 @@ type selectedCriteriaStore = {
 export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
   (set) => ({
     selectedInclusionCriteria: {
-      criteriaType: "inclusion",
+      criteriaType: "inclusionCriteria",
       criteria: [],
       logics: [],
     },
     selectedExclusionCriteria: {
-      criteriaType: "exclusion",
+      criteriaType: "exclusionCriteria",
       criteria: [],
       logics: [],
     },
@@ -82,10 +82,13 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
 
         const nextLogics =
           nextCriteria.length > 1
-            ? [...state.selectedInclusionCriteria.logics, "AND"]
+            ? [
+                ...state.selectedInclusionCriteria.logics,
+                "AND" as LogicOperator,
+              ]
             : [];
 
-        if (zone === "inclusion") {
+        if (zone === "inclusionCriteria") {
           return {
             selectedInclusionCriteria: {
               ...state.selectedInclusionCriteria,
@@ -95,7 +98,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
           };
         }
 
-        if (zone === "exclusion") {
+        if (zone === "exclusionCriteria") {
           return {
             selectedExclusionCriteria: {
               ...state.selectedExclusionCriteria,
@@ -125,7 +128,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
 
         deleteItem(uid);
 
-        if (zone === "inclusion") {
+        if (zone === "inclusionCriteria") {
           return {
             selectedInclusionCriteria: {
               ...state.selectedInclusionCriteria,
@@ -135,7 +138,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
           };
         }
 
-        if (zone === "exclusion") {
+        if (zone === "exclusionCriteria") {
           return {
             selectedExclusionCriteria: {
               ...state.selectedExclusionCriteria,
@@ -202,7 +205,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       });
     },
 
-    applyGlobalFilter: (filterName) => {
+    /* applyGlobalFilter: (filterName) => {
       set((state) => {
         const { globalFilter } = useGlobalFilterStore.getState();
         const selectedCriteria = state.selectedInclusionCriteria;
@@ -218,7 +221,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
           selectedInclusionCriteria: updatedCriteria,
         };
       });
-    },
+    }, */
 
     applyGlobalTimeRange: (next, includeLocal) => {
       set((state) => {
@@ -261,27 +264,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       });
     },
 
-    /* toggleCriterionExpansion: (uid, zone) => {
-      set((state) => {
-        const currentCriteria = state.selectedInclusionCriteria;
-        const updatedCriteria = {
-          ...currentCriteria,
-          criteria: currentCriteria.criteria.map((c) =>
-            c.uid === uid
-              ? {
-                  ...c,
-                  isExpanded: !c.isExpanded,
-                }
-              : c
-          ),
-        };
-        return {
-          selectedInclusionCriteria: updatedCriteria,
-        };
-      });
-    }, */
-
-    reOrderCriteria: (active, over, zone) => {
+    reOrderCriteria: (active, over /* zone */) => {
       set((state) => {
         const currentCriteria = state.selectedInclusionCriteria;
         const oldIndex = currentCriteria.criteria.findIndex(
@@ -304,9 +287,9 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
     },
 
     setSelectedCriteria: (selectedCriteria) => {
-      if (selectedCriteria.criteriaType === "inclusion") {
+      if (selectedCriteria.criteriaType === "inclusionCriteria") {
         set({ selectedInclusionCriteria: selectedCriteria });
-      } else if (selectedCriteria.criteriaType === "exclusion") {
+      } else if (selectedCriteria.criteriaType === "exclusionCriteria") {
         set({ selectedExclusionCriteria: selectedCriteria });
       }
     },

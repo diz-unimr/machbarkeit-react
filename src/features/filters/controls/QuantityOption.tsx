@@ -26,10 +26,7 @@ const dropDownOptions: DropDownOption[] = [
   { code: "between", display: "zwischen" },
 ];
 
-export default function QuantityOption({
-  criterion,
-  onChange,
-}: QuantityOptionProps) {
+const QuantityOption = ({ criterion, onChange }: QuantityOptionProps) => {
   const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedUnit, setSelectedUnit] = useState(
     criterion.filterOptions?.[0].display || ""
@@ -153,4 +150,6 @@ export default function QuantityOption({
       ) : null}
     </div>
   );
-}
+};
+
+export default QuantityOption;

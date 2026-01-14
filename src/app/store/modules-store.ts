@@ -9,7 +9,9 @@ type ModulesStore = {
   setModules: (modules: Module[]) => void;
 };
 
-export const useModulesStore = create<ModulesStore>((set) => ({
+const useModulesStore = create<ModulesStore>((set) => ({
   modules: [],
   setModules: (item) => set({ modules: item }),
 }));
+
+export default useModulesStore;

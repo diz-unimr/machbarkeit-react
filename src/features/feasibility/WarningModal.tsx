@@ -11,11 +11,11 @@ type WarningModalProps = {
   onClick: (choice: SelectedChoice) => void;
 };
 
-export default function WarningModal({
+const WarningModal = ({
   open,
   hasAnyGlobalFilter,
   onClick,
-}: WarningModalProps) {
+}: WarningModalProps) => {
   return (
     <PopupModal
       open={open}
@@ -46,4 +46,6 @@ export default function WarningModal({
       </>
     </PopupModal>
   );
-}
+};
+
+export default WarningModal;

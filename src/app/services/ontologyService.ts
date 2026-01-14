@@ -3,56 +3,40 @@
 
 import axios, { type AxiosResponse, AxiosError } from "axios";
 import type { Criterion } from "@app/types/ontologyType";
-import {
-  API_ONTOLOGY_URL,
-  API_SEARCH_ONTOLOGY_URL,
-} from "@app/constants/appConfig";
 import transformObjectKeys from "@app/utils/transformObjectKeys";
 
-/* function transformObjectKeys<T extends { children?: T[] }>(data: T[]): T[] {
-  const response: T[] = data.map((obj: T) => {
-    const transformedObj = lodash.mapKeys(obj, (_, key) =>
-      lodash.camelCase(key)
-    ) as unknown as T;
-    if ("children" in transformedObj && transformedObj.children!.length > 0) {
-      transformedObj.children = transformObjectKeys(
-        transformedObj.children!
-      ) as T[];
-    }
-    return transformedObj;
-  });
-  return response;
-} */
+export const getConcept = async (id: string): Promise<Criterion | null> => {
+  let response: AxiosResponse;
+  const url = `${import.meta.env.VITE_BACKEND_API_BASE}/mdr/ontology/concepts/${id}`;
 
-export async function getOntology(
+  try {
+    response = await axios.get(url, {
+      withCredentials: true,
+    });
+    const conceptResponse = transformObjectKeys([response.data]) as Criterion[];
+    return conceptResponse[0];
+  } catch (error) {
+    if ((error as AxiosError).code === "ERR_NETWORK") {
+      alert("Network Error");
+    }
+    return null;
+  }
+};
+
+export const getOntology = async (
   moduleId: string,
-  /* searchText?: string = "", */
   signal?: AbortSignal
-): Promise<[Criterion[] | null, number]> {
+): Promise<[Criterion[] | null, number]> => {
   let apiResponse: AxiosResponse;
   try {
-    /* if (searchText.length > 0) {
-      apiResponse = await axios.post(
-        API_SEARCH_ONTOLOGY_URL,
-        {
-          module_id: moduleId,
-          search_term: searchText,
-          display: "tree",
-        },
-        {
-          signal,
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control": "max-age=3600",
-          },
-        }
-      );
-    } else {} */
-    apiResponse = await axios.get(API_ONTOLOGY_URL + moduleId, {
+    const url = `${import.meta.env.VITE_BACKEND_API_BASE}/mdr/ontology/tree/`;
+    apiResponse = await axios.get(url + moduleId, {
+      withCredentials: true,
       signal,
     });
     // Convert object keys to camelCase using lodash
     const response = transformObjectKeys(apiResponse.data) as Criterion[];
+
     return [response, apiResponse.status];
   } catch (error) {
     if ((error as AxiosError).code === "ERR_NETWORK") {
@@ -60,17 +44,18 @@ export async function getOntology(
     }
     return [null, (error as AxiosError)?.status ?? 0]; // Return null and error status
   }
-}
+};
 
-export async function getFlatOntology(
+export const getFlatOntology = async (
   moduleId: string,
   searchText: string,
   signal?: AbortSignal
-): Promise<[Criterion[] | null, number]> {
+): Promise<[Criterion[] | null, number]> => {
   let apiResponse: AxiosResponse;
   try {
+    const url = `${import.meta.env.VITE_BACKEND_API_BASE}/mdr/ontology/concepts/search`;
     apiResponse = await axios.post(
-      API_SEARCH_ONTOLOGY_URL,
+      url,
       {
         module_id: moduleId,
         search_term: searchText,
@@ -78,6 +63,7 @@ export async function getFlatOntology(
       },
       {
         signal,
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
           "Cache-Control": "max-age=3600",
@@ -90,4 +76,4 @@ export async function getFlatOntology(
     console.error("Error fetching flat ontology:", error);
     return [null, (error as AxiosError)?.status ?? 0]; // Return null and error status
   }
-}
+};

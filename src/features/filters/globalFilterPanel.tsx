@@ -3,10 +3,10 @@
 
 import Card from "@components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
-import { ArrowButton } from "@components/ui/buttons/ArrowButton";
+import ArrowButton from "@components/ui/buttons/ArrowButton";
 import { useState } from "react";
-import { useGlobalFilterStore } from "@app/store/selectedCriteria/global-filter-store";
-import { useFilterValidationStore } from "@app/store/filter-validation-store";
+import useGlobalFilterStore from "@/app/store/global-filter-store";
+import useFilterValidationStore from "@app/store/filter-validation-store";
 import type { TimeRangeType } from "./controls/type";
 import { Button } from "@components/ui/buttons/Button";
 import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
@@ -21,10 +21,9 @@ type GlobalFilterPanelProps = {
   ) => Promise<void>;
 };
 
-export default function GlobalFilterPanel({
-  // onSetValidity,
+const GlobalFilterPanel = ({
   onHandleGlobalFilterChange,
-}: GlobalFilterPanelProps) {
+}: GlobalFilterPanelProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
   const updateGlobalFilter = useGlobalFilterStore((s) => s.updateGlobalFilter);
@@ -161,4 +160,6 @@ export default function GlobalFilterPanel({
       )}
     </div>
   );
-}
+};
+
+export default GlobalFilterPanel;

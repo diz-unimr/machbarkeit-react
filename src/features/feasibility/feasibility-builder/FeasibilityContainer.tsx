@@ -2,30 +2,36 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
+import download from "downloadjs";
 import Card from "@components/ui/Card";
 import type {
-  DropZone,
-  SelectedAttribute,
+  /* DropZone,
+  SelectedAttribute, */
   CriterionNode,
   SelectedCriteria,
   FeasibilityQueryData,
+  SelectedChoice,
 } from "./type";
 import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQueryControl";
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
 import GlobalFilterPanel, {
   type GlobalFilterName,
 } from "@features/filters/globalFilterPanel";
-import PopupModal from "@components/ui/PopupModal";
 import type { TimeRangeType } from "@features/filters/controls/type";
-import { useSelectedCriteriaStore } from "@app/store/selectedCriteria/selected-criteria-store";
-import { useGlobalFilterStore } from "@app/store/selectedCriteria/global-filter-store";
-import { useFilterValidationStore } from "@app/store/filter-validation-store";
+import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
+import useGlobalFilterStore from "@/app/store/global-filter-store";
+import useFilterValidationStore from "@app/store/filter-validation-store";
+import { TertiaryButton } from "@/components/ui/buttons/Button";
+import WarningModal from "../WarningModal";
+import SaveQueryModal from "../SaveQueryModal";
+import createQueryData from "@/app/utils/createQueryData";
+import convertToCriteriaDisplay from "@/app/utils/convertJsonToCriteriaDisplay";
 
-function FeasibilityContainer() {
+const FeasibilityContainer = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
     useState<boolean>(true);
   const [inclusionCriteria, setInclusionCriteria] = useState<SelectedCriteria>({
-    criteriaType: "inclusion",
+    criteriaType: "inclusionCriteria",
     criteria: [],
     logics: [],
   });
@@ -37,79 +43,59 @@ function FeasibilityContainer() {
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria
   );
-  const applyGlobalFilter = useSelectedCriteriaStore(
-    (s) => s.applyGlobalFilter
+  const setSelectedCriteria = useSelectedCriteriaStore(
+    (s) => s.setSelectedCriteria
+  );
+  const applyGlobalTimeRange = useSelectedCriteriaStore(
+    (s) => s.applyGlobalTimeRange
   );
   const { validityItems } = useFilterValidationStore();
   const { updateGlobalFilter } = useGlobalFilterStore();
-
-  const [feasibilityQueryData, setFeasibilityQueryData] =
-    useState<FeasibilityQueryData | null>(null);
-  // const [attributeList, setAttributeList] = useState<SelectedAttribute[]>([]);
-  // const [activeZone, setActiveZone] = useState<DropZone | null>(null);
-  const { globalFilter } = useGlobalFilterStore();
-  const [timeRangeDraft, setTimeRangeDraft] = useState<
-    TimeRangeType["timeRestriction"] | null
-  >(globalFilter.timeRange);
   const [completeFilter, setCompleteFilter] = useState<boolean>(true);
-  const [isGlobalFilterWarning, setIsGlobalFilterWarning] =
-    useState<boolean>(false);
-  const [hasGlobalFilterConflict, setHasGlobalFilterConflict] =
-    useState<boolean>(false);
+  const [hasAnyGlobalFilter, setHasAnyGlobalFilter] = useState<boolean>(false);
   const [warningModal, setWarningModal] = useState<{
     open: boolean;
-    resolver?: (ok: boolean) => void;
+    resolver?: (choice: SelectedChoice) => void;
   }>({ open: false });
 
-  /* const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
 
-    if (file.type !== "application/json") {
-      alert("Please select a JSON file.");
-      return;
-    }
+  const findTimeRangeConflicts = () => {
+    const criteria =
+      useSelectedCriteriaStore.getState().selectedInclusionCriteria.criteria;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const uploadedCriteria: FeasibilityQueryData = JSON.parse(
-          e.target?.result as string
-        );
-        const isJsonDataValid =
-          !!(
-            uploadedCriteria.inclusionCriteria &&
-            uploadedCriteria.inclusionCriteria!.length > 0
-          ) ||
-          (uploadedCriteria.exclusionCriteria &&
-            uploadedCriteria.exclusionCriteria!.length > 0);
-        if (isJsonDataValid) {
-          convertToCriteriaDisplay(uploadedCriteria);
-        } else {
-          alert("Invalid JSON Format");
-        }
-      } catch (error) {
-        alert((error as AxiosError).message);
-      }
-    };
-    reader.readAsText(file);
-  }; */
+    const hasAnyLocal = criteria.some(
+      (c) =>
+        c.criterion.timeRestrictionAllowed &&
+        c.criterion.timeRestriction?.isLocalFilter === true
+    );
+
+    const hasAnyGlobal = criteria.some(
+      (c) =>
+        c.criterion.timeRestrictionAllowed &&
+        (!c.criterion.timeRestriction ||
+          c.criterion.timeRestriction?.isLocalFilter === false)
+    );
+    setHasAnyGlobalFilter(hasAnyGlobal);
+    return hasAnyLocal;
+    /* const { selectedInclusionCriteria } = useSelectedCriteriaStore.getState();
+    return selectedInclusionCriteria.criteria.some((c) => {
+      const tr = c.criterion.timeRestriction;
+      if (!tr) return false;
+      const isLocal = tr.isLocalFilter === true;
+      return isLocal; // || diff;
+    }); */
+  };
+
+  const handleWarningChoice = (selectedChoice: SelectedChoice) => {
+    warningModal.resolver?.(selectedChoice);
+    setWarningModal({ open: false });
+  };
 
   const requestWarningConfirmation = () =>
-    new Promise<boolean>((resolve) => {
+    new Promise<SelectedChoice>((resolve) => {
       setWarningModal({ open: true, resolver: resolve });
     });
-
-  const handleConfirmWarning = () => {
-    warningModal.resolver?.(true);
-    setWarningModal({ open: false });
-  };
-
-  const handleCancelWarning = () => {
-    warningModal.resolver?.(false);
-    setWarningModal({ open: false });
-    setTimeRangeDraft(globalFilter.timeRange);
-  };
 
   const toggleCriterionItem = (criterion: CriterionNode) => {
     setInclusionCriteria((prev) => {
@@ -122,66 +108,43 @@ function FeasibilityContainer() {
     });
   };
 
-  const handleGlobalFilterChange = (
+  const handleGlobalFilterChange = async (
     filterName: GlobalFilterName,
-    value: string | (TimeRangeType["timeRestriction"] | null)
+    value: TimeRangeType["timeRestriction"] | null
   ) => {
-    updateGlobalFilter(filterName, value);
-  };
-
-  const handleGlobalFilterConflict = async (
-    hasConflict: boolean,
-    timeRange: TimeRangeType["timeRestriction"] | null
-  ) => {
-    setTimeRangeDraft(timeRange);
-    if (hasConflict) {
-      const ok = await requestWarningConfirmation();
-      if (!ok) return; // ผู้ใช้กด Cancel -> ออกทันที
+    // do not have any selectedInclusionCriteria
+    if (selectedInclusionCriteria.criteria.length === 0) {
+      updateGlobalFilter(filterName, value);
+      return;
     }
 
-    // เมื่อ isAnyLocalFilter = true ต้องการใช้มีป๊อปอัพเด้งขึ้นมาให้ผู้ใช้กดเลือก
-    // ถ้าผู้ใช้กดเลือก ok ถึงจะไปต่อในส่วนนี้ได้ ถ้ากด cancel ให้ออกจาก function นี้
-    updateGlobalFilter("timeRange", timeRange);
-    applyGlobalFilter("timeRange");
-  };
-
-  const applyGlobalTime = async (selectedCriteria: SelectedCriteria) => {
-    // check for overwrite global filter
-    const isAnyLocalFilter = selectedCriteria.criteria.some((c) => {
-      const current = c.criterion.timeRestriction;
-      const global = globalFilter.timeRange;
-
-      return (
-        current?.afterDate !== global?.afterDate &&
-        current?.beforeDate !== global?.beforeDate
-      );
-    });
-
-    setIsGlobalFilterWarning(isAnyLocalFilter);
-    if (isAnyLocalFilter) {
-      const ok = await requestWarningConfirmation();
-      if (!ok) return; // ผู้ใช้กด Cancel -> ออกทันที
+    const hasConflicts = findTimeRangeConflicts();
+    // do not have any conflicts
+    if (!hasConflicts) {
+      applyGlobalTimeRange(value, true);
+      updateGlobalFilter(filterName, value);
+      return;
     }
-    // เมื่อ isAnyLocalFilter = true ต้องการใช้มีป๊อปอัพเด้งขึ้นมาให้ผู้ใช้กดเลือก
-    // ถ้าผู้ใช้กดเลือก ok ถึงจะไปต่อในส่วนนี้ได้ ถ้ากด cancel ให้ออกจาก function นี้
-    /* return {
-      ...selectedCriteria,
-      criteria: selectedCriteria.criteria.map((c) =>
-        c.criterion.timeRestrictionAllowed
-          ? {
-              ...c,
-              criterion: {
-                ...c.criterion,
-                timeRestriction: globalFilter.timeRange ?? undefined,
-              },
-            }
-          : c
-      ),
-    }; */
+
+    // has some conflict
+    const choice = await requestWarningConfirmation();
+    if (choice === "cancel") return;
+
+    if (choice === "replace all") {
+      applyGlobalTimeRange(value, true);
+      updateGlobalFilter(filterName, value);
+      return;
+    }
+
+    if (choice === "replace global") {
+      applyGlobalTimeRange(value, false);
+      updateGlobalFilter(filterName, value);
+      return;
+    }
   };
 
   // drag Markmale into Einschlusskriterien and logic change
-  const handleCriteriaChange = ({
+  /* const handleCriteriaChange = ({
     items,
     isIndividualChange = false,
   }: {
@@ -203,7 +166,7 @@ function FeasibilityContainer() {
       })();
       return prev;
     });
-  };
+  }; */
 
   const removeCriterion = (uid: string) => {
     setInclusionCriteria((prev) => {
@@ -215,48 +178,71 @@ function FeasibilityContainer() {
           if (index === prev.criteria.length - 1) return i;
           else if (prev.logics[index - 1] === "OR") return i != index - 1;
           else return i != index;
-          /* if (index > 0 && prev.logics[index - 1] === "OR") {
-            return i != index - 1;
-          } else return i != index; */
         }),
       };
     });
   };
 
-  const handleFeasibilityQueryData = (data: SelectedCriteria) => {
-    const criteria = data.criteria.map((criterion) => {});
-    const queryData: FeasibilityQueryData = {
-      display: "Feasibility Query",
-      version: "1.0.0",
-    };
+  const parseAndValidateFile = async (
+    file: File
+  ): Promise<FeasibilityQueryData> => {
+    const text = await file.text();
+    const data = JSON.parse(text) as FeasibilityQueryData;
+
+    const isValid =
+      (data.inclusionCriteria && data.inclusionCriteria.length > 0) ||
+      (data.exclusionCriteria && data.exclusionCriteria.length > 0);
+
+    if (!isValid) {
+      throw new Error("Invalid JSON format");
+    }
+
+    return data;
   };
 
-  const convertToCriteriaDisplay = (x) => {};
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const uploadedCriteria: FeasibilityQueryData =
+        await parseAndValidateFile(file);
+      const inclusionCriteria =
+        await convertToCriteriaDisplay(uploadedCriteria);
+
+      if (inclusionCriteria) setSelectedCriteria(inclusionCriteria);
+    } catch (error) {
+      alert((error as Error).message);
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const saveQuery = (fileName: string) => {
+    const queryData = createQueryData();
+
+    if (!queryData) return;
+    // utf-8 encoder
+    const encoder = new TextEncoder();
+    const jsonString = JSON.stringify(queryData, null, 2);
+    const utf8JsonData = encoder.encode(jsonString);
+    download(utf8JsonData, fileName + ".json", "application/json");
+  };
 
   useEffect(() => {
-    console.log("UseEffect: ", validityItems);
     const allValid = validityItems.every((item) => item.isValid);
     if (allValid) setCompleteFilter(true);
     else setCompleteFilter(false);
   }, [validityItems]);
-  /* useEffect(() => {
-    console.log("Criteria from Store: ", selectedInclusionCriteria);
-    if (!globalFilter.timeRange) return;
-    setInclusionCriteria((prev) => {
-      (async () => {
-        const updated = await applyGlobalTime(prev);
-        if (updated) setInclusionCriteria(updated);
-      })();
-      return prev;
-    });
-  }, [globalFilter.timeRange, selectedInclusionCriteria]); */
 
   return (
     <>
       <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
         <FeasibilityQueryControl
           completeFilter={completeFilter}
-          data={feasibilityQueryData}
+          createQueryData={createQueryData}
         />
         <div
           id="feasibility-container"
@@ -269,12 +255,30 @@ function FeasibilityContainer() {
             <div className="flex justify-end items-center py-3 border-b-[1.5px] border-[var(--color-border)]">
               <menu className="flex gap-8 pr-5">
                 <li className="flex gap-7 m-auto">
-                  <div className="font-medium text-sm text-gray-500 cursor-pointer">
-                    Abfragen Laden
-                  </div>
-                  <div className="font-medium text-sm text-gray-500 cursor-pointer">
-                    Abfragen Speichen
-                  </div>
+                  {/* <TertiaryButton
+                    id="load-query-btn"
+                    label="Abfragen Laden"
+                    onClick={() => {}}
+                  /> */}
+                  <input
+                    id="upload"
+                    type="file"
+                    accept="application/json"
+                    hidden
+                    onChange={(e) => handleFileUpload(e)}
+                  />
+                  <label
+                    htmlFor="upload"
+                    className="flex text-sm font-medium text-gray-500 cursor-pointer hover:underline hover:text-gray-800"
+                  >
+                    ABFRAGE LADEN
+                  </label>
+                  <TertiaryButton
+                    id="save-query-btn"
+                    label="ABFRAGE SPEICHERN"
+                    isActive={completeFilter}
+                    onClick={() => setSaveModalOpen(true)}
+                  />
                 </li>
               </menu>
             </div>
@@ -282,7 +286,6 @@ function FeasibilityContainer() {
               <GlobalFilterPanel
                 // timeRangeValue={timeRangeDraft}
                 onHandleGlobalFilterChange={handleGlobalFilterChange}
-                // onConflict={handleGlobalFilterConflict}
               />
               <div className="flex-1 min-h-0">
                 {inclusionCriteria.criteria.map((c, i) => (
@@ -300,7 +303,6 @@ function FeasibilityContainer() {
                     setIsInclusionCriteriaOpen((prev) => !prev)
                   }
                   onToggleCriterionItem={toggleCriterionItem}
-                  onCriteriaChange={handleCriteriaChange}
                   onRemoveCriterion={removeCriterion}
                 />
               </div>
@@ -308,15 +310,21 @@ function FeasibilityContainer() {
           </Card>
         </div>
       </div>
-      <PopupModal
+      <WarningModal
         open={warningModal.open}
-        title="Global Filter Warning"
-        message="Auf Filter in allen Elemente ersetzen"
-        onConfirm={handleConfirmWarning}
-        onCancel={handleCancelWarning}
+        hasAnyGlobalFilter={hasAnyGlobalFilter}
+        onClick={(choice) => handleWarningChoice(choice)}
+      />
+      <SaveQueryModal
+        open={saveModalOpen}
+        onSaveFile={(fileName) => {
+          saveQuery(fileName);
+          setSaveModalOpen(false);
+        }}
+        onCancel={() => setSaveModalOpen(false)}
       />
     </>
   );
-}
+};
 
 export default FeasibilityContainer;

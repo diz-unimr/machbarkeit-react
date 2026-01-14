@@ -3,9 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import lodash from "lodash";
 
-export default function transformObjectKeys<T extends { children?: T[] }>(
-  data: T[]
-): T[] {
+const transformObjectKeys = <T extends { children?: T[] }>(data: T[]): T[] => {
   const response: T[] = data.map((obj: T) => {
     const transformedObj = lodash.mapKeys(obj, (_, key) =>
       lodash.camelCase(key)
@@ -18,4 +16,6 @@ export default function transformObjectKeys<T extends { children?: T[] }>(
     return transformedObj;
   });
   return response;
-}
+};
+
+export default transformObjectKeys;

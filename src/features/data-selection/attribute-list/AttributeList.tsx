@@ -6,20 +6,15 @@ import InputTextField from "@components/ui/inputs/InputTextField";
 import { type Attribute } from "@features/data-selection/attribute-list/type";
 import { useEffect, useState, type DragEvent } from "react";
 import TreePanel from "@features/data-selection/ontology-container/ontology/TreePanel";
-import { ArrowButton } from "@components/ui/buttons/ArrowButton";
+import ArrowButton from "@components/ui/buttons/ArrowButton";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 
-function AttributeList() {
+const AttributeList = () => {
   const [metadata, setMetadata] = useState<Attribute[]>([]);
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
   const [mouseOverIndex, setMouseOverIndex] = useState<number | null>(null);
-  const [checkboxItems, setCheckboxItem] = useState<Map<string, Attribute>>(
-    new Map()
-  );
 
   const moduleName = ["Diagnose", "Fall", "Labor", "Person"];
-
-  const keyOf = (a: Attribute) => a.kdsModule + "-" + a.attributeName;
 
   const [textInput, setTextInput] = useState<string>("");
 
@@ -35,17 +30,6 @@ function AttributeList() {
 
   const handleTextChange = (text: string) => {
     setTextInput(text);
-  };
-
-  const toggleCheckbox = (attribute: Attribute) => {
-    const key = keyOf(attribute);
-    setCheckboxItem((items) => {
-      const currentItems = new Map(items);
-      if (currentItems.has(key)) {
-        currentItems.delete(key);
-      } else currentItems.set(key, attribute);
-      return currentItems;
-    });
   };
 
   const getTooltipPosition = (index: number) => {
@@ -123,7 +107,7 @@ function AttributeList() {
                     <input
                       id={"id-" + attribute_index}
                       type="checkbox"
-                      onChange={() => toggleCheckbox(attribute)}
+                      onChange={() => {}} //toggleCheckbox() in store
                     />
                     <div className="flex flex-col">
                       <p
@@ -173,6 +157,6 @@ function AttributeList() {
       </Card> */}
     </section>
   );
-}
+};
 
 export default AttributeList;

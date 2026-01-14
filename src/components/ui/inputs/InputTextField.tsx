@@ -20,7 +20,7 @@ type InputTextFieldProp = {
   onClearText?: () => void;
 };
 
-function InputTextField({
+const InputTextField = ({
   id,
   label,
   value,
@@ -30,7 +30,7 @@ function InputTextField({
   className,
   onChange,
   onClearText = () => {},
-}: InputTextFieldProp) {
+}: InputTextFieldProp) => {
   const [isFocused, setIsFocused] = useState(false);
   const rootClassName = twMerge(
     "flex flex-col justify-center w-full relative px-1 my-2",
@@ -86,6 +86,6 @@ function InputTextField({
       </div>
     </>
   );
-}
+};
 
 export default InputTextField;

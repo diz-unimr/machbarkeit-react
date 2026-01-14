@@ -6,24 +6,24 @@ import { useEffect, useState } from "react";
 import {
   useSelectedCriteriaStore,
   type FilterType,
-} from "@app/store/selectedCriteria/selected-criteria-store";
-import { useGlobalFilterStore } from "@app/store/selectedCriteria/global-filter-store";
+} from "@/app/store/selected-criteria-store";
+import useGlobalFilterStore from "@/app/store/global-filter-store";
 import type { CriterionNode } from "./type";
 import ConceptOption from "@features/filters/controls/ConceptOption";
 import QuantityOption from "@features/filters/controls/QuantityOption";
 import TimeRangeOption from "@features/filters/controls/TimeRangeOption";
-import { Button } from "@components/ui/buttons/Button";
+import { Button, TertiaryButton } from "@components/ui/buttons/Button";
 import closeIcon from "@assets/close-icon.svg";
 import globalFilterIcon from "@assets/global-filter-icon.svg";
 import localFilterIcon from "@assets/local-filter-icon.svg";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type {
-  ConceptType,
+  /* ConceptType, */
   /* QuantityType, */
   TimeRangeType,
 } from "@features/filters/controls/type";
-import { useFilterValidationStore } from "@app/store/filter-validation-store";
+import useFilterValidationStore from "@app/store/filter-validation-store";
 
 type DragProps = {
   setNodeRef: (el: HTMLElement | null) => void;
@@ -37,12 +37,10 @@ type FeasibilityCriterionItemProps = {
   index: number;
   item: CriterionNode;
   logic?: string;
-  onToggleLogic: (index: number) => void;
-  onToggleExpand: (item: CriterionNode) => void;
   dragProps?: DragProps;
 };
 
-export default function FeasibilityCriterionItem({
+const FeasibilityCriterionItem = ({
   index,
   item,
   logic,
@@ -53,7 +51,7 @@ export default function FeasibilityCriterionItem({
     style: {},
     isDragging: false,
   },
-}: FeasibilityCriterionItemProps) {
+}: FeasibilityCriterionItemProps) => {
   const { removeCriterion, toggleLogic, updateCriterionFilter } =
     useSelectedCriteriaStore();
   const { globalFilter } = useGlobalFilterStore();
@@ -62,7 +60,12 @@ export default function FeasibilityCriterionItem({
   );
 
   const isOr = logic === "OR";
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [localFilter, setLocalFilter] = useState<
+    TimeRangeType["timeRestriction"] | null
+  >(null);
+  const [isExpanded, setIsExpanded] = useState<boolean>(
+    item.isExpanded ?? false
+  );
   const [isLocalFilter, setIsLocalFilter] = useState<boolean>(
     item.criterion.timeRestriction?.isLocalFilter ?? false
   );
@@ -71,7 +74,7 @@ export default function FeasibilityCriterionItem({
   );
   const [isLocalFilterEditing, setIsLocalFilterEditing] =
     useState<boolean>(false);
-  const [isFilterComplete, setIsFilterCompleted] = useState<boolean>(true);
+  const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
   const [currentTimeRestriction, setCurrentTimeRestriction] = useState<
     TimeRangeType["timeRestriction"] | null
   >(
@@ -79,13 +82,13 @@ export default function FeasibilityCriterionItem({
       ? item.criterion.timeRestriction
       : null
   );
-  const [timeRangeLabel, setTimeRangeLabel] = useState<string>("");
+  const [timeRangeLabel, setTimeRangeLabel] = useState<string | null>(null);
 
   const formatTimeRangeLabel = (
     filterValue: TimeRangeType["timeRestriction"] | null
   ) => {
-    if (!filterValue) return "Kein Filter";
-    console.log(filterValue);
+    if (!filterValue) return null;
+
     const after = filterValue.afterDate
       ? new Date(filterValue.afterDate)
       : null;
@@ -104,95 +107,41 @@ export default function FeasibilityCriterionItem({
 
     if (after && !before) return "Nach " + afterDate;
     if (before && !after) return "Vor " + beforeDate;
-    return "Kein Filter";
+
+    return null;
   };
 
-  const handleTimeRangeFilter = (timeRange: {
-    filterValue: TimeRangeType["timeRestriction"] | null;
-    isLocal?: boolean;
-  }) => {
-    console.log("filterValue: ", timeRange.filterValue);
-    const timeRangeValue = timeRange.filterValue
-      ? timeRange.filterValue
-      : { beforeDate: undefined, afterDate: undefined };
+  const handleTimeRangeFilter = (
+    timeRange: TimeRangeType["timeRestriction"] | null
+  ) => {
+    const timeRangeValue = timeRange || {
+      beforeDate: undefined,
+      afterDate: undefined,
+    };
 
     const filterInfo: FilterType = {
       uid: item.uid,
       filterType: "timeRangeType",
       filterValue: {
         ...timeRangeValue,
-        isLocalFilter: timeRange.isLocal ?? isLocalFilter,
+        isLocalFilter: timeRange ? timeRange.isLocalFilter : undefined,
       },
     };
     updateCriterionFilter(filterInfo);
   };
 
-  const handleConceptFilter = (
-    filterValue: ConceptType["valueFilter"] | null
-  ) => {
-    const filterInfo: FilterType = {
-      uid: item.uid,
-      filterType: "conceptType",
-      filterValue: filterValue,
-    };
-    updateCriterionFilter(filterInfo);
-    /* onChange({
-      items: (prev) => ({
-        ...prev,
-        criteria: prev.criteria.map((c) =>
-          c.uid === item.uid
-            ? {
-                ...c,
-                criterion: {
-                  ...c.criterion,
-                  valueFilter: filterValue ?? undefined,
-                },
-              }
-            : c
-        ),
-      }),
-    }); */
-  };
-
-  /* const handleQuantityFilter = (
-    filterValue: QuantityType["valueFilter"],
-    completeFilter: boolean
-  ) => {
-    if (!completeFilter) {
-      onChange({ items: null, completeFilter });
-      return;
-    }
-    onChange({
-      items: (prev) => ({
-        ...prev,
-        criteria: prev.criteria.map((c) =>
-          c.uid === item.uid
-            ? {
-                ...c,
-                criterion: {
-                  ...c.criterion,
-                  valueFilter: filterValue,
-                },
-              }
-            : c
-        ),
-      }),
-      completeFilter,
-    });
-  }; */
-
   useEffect(() => {
-    console.log("useEffect1");
     const itemTR = item.criterion.timeRestriction;
     const currentTR = currentTimeRestriction;
-    console.log(itemTR);
-    console.log(currentTR);
+
     if (
       itemTR?.afterDate === currentTR?.afterDate &&
       itemTR?.beforeDate === currentTR?.beforeDate
     )
       return;
     setCurrentTimeRestriction(itemTR ?? null);
+
+    setIsLocalFilter(itemTR?.isLocalFilter ?? isLocalFilter);
   }, [
     item.criterion.timeRestriction,
     item.criterion.timeRestriction?.afterDate,
@@ -200,13 +149,11 @@ export default function FeasibilityCriterionItem({
   ]);
 
   useEffect(() => {
-    console.log("useEffect2");
     setTimeRangeLabel(formatTimeRangeLabel(currentTimeRestriction));
   }, [currentTimeRestriction]);
 
   useEffect(() => {
-    console.log("useEffect3");
-    if (!item.criterion.timeRestriction?.isLocalFilter) {
+    if (!item.criterion.timeRestriction) {
       setCurrentTimeRestriction(globalFilter.timeRange);
     }
   }, [globalFilter.timeRange]);
@@ -241,32 +188,26 @@ export default function FeasibilityCriterionItem({
               <div
                 className={`flex w-full gap-3 hover:underline ${
                   isExpanded
-                    ? // item.isExpanded
-                      "pb-2 border-b-[1.5px] border-[var(--color-border)]"
+                    ? "pb-2 border-b-[1.5px] border-[var(--color-border)]"
                     : ""
                 }`}
               >
                 <p
-                  className="w-fit font-medium text-gray-800 whitespace-nowrap cursor-pointer"
+                  className="w-fit font-bold text-gray-800 whitespace-nowrap cursor-pointer"
                   onClick={() => setIsExpanded((prev) => !prev)}
                 >
                   {item.criterion.termCodes?.[0]?.code}
                 </p>
                 <p
                   className="w-fit font-normal text-gray-800 cursor-pointer"
-                  /* onClick={() =>
-                    toggleCriterionExpansion(item.uid, "inclusion")
-                  } */
                   onClick={() => setIsExpanded((prev) => !prev)}
                 >
                   {item.criterion.display}
                 </p>
               </div>
-              {!isExpanded ? (
+              {!isExpanded && isLocalFilterEditing ? (
                 <p className="p-1 bg-amber-300 text-red-500">
-                  {isLocalFilterEditing
-                    ? "Bitte bestätigen Sie das Filter!!"
-                    : "Error Message"}
+                  Bitte bestätigen Sie das Filter!!
                 </p>
               ) : null}
             </div>
@@ -278,7 +219,13 @@ export default function FeasibilityCriterionItem({
               {item.criterion.filterType === "concept" ? (
                 <ConceptOption
                   criterion={item.criterion}
-                  onChange={handleConceptFilter}
+                  onChange={(value) =>
+                    updateCriterionFilter({
+                      uid: item.uid,
+                      filterType: "conceptType",
+                      filterValue: value,
+                    })
+                  }
                 />
               ) : item.criterion.filterType === "quantity" ? (
                 <QuantityOption
@@ -288,24 +235,41 @@ export default function FeasibilityCriterionItem({
               ) : item.criterion.timeRestrictionAllowed ? (
                 <div className="flex flex-col gap-3">
                   {timeRangeLabel ? (
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 bg-[#ccddff]">
                       {!isLocalFilter && !currentTimeRestriction ? null : (
-                        <p className={`flex gap-2 px-2 py-1 text-xs rounded`}>
-                          {/* ${isLocalFilter ? "bg-red-200 text-red-800" : "bg-blue-200 text-blue-800"} */}
+                        <div
+                          className={`flex w-full gap-2 items-center justify-between px-2 py-1 text-xs rounded`}
+                        >
                           <span className="flex gap-2">
                             {isLocalFilter ? (
                               <>
                                 <img src={localFilterIcon} /> Lokaler Zeitraum:
+                                {!isLocalFilterEditing ? (
+                                  <span className="font-medium">
+                                    {timeRangeLabel}
+                                  </span>
+                                ) : null}
                               </>
                             ) : (
                               <>
                                 <img src={globalFilterIcon} /> Globaler
                                 Zeitraum:
+                                <span className="font-medium">
+                                  {timeRangeLabel}
+                                </span>
                               </>
                             )}
                           </span>
-                          <span className="font-medium">{timeRangeLabel}</span>
-                        </p>
+                          <TertiaryButton
+                            id={"delete-" + item.uid}
+                            label="Löschen"
+                            className="text-xs font-normal text-red-600 hover:text-red-500"
+                            onClick={() => {
+                              handleTimeRangeFilter(null);
+                              setIsLocalFilter(false);
+                            }}
+                          />
+                        </div>
                       )}
                     </div>
                   ) : null}
@@ -321,27 +285,34 @@ export default function FeasibilityCriterionItem({
                             }
                             onValidityChange={(isValid) => {
                               setIsFilterCompleted(isValid);
-                              updateValidityItem({
-                                id: item.uid,
-                                isValid,
+                              if (!isValid) {
+                                updateValidityItem({
+                                  id: item.uid,
+                                  isValid,
+                                });
+                              }
+                            }}
+                            onCompleteChange={(filterValue) => {
+                              setLocalFilter({
+                                ...filterValue,
+                                isLocalFilter: true,
                               });
                             }}
-                            onCompleteChange={(filterValue) =>
-                              handleTimeRangeFilter({
-                                ...filterValue,
-                                isLocal: true,
-                              })
-                            }
                           />
                           <Button
                             id={item.criterion.id + "-btn"}
                             label="Lokaler Filter bestätigen"
                             type="tertiary"
                             className="!m-0 !mt-2 text-white bg-[var(--btn-bg)] hover:text-[#213547]"
-                            isActive={isFilterComplete}
+                            isActive={isFilterCompleted}
                             onClick={() => {
                               setIsLocalFilterEditing((prev) => !prev);
                               setIsPrevLocalFilter(isLocalFilter);
+                              handleTimeRangeFilter(localFilter);
+                              updateValidityItem({
+                                id: item.uid,
+                                isValid: isFilterCompleted,
+                              });
                             }}
                           />
                         </>
@@ -351,9 +322,13 @@ export default function FeasibilityCriterionItem({
                           label="Lokaler Filter bearbeiten"
                           type="tertiary"
                           className="!m-0 !mt-2"
-                          onClick={() =>
-                            setIsLocalFilterEditing((prev) => !prev)
-                          }
+                          onClick={() => {
+                            setIsLocalFilterEditing((prev) => !prev);
+                            updateValidityItem({
+                              id: item.uid,
+                              isValid: false,
+                            });
+                          }}
                         />
                       )}
 
@@ -367,9 +342,13 @@ export default function FeasibilityCriterionItem({
                             setIsLocalFilterEditing(false);
                             setIsPrevLocalFilter(isLocalFilter);
                             setIsLocalFilter(false);
+                            updateValidityItem({
+                              id: item.uid,
+                              isValid: isFilterCompleted,
+                            });
                             handleTimeRangeFilter({
-                              filterValue: globalFilter.timeRange,
-                              isLocal: false,
+                              ...globalFilter.timeRange,
+                              isLocalFilter: false,
                             });
                           }}
                         />
@@ -387,9 +366,9 @@ export default function FeasibilityCriterionItem({
                           setIsPrevLocalFilter(isLocalFilter);
                           setIsLocalFilter((prev) => !prev);
                           setIsLocalFilterEditing((prev) => !prev);
-                          handleTimeRangeFilter({
-                            filterValue: null,
-                            isLocal: true,
+                          updateValidityItem({
+                            id: item.uid,
+                            isValid: false,
                           });
                         }}
                       />
@@ -409,7 +388,7 @@ export default function FeasibilityCriterionItem({
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
-                removeCriterion(index, item.uid, "inclusion");
+                removeCriterion(index, item.uid, "inclusionCriteria");
               }}
             >
               <img src={closeIcon} width="18px" />
@@ -438,4 +417,6 @@ export default function FeasibilityCriterionItem({
       ) : null}
     </div>
   );
-}
+};
+
+export default FeasibilityCriterionItem;

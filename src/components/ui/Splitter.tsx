@@ -13,11 +13,11 @@ type SplitterProps = {
   startLeftPercent?: number;
 };
 
-export default function Splitter({
+const Splitter = ({
   leftChild,
   rightChild,
   startLeftPercent = 50,
-}: SplitterProps) {
+}: SplitterProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isResizing = useRef<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
@@ -86,4 +86,5 @@ export default function Splitter({
       </div>
     </div>
   );
-}
+};
+export default Splitter;

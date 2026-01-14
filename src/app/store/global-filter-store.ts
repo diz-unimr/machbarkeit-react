@@ -2,7 +2,6 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import { useSelectedCriteriaStore } from "./selected-criteria-store";
 import type { TimeRangeType } from "@features/filters/controls/type";
 import type { GlobalFilterName } from "@features/filters/globalFilterPanel";
 
@@ -19,21 +18,7 @@ type GlobalFilterStore = {
   ) => void;
 };
 
-export const checkGlobalConflicts = (
-  filterValue: TimeRangeType["timeRestriction"] | null
-): boolean => {
-  const { selectedInclusionCriteria } = useSelectedCriteriaStore.getState();
-  const hasLocalFilter = selectedInclusionCriteria.criteria.some(
-    (c) =>
-      c.criterion.timeRestriction &&
-      (c.criterion.timeRestriction.isLocalFilter ||
-        c.criterion.timeRestriction?.afterDate !== filterValue?.afterDate ||
-        c.criterion.timeRestriction?.beforeDate !== filterValue?.beforeDate)
-  );
-  return hasLocalFilter;
-};
-
-export const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
+const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
   globalFilter: {
     timeRange: null,
     caseType: "no filter",
@@ -56,3 +41,5 @@ export const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
     });
   },
 }));
+
+export default useGlobalFilterStore;

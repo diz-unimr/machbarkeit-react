@@ -3,9 +3,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { TimeRangeType } from "@features/filters/controls/type";
 
-export default function formatTimeRangeLabel(
+const formatTimeRangeLabel = (
   filterValue: TimeRangeType["timeRestriction"] | null
-): React.ReactNode {
+): React.ReactNode => {
   if (!filterValue) return "Kein Filter";
   const after = filterValue.afterDate ? new Date(filterValue.afterDate) : null;
   const before = filterValue.beforeDate
@@ -29,4 +29,6 @@ export default function formatTimeRangeLabel(
   if (after && !before) return <p>Nach {afterDate}</p>;
   if (before && !after) return <p>Vor {beforeDate}</p>;
   return <p>Kein Filter</p>;
-}
+};
+
+export default formatTimeRangeLabel;

@@ -2,26 +2,22 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useCallback, useState, type DragEvent } from "react";
-import { useSelectedCriteriaStore } from "@app/store/selectedCriteria/selected-criteria-store";
+import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 import type { Criterion } from "@app/types/ontologyType";
 import type { DropZone, CriterionNode } from "../type";
+import generateId from "@/app/utils/generateUID";
 
-export function useCriteriaDnD(/* label: string */) {
+const useCriteriaDnD = () => {
   const { addNewCriteria } = useSelectedCriteriaStore();
   const [activeZone, setActiveZone] = useState<DropZone | null>(null);
 
-  const generateId = useCallback(
-    () =>
-      typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `drop-${Date.now()}-${Math.random()}`,
-    []
-  );
+  const uid = generateId();
 
   const dropZoneClasses = useCallback(
     (zone: DropZone) =>
-      `flex flex-col gap-3 min-h-[160px] border-2 border-dashed rounded-md px-4 py-5 transition-colors ${
+      /* min-h-[180px] */
+      `flex flex-col gap-3 border-2 border-dashed rounded-md px-4 py-5 transition-colors ${
         activeZone === zone
           ? "border-blue-500 bg-blue-50"
           : "border-[var(--color-border)] bg-white"
@@ -56,13 +52,13 @@ export function useCriteriaDnD(/* label: string */) {
         if (!data) return;
         const criterion = JSON.parse(data) as Criterion;
         const newCriterion: CriterionNode = {
-          uid: generateId(),
+          uid: uid,
           criterion,
           isExpanded: false,
         };
         addNewCriteria(newCriterion, zone);
       },
-    [addNewCriteria, generateId]
+    [addNewCriteria, uid]
   );
 
   const handleDragLeave = useCallback(
@@ -82,4 +78,6 @@ export function useCriteriaDnD(/* label: string */) {
     handleDragLeave,
     handleCriteriaDrop,
   };
-}
+};
+
+export default useCriteriaDnD;

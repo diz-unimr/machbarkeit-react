@@ -14,7 +14,7 @@ export type ButtonProp = {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
 
-export function Button({
+export const Button = ({
   id,
   type = "primary",
   label,
@@ -22,7 +22,7 @@ export function Button({
   color = undefined,
   isActive = true,
   onClick,
-}: ButtonProp) {
+}: ButtonProp) => {
   const baseClass =
     "!min-w-[80px] font-bold border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
 
@@ -66,39 +66,43 @@ export function Button({
       )}
     </button>
   );
-}
+};
 
-export function TertiaryButton({
+export const TertiaryButton = ({
   id,
   label,
+  isActive = true,
   className,
   onClick,
 }: {
   id: string;
   label: string;
+  isActive?: boolean;
   className?: string;
   onClick: () => void;
-}) {
+}) => {
   return (
     <span
+      role="button"
+      aria-disabled={isActive}
       id={id}
       onClick={onClick}
-      className={`flex text-sm font-medium text-gray-500 cursor-pointer hover:underline hover:text-gray-800 ${className}`}
+      className={`flex text-sm font-medium ${!isActive ? "cursor-not-allowed opacity-50 pointer-events-none" : "text-gray-500 cursor-pointer hover:underline hover:text-gray-800"}  ${className}`}
     >
       {label}
     </span>
   );
-}
+};
 
-export function SubmitButton({ className, ...props }: ButtonProp) {
+export const SubmitButton = ({ className, ...props }: ButtonProp) => {
   return <Button type="primary" className={className} {...props}></Button>;
-}
+};
 
-export function CancelButton({ className, ...props }: ButtonProp) {
+export const CancelButton = ({ className, ...props }: ButtonProp) => {
   return <Button type="secondary" className={className} {...props}></Button>;
-}
+};
 
-export function DeleteButton({ className, ...props }: ButtonProp) {
+export const DeleteButton = ({ className, ...props }: ButtonProp) => {
   return (
     <Button
       type="danger"
@@ -107,4 +111,4 @@ export function DeleteButton({ className, ...props }: ButtonProp) {
       {...props}
     ></Button>
   );
-}
+};

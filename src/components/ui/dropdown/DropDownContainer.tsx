@@ -16,7 +16,8 @@ type DropDownContainerProps = {
   onSelectOption: (option: OptionCode) => void;
   onSelectUnit?: (unit: string) => void;
 };
-export default function DropDownContainer({
+
+const DropDownContainer = ({
   id,
   children,
   selectedOption,
@@ -25,7 +26,7 @@ export default function DropDownContainer({
   size = "md",
   onSelectOption,
   onSelectUnit,
-}: DropDownContainerProps) {
+}: DropDownContainerProps) => {
   return (
     <div className="flex items-center gap-3 pt-1.5 overflow-x-auto">
       <DropDown
@@ -49,4 +50,5 @@ export default function DropDownContainer({
       </div>
     </div>
   );
-}
+};
+export default DropDownContainer;

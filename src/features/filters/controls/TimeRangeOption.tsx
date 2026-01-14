@@ -25,13 +25,13 @@ type TimeRangeOptionProps = {
   ) => void;
 };
 
-export default function TimeRangeOption({
+const TimeRangeOption = ({
   id,
   size = "md",
-  timeRestrictionData = null, // nur zur Initialisierung und wenn LocalFilter = true
+  timeRestrictionData = null,
   onValidityChange,
   onCompleteChange,
-}: TimeRangeOptionProps) {
+}: TimeRangeOptionProps) => {
   const syncSelectedOption = (
     next: TimeRangeType["timeRestriction"] | null
   ) => {
@@ -139,12 +139,6 @@ export default function TimeRangeOption({
     }
   };
 
-  /* const convertJsonToTimeRange = (jsonObject: SelectedDate) => {
-    if (jsonObject.afterDate) {
-
-    }
-  }; */
-
   const IsBetweenValid = (
     selectedDate: SelectedDate,
     selectedOption: string
@@ -171,6 +165,7 @@ export default function TimeRangeOption({
     let isValid: boolean = true;
     switch (selectedOption) {
       case "no filter": {
+        isValid = false;
         timeRestriction = null;
         break;
       }
@@ -227,81 +222,15 @@ export default function TimeRangeOption({
     return { timeRestriction, isValid };
   };
 
-  /* const syncTimeRestrictionData = (
-    next: TimeRangeType["timeRestriction"] | null
-  ) => {
-    if (!next) {
-      setSelectedOption("no filter");
-      setSelectedDate({
-        afterDate: undefined,
-        beforeDate: undefined,
-      });
-      return;
-    }
-    let option: OptionCode = "no filter";
-    const hasAfter = !!next.afterDate;
-    const hasBefore = !!next.beforeDate;
-
-    if (hasAfter && hasBefore) {
-      option = next.afterDate === next.beforeDate ? "at" : "between";
-    } else if (hasAfter) {
-      option = "after";
-    } else if (hasBefore) {
-      option = "before";
-    }
-    const sameOption = selectedOption === option;
-    const sameDate =
-      selectedDate.afterDate === next.afterDate &&
-      selectedDate.beforeDate === next.beforeDate;
-
-    if (!sameOption) setSelectedOption(option);
-    if (!sameDate)
-      setSelectedDate({
-        afterDate: next.afterDate,
-        beforeDate: next.beforeDate,
-      });
-  }; */
-
-  /* useEffect(() => {
-    // if (!timeRestrictionData) return;
-    syncTimeRestrictionData(timeRestrictionData);
-  }, []); */
-
   useEffect(() => {
     const { timeRestriction, isValid } = handleTimeRange(
       selectedDate,
       selectedOption
     );
-    // setIsFilterCompleted(isValid);
+
     onValidityChange(isValid);
     if (isValid) onCompleteChange(timeRestriction);
   }, [selectedDate, selectedOption]);
-
-  /* useEffect(() => {
-    const next = handleTimeRange(selectedDate, selectedOption);
-    const same =
-      (next?.afterDate ?? null) === (timeRestrictionData?.afterDate ?? null) &&
-      (next?.beforeDate ?? null) === (timeRestrictionData?.beforeDate ?? null);
-
-    if (same) return; // กันยิงซ้ำค่าเดิมที่ทำให้วนลูป
-
-    if (!timeRestrictionData) {
-      setSelectedOption("no filter");
-      setSelectedDate({ afterDate: "", beforeDate: "" });
-      return;
-    }
-    const { afterDate, beforeDate } = timeRestrictionData;
-    if (afterDate && beforeDate) {
-      setSelectedOption(afterDate === beforeDate ? "at" : "between");
-      setSelectedDate({ afterDate, beforeDate });
-    } else if (afterDate) {
-      setSelectedOption("after");
-      setSelectedDate({ afterDate, beforeDate: "" });
-    } else if (beforeDate) {
-      setSelectedOption("before");
-      setSelectedDate({ afterDate: "", beforeDate });
-    }
-  }, [timeRestrictionData]); */
 
   return (
     <div className="flex flex-col overflow-x-auto">
@@ -319,4 +248,6 @@ export default function TimeRangeOption({
       ) : null}
     </div>
   );
-}
+};
+
+export default TimeRangeOption;

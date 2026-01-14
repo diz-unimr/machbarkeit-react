@@ -9,7 +9,7 @@ type ModulesPanelProps = {
   onHandleModules: (activeModule: Module | null) => void;
 };
 
-export const ModulesPanel = ({ onHandleModules }: ModulesPanelProps) => {
+const ModulesPanel = ({ onHandleModules }: ModulesPanelProps) => {
   const [currentModule, setCurrentModule] = useState<Module | null>(null);
   const modules = useModules();
 
@@ -50,3 +50,4 @@ export const ModulesPanel = ({ onHandleModules }: ModulesPanelProps) => {
     </div>
   );
 };
+export default ModulesPanel;

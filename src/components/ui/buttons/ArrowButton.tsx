@@ -14,7 +14,7 @@ type ArrowButtonProp = {
   onClick?: () => void;
 };
 
-export function ArrowButton({
+const ArrowButton = ({
   id,
   image = accordionArrow,
   width = "14",
@@ -23,7 +23,7 @@ export function ArrowButton({
   isExpanded,
   hasChildren = true,
   onClick,
-}: ArrowButtonProp) {
+}: ArrowButtonProp) => {
   return (
     <button
       disabled={!hasChildren}
@@ -52,4 +52,6 @@ export function ArrowButton({
       />
     </button>
   );
-}
+};
+
+export default ArrowButton;

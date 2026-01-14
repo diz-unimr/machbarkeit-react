@@ -3,16 +3,18 @@
 
 import axios, { type AxiosResponse, AxiosError } from "axios";
 import type { Module } from "@app/types/ontologyType";
-import { getTabColor } from "@app/utils/moduleUtils";
-import { API_MODULES_URL } from "@app/constants/appConfig";
+import { getModuleColor } from "@app/utils/moduleUtils";
 import lodash from "lodash";
 
-export default async function getModules(): Promise<Module[] | null> {
+const getModules = async (): Promise<Module[] | null> => {
   try {
-    const apiResponse: AxiosResponse = await axios.get(API_MODULES_URL);
+    const url = `${import.meta.env.VITE_BACKEND_API_BASE}/mdr/ontology/modules`;
+    const apiResponse: AxiosResponse = await axios.get(url, {
+      withCredentials: true,
+    });
     const modules: Module[] = apiResponse.data.map((m: Module) => {
       const module = lodash.mapKeys(m, (_, key) => lodash.camelCase(key));
-      module.color = getTabColor(m.name);
+      module.color = getModuleColor(module["fdpgCdsCode"] as string);
       return module;
     });
     return modules;
@@ -21,7 +23,9 @@ export default async function getModules(): Promise<Module[] | null> {
     alert((error as AxiosError).message);
     return null;
   }
-}
+};
+
+export default getModules;
 
 /* 
 	[User clicks "Load Merkmale"]

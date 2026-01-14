@@ -9,7 +9,7 @@ import type {
 import type { Attribute } from "@features/data-selection/attribute-list/type";
 import type { Criterion } from "@app/types/ontologyType";
 
-export type DropZone = "inclusion" | "exclusion" | "attribute";
+export type DropZone = "inclusionCriteria" | "exclusionCriteria" | "attribute";
 
 export type SelectedAttribute = {
   uid: string;
@@ -24,7 +24,7 @@ export type CriterionNode = {
 
 export type SelectedChoice = "replace all" | "replace global" | "cancel";
 
-type LogicOperator = "AND" | "OR";
+export type LogicOperator = "AND" | "OR";
 
 export type SelectedCriteria = {
   criteriaType: string;

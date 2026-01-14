@@ -15,7 +15,7 @@ type CardProp = {
   children: ReactNode;
 };
 
-export default function Card({
+const Card = ({
   header,
   className,
   headerClassName,
@@ -24,7 +24,7 @@ export default function Card({
   height,
   extra,
   children,
-}: CardProp) {
+}: CardProp) => {
   const ref = useRef<HTMLDivElement>(null);
   const scrollHeight = (ref.current?.scrollHeight || 0) + 20;
   return (
@@ -64,4 +64,5 @@ export default function Card({
       </div>
     </div>
   );
-}
+};
+export default Card;

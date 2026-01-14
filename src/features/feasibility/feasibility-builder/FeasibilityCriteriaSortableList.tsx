@@ -1,6 +1,6 @@
 import type { CriterionNode, SelectedCriteria } from "./type";
 import FeasibilityCriterionItem from "./FeasibilityCriterionItem";
-import { useSelectedCriteriaStore } from "@app/store/selectedCriteria/selected-criteria-store";
+import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import {
   DndContext,
   closestCenter,
@@ -22,30 +22,16 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
 
-function SortableCriterion({
+const SortableCriterion = ({
   item,
   index,
   logic,
-  onToggleLogic,
-  onToggleExpand,
-  onChange,
 }: {
   item: CriterionNode;
   index: number;
   logic?: string;
-  onToggleLogic: (index: number) => void;
-  onToggleExpand: (item: CriterionNode) => void;
-  onChange: ({
-    items,
-    isIndividualChange,
-    completeFilter,
-  }: {
-    items: React.SetStateAction<SelectedCriteria> | null;
-    isIndividualChange?: boolean;
-    completeFilter?: boolean;
-  }) => void;
   onRemove: (uid: string) => void;
-}) {
+}) => {
   const {
     attributes,
     listeners,
@@ -66,35 +52,18 @@ function SortableCriterion({
       index={index}
       item={item}
       logic={logic}
-      onToggleLogic={onToggleLogic}
-      onToggleExpand={onToggleExpand}
-      onChange={onChange}
       dragProps={{ attributes, listeners, setNodeRef, style, isDragging }}
     />
   );
-}
+};
 
-export default function FeasibilityCriteriaSortableList({
+const FeasibilityCriteriaSortableList = ({
   selectedCriteria,
-  onChange,
-  onToggleLogic,
-  onToggleExpand,
   onRemove,
 }: {
   selectedCriteria: SelectedCriteria;
-  onChange: ({
-    items,
-    isIndividualChange,
-    completeFilter,
-  }: {
-    items: React.SetStateAction<SelectedCriteria> | null;
-    isIndividualChange?: boolean;
-    completeFilter?: boolean;
-  }) => void;
-  onToggleLogic: (index: number) => void;
-  onToggleExpand: (item: CriterionNode) => void;
   onRemove: (uid: string) => void;
-}) {
+}) => {
   const { reOrderCriteria } = useSelectedCriteriaStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(
@@ -118,7 +87,7 @@ export default function FeasibilityCriteriaSortableList({
         setActiveId(null);
         if (!over || active.id === over.id) return;
         // reorder
-        reOrderCriteria(active, over, "inclusion");
+        reOrderCriteria(active, over, "inclusionCriteria");
       }}
     >
       <SortableContext
@@ -136,9 +105,6 @@ export default function FeasibilityCriteriaSortableList({
                   : undefined
               }
               index={idx}
-              onToggleLogic={onToggleLogic}
-              onToggleExpand={onToggleExpand}
-              onChange={onChange}
               onRemove={onRemove}
             />
           ))}
@@ -152,12 +118,11 @@ export default function FeasibilityCriteriaSortableList({
               (i) => i.uid === activeItem.uid
             )}
             item={activeItem}
-            onToggleLogic={onToggleLogic}
-            onToggleExpand={onToggleExpand}
-            onChange={onChange}
           />
         ) : null}
       </DragOverlay>
     </DndContext>
   );
-}
+};
+
+export default FeasibilityCriteriaSortableList;

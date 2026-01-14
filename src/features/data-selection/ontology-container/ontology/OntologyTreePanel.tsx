@@ -3,8 +3,6 @@
 
 import TreePanel from "./TreePanel";
 import TreeNode from "./TreeNode";
-import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
-import { CancelButton, SubmitButton } from "@components/ui/buttons/Button";
 import { type Criterion, type Module } from "@app/types/ontologyType";
 import { useEffect, useState } from "react";
 import useOntology from "@app/hooks/useOntology";
@@ -15,8 +13,7 @@ type OntologyTreePanelProps = {
   onClick: (criteria: Criterion[] | null) => void;
 };
 
-function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
-  const [selectedCriteria, setSelectedCriteria] = useState<Criterion[]>([]);
+const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
   const [textInput, setTextInput] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const { ontologyResult, isLoading } = useOntology(
@@ -31,14 +28,6 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
     );
     return () => clearTimeout(handler);
   }, [textInput]);
-
-  const handleCheckboxChange = (isChecked: boolean, criterion: Criterion) => {
-    if (isChecked) {
-      setSelectedCriteria((prev) => [...prev, criterion]);
-    } else {
-      setSelectedCriteria((prev) => prev.filter((c) => c.id !== criterion.id));
-    }
-  };
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -69,7 +58,12 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
               </div>
             ) : (
               <>
-                <p className="text-lg font-bold">{activeModule?.name}</p>
+                <p
+                  className="text-lg font-bold"
+                  style={{ color: activeModule?.color.btnColor }}
+                >
+                  {activeModule?.name}
+                </p>
                 <div className="flex-1 min-h-0 overflow-hidden">
                   <TreePanel>
                     {activeModule &&
@@ -78,7 +72,6 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
                         <TreeNode
                           key={criterion.id}
                           criterion={criterion}
-                          onCheckbox={handleCheckboxChange}
                           searchTerm={debouncedSearch}
                         />
                       ))}
@@ -89,26 +82,8 @@ function OntologyTreePanel({ activeModule, onClick }: OntologyTreePanelProps) {
           ) : undefined}
         </div>
       </div>
-      {/* <ButtonContainer bgContainer={activeModule?.color.btnColor}>
-        <CancelButton
-          id="cancel"
-          label="ABBRECHEN"
-          color="white"
-          isActive={true}
-          className="text-white hover:text-black"
-          onClick={() => onClick(null)}
-        />
-        <SubmitButton
-          id="submit"
-          label="AUSWÄHLEN"
-          color="white"
-          isActive={selectedCriteria.length > 0}
-          className="text-black"
-          onClick={() => onClick(selectedCriteria)}
-        />
-      </ButtonContainer> */}
     </div>
   );
-}
+};
 
 export default OntologyTreePanel;

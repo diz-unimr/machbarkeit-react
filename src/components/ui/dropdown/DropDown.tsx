@@ -12,13 +12,14 @@ type DropDownProps = {
   options: DropDownOption[] | null;
   onSelect: (selectedValue: OptionCode) => void;
 };
-export default function DropDown({
+
+const DropDown = ({
   id,
   size = "md",
   selectedOption = "no filter",
   options,
   onSelect,
-}: DropDownProps) {
+}: DropDownProps) => {
   const [selectedValue, setSelectedValue] =
     useState<OptionCode>(selectedOption);
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -49,4 +50,5 @@ export default function DropDown({
       </div>
     </div>
   );
-}
+};
+export default DropDown;

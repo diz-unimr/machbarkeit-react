@@ -14,22 +14,20 @@ type FilterValidationStore = {
   deleteItem: (id: string) => void;
 };
 
-export const useFilterValidationStore = create<FilterValidationStore>(
-  (set) => ({
-    validityItems: [],
-    updateValidityItem: (newItem) => {
-      set((state) => ({
-        validityItems: state.validityItems.some(
-          (item) => item.id === newItem.id
-        )
-          ? state.validityItems.map((i) => (i.id === newItem.id ? newItem : i))
-          : [...state.validityItems, newItem],
-      }));
-    },
-    deleteItem: (id) => {
-      set((state) => ({
-        validityItems: state.validityItems.filter((item) => item.id !== id),
-      }));
-    },
-  })
-);
+const useFilterValidationStore = create<FilterValidationStore>((set) => ({
+  validityItems: [],
+  updateValidityItem: (newItem) => {
+    set((state) => ({
+      validityItems: state.validityItems.some((item) => item.id === newItem.id)
+        ? state.validityItems.map((i) => (i.id === newItem.id ? newItem : i))
+        : [...state.validityItems, newItem],
+    }));
+  },
+  deleteItem: (id) => {
+    set((state) => ({
+      validityItems: state.validityItems.filter((item) => item.id !== id),
+    }));
+  },
+}));
+
+export default useFilterValidationStore;

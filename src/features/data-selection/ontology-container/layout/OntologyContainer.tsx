@@ -2,7 +2,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import { ModulesPanel } from "../modules/ModulesPanel";
+import ModulesPanel from "../modules/ModulesPanel";
 import type { Module } from "@app/types/ontologyType";
 import OntologyTreePanel from "../ontology/OntologyTreePanel";
 
@@ -11,25 +11,15 @@ type OntologyContainerProps = {
   isOntologyContainerOpen: boolean;
 };
 
-export default function OntologyContainer({
+const OntologyContainer = ({
   isOntologyContainerOpen,
-}: OntologyContainerProps) {
+}: OntologyContainerProps) => {
   const [activeModule, setActiveModule] = useState<Module | null>(null);
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      {" "}
-      {/* border-b-[2px] border-[var(--color-border)] */}
       <div className="flex justify-between px-4 py-3">
         <p className="font-medium">Merkmale</p>
-        {/* <ArrowButton
-          id="characteristic-btn"
-          image={accordionArrow}
-          mode="rotate-left"
-          width="28"
-          isExpanded={isOntologyContainerOpen}
-          onClick={onSetPanelStatus}
-        /> */}
       </div>
       <div
         className="flex flex-col w-full flex-1 min-h-0 p-2 pb-3"
@@ -44,4 +34,5 @@ export default function OntologyContainer({
       </div>
     </div>
   );
-}
+};
+export default OntologyContainer;

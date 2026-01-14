@@ -3,10 +3,10 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect } from "react";
-import { useModulesStore } from "@app/store/modules-store";
+import useModulesStore from "@app/store/modules-store";
 import getModules from "@app/services/moduleService";
 
-export default function useModules() {
+const useModules = () => {
   const { modules, setModules } = useModulesStore();
 
   useEffect(() => {
@@ -18,4 +18,6 @@ export default function useModules() {
   }, []);
 
   return modules;
-}
+};
+
+export default useModules;

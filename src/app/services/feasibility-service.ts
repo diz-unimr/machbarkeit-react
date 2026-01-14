@@ -4,10 +4,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import axios, { AxiosError, type AxiosResponse } from "axios";
 import type { FeasibilityQueryData } from "@features/feasibility/feasibility-builder/type";
 
-export async function feasibilityQuery(
+const feasibilityQuery = async (
   data: FeasibilityQueryData,
   abortController: AbortController
-): Promise<[number | null, string | null]> {
+): Promise<[number | null, string | null]> => {
   let numberOfPatients: number | null = null;
   let errorMessage: string | null = null;
 
@@ -27,7 +27,6 @@ export async function feasibilityQuery(
     if (response.status === 202) {
       // check location header
       const poll = response.headers.location;
-
       // numberOfPatients =
       numberOfPatients = await new Promise((resolve, reject) => {
         const intervalId = setInterval(async () => {
@@ -40,11 +39,9 @@ export async function feasibilityQuery(
                 return status < 400 || status === 404;
               },
             });
-
             // 404 => not yet ready
             if (r.status === 200) {
               clearInterval(intervalId);
-
               // result: parse response
               if (r && String(r.data)) {
                 resolve(r.data);
@@ -70,4 +67,6 @@ export async function feasibilityQuery(
     }
   }
   return [numberOfPatients, errorMessage];
-}
+};
+
+export default feasibilityQuery;
