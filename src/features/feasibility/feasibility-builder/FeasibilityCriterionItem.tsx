@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import { useEffect, useState } from "react";
 import {
   useSelectedCriteriaStore,
-  type FilterType,
+  type FilterProps,
 } from "@/app/store/selected-criteria-store";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import type { CriterionNode } from "./type";
@@ -119,9 +119,9 @@ const FeasibilityCriterionItem = ({
       afterDate: undefined,
     };
 
-    const filterInfo: FilterType = {
+    const filterInfo: FilterProps = {
       uid: item.uid,
-      filterType: "timeRangeType",
+      filterType: "timeRange",
       filterValue: {
         ...timeRangeValue,
         isLocalFilter: timeRange ? timeRange.isLocalFilter : undefined,
@@ -188,7 +188,7 @@ const FeasibilityCriterionItem = ({
               <div
                 className={`flex w-full gap-3 hover:underline ${
                   isExpanded
-                    ? "pb-2 border-b-[1.5px] border-[var(--color-border)]"
+                    ? "pb-2 border-b-[1.5px] border-(--color-border)"
                     : ""
                 }`}
               >
@@ -222,7 +222,7 @@ const FeasibilityCriterionItem = ({
                   onChange={(value) =>
                     updateCriterionFilter({
                       uid: item.uid,
-                      filterType: "conceptType",
+                      filterType: "concept",
                       filterValue: value,
                     })
                   }
@@ -303,7 +303,7 @@ const FeasibilityCriterionItem = ({
                             id={item.criterion.id + "-btn"}
                             label="Lokaler Filter bestätigen"
                             type="tertiary"
-                            className="!m-0 !mt-2 text-white bg-[var(--btn-bg)] hover:text-[#213547]"
+                            className="m-0! mt-2! text-white bg-(--btn-bg) hover:text-[#213547]"
                             isActive={isFilterCompleted}
                             onClick={() => {
                               setIsLocalFilterEditing((prev) => !prev);
@@ -321,7 +321,7 @@ const FeasibilityCriterionItem = ({
                           id={item.criterion.id + "-btn"}
                           label="Lokaler Filter bearbeiten"
                           type="tertiary"
-                          className="!m-0 !mt-2"
+                          className="m-0! mt-2!"
                           onClick={() => {
                             setIsLocalFilterEditing((prev) => !prev);
                             updateValidityItem({
@@ -337,7 +337,7 @@ const FeasibilityCriterionItem = ({
                           id={item.criterion.id + "-btn"}
                           label="Auf Globalfilter zurücksetzen"
                           type="tertiary"
-                          className="!m-0 !mt-2"
+                          className="m-0! mt-2!"
                           onClick={() => {
                             setIsLocalFilterEditing(false);
                             setIsPrevLocalFilter(isLocalFilter);
@@ -361,7 +361,7 @@ const FeasibilityCriterionItem = ({
                         id={item.criterion.id + "-btn"}
                         label="Lokaler Filter setzen"
                         type="tertiary"
-                        className="!m-0 !mt-2"
+                        className="m-0! mt-2!"
                         onClick={() => {
                           setIsPrevLocalFilter(isLocalFilter);
                           setIsLocalFilter((prev) => !prev);
@@ -384,7 +384,7 @@ const FeasibilityCriterionItem = ({
           >
             <button
               type="button"
-              className="!m-0 !p-0"
+              className="m-0! p-0!"
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
@@ -398,7 +398,7 @@ const FeasibilityCriterionItem = ({
       </li>
       {logic ? (
         <div
-          className={`z-[100] pt-2 ${isOr ? "absolute -translate-y-1/2" : "flex relative"}`}
+          className={`z-100 pt-2 ${isOr ? "absolute -translate-y-1/2" : "flex relative"}`}
         >
           <button
             key={"logic-" + index}

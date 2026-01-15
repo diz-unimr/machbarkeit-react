@@ -36,7 +36,9 @@ export type QueryCriterion = {
   id: Criterion["id"];
   termCodes: Criterion["termCodes"];
   context: Criterion["context"];
-} & Partial<ConceptType | QuantityType | TimeRangeType>;
+  valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
+  timeRestriction?: TimeRangeType["timeRestriction"];
+};
 
 export type FeasibilityQueryData = {
   version: string;

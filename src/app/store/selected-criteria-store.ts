@@ -18,20 +18,20 @@ import type {
 import useGlobalFilterStore from "./global-filter-store";
 import useFilterValidationStore from "./filter-validation-store";
 
-export type FilterType =
+export type FilterProps =
   | {
       uid: string;
-      filterType: "conceptType";
+      filterType: "concept";
       filterValue: ConceptType["valueFilter"] | null;
     }
   | {
       uid: string;
-      filterType: "quantityType";
+      filterType: "quantity";
       filterValue: QuantityType["valueFilter"] | null;
     }
   | {
       uid: string;
-      filterType: "timeRangeType";
+      filterType: "timeRange";
       filterValue: TimeRangeType["timeRestriction"] | null;
     };
 
@@ -40,7 +40,7 @@ type selectedCriteriaStore = {
   selectedExclusionCriteria: SelectedCriteria;
   addNewCriteria: (newCriterion: CriterionNode, zone: DropZone) => void;
   removeCriterion: (idex: number, uid: string, zone: string) => void;
-  updateCriterionFilter: (filterInfo: FilterType | null) => void;
+  updateCriterionFilter: (filterInfo: FilterProps | null) => void;
   // applyGlobalFilter: (filterName: "timeRange") => void;
   applyGlobalTimeRange: (
     next: TimeRangeType["timeRestriction"] | null,
@@ -156,8 +156,8 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       set((state) => {
         const selectedCriteria = state.selectedInclusionCriteria;
         switch (filterInfo?.filterType) {
-          case "conceptType":
-          case "quantityType":
+          case "concept":
+          case "quantity":
             return {
               selectedInclusionCriteria: {
                 ...selectedCriteria,
@@ -174,7 +174,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
                 ),
               },
             };
-          case "timeRangeType": {
+          case "timeRange": {
             const updatedCriteria: SelectedCriteria = {
               ...selectedCriteria,
               criteria: selectedCriteria.criteria.map((c) =>

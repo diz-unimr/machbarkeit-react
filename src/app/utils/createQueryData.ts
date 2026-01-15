@@ -9,7 +9,7 @@ import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import setCriterionContext from "./setCriterionContext";
 import type {
   ConceptType,
-  /* QuantityType, */
+  QuantityType,
 } from "@/features/filters/controls/type";
 
 const createQueryData = (): FeasibilityQueryData | null => {
@@ -52,11 +52,13 @@ const createQueryData = (): FeasibilityQueryData | null => {
       termCodes: criteriaWithContext[i + 1].criterion.termCodes,
       context: criteriaWithContext[i + 1].criterion.context,
       valueFilter:
-        (
-          criteriaWithContext[i + 1].criterion
-            .valueFilter as ConceptType["valueFilter"]
-        )?.selectedConcepts ??
-        undefined /* (criteriaWithContext[0].criterion.valueFilter as QuantityType["valueFilter"]) */,
+        criteriaWithContext[i + 1].criterion.filterType === "concept"
+          ? (criteriaWithContext[i + 1].criterion
+              .valueFilter as ConceptType["valueFilter"])
+          : criteriaWithContext[i + 1].criterion.filterType === "quantity"
+            ? (criteriaWithContext[0].criterion
+                .valueFilter as QuantityType["valueFilter"])
+            : undefined,
       timeRestriction: criteriaWithContext[i + 1].criterion
         .timeRestrictionAllowed
         ? criteriaWithContext[i + 1].criterion.timeRestriction

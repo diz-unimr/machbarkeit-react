@@ -21,6 +21,8 @@ export type Module = {
   color: ModuleColorProps;
 };
 
+export type FilterType = "concept" | "quantity";
+
 export type Criterion = {
   children?: Criterion[];
   id: string;
@@ -43,7 +45,7 @@ export type Criterion = {
   leaf: boolean;
   timeRestrictionAllowed?: boolean | null;
   filterName?: string;
-  filterType: string | null;
+  filterType: FilterType | null;
   filterOptions:
     | {
         code: string;
