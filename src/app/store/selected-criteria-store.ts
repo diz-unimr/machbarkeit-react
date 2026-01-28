@@ -44,11 +44,12 @@ type selectedCriteriaStore = {
   // applyGlobalFilter: (filterName: "timeRange") => void;
   applyGlobalTimeRange: (
     next: TimeRangeType["timeRestriction"] | null,
-    includeLocal: boolean
+    includeLocal: boolean,
   ) => void;
   toggleLogic: (logicIndex: number) => void;
   reOrderCriteria: (active: Active, over: Over, zone: string) => void;
   setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
+  clearSelectedCriteria: () => void;
 };
 
 export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
@@ -66,6 +67,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
     addNewCriteria: (newCriterion, zone) => {
       set((state) => {
         const { globalFilter } = useGlobalFilterStore.getState();
+        const { updateValidityItem } = useFilterValidationStore.getState();
         const nextCriteria = [
           ...state.selectedInclusionCriteria.criteria,
           newCriterion.criterion.timeRestrictionAllowed &&
@@ -87,6 +89,11 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
                 "AND" as LogicOperator,
               ]
             : [];
+
+        updateValidityItem({
+          id: newCriterion.uid,
+          isValid: true,
+        });
 
         if (zone === "inclusionCriteria") {
           return {
@@ -114,10 +121,10 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
 
     removeCriterion: (index, uid, zone) => {
       set((state) => {
-        const { deleteItem } = useFilterValidationStore.getState();
+        const { deleteValidityItem } = useFilterValidationStore.getState();
         const currentCriteria = state.selectedInclusionCriteria;
         const nextCriteria = currentCriteria.criteria.filter(
-          (c) => c.uid !== uid
+          (c) => c.uid !== uid,
         );
         const nextLogics = currentCriteria.logics.filter((_, i) => {
           if (index === currentCriteria.criteria.length - 1) return i;
@@ -126,7 +133,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
           else return i != index;
         });
 
-        deleteItem(uid);
+        deleteValidityItem(uid);
 
         if (zone === "inclusionCriteria") {
           return {
@@ -170,7 +177,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
                           valueFilter: filterInfo.filterValue ?? undefined,
                         },
                       }
-                    : c
+                    : c,
                 ),
               },
             };
@@ -190,9 +197,10 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
                             : undefined,
                       },
                     }
-                  : c
+                  : c,
               ),
             };
+
             return {
               selectedInclusionCriteria: updatedCriteria,
             };
@@ -204,24 +212,6 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
         }
       });
     },
-
-    /* applyGlobalFilter: (filterName) => {
-      set((state) => {
-        const { globalFilter } = useGlobalFilterStore.getState();
-        const selectedCriteria = state.selectedInclusionCriteria;
-        const updatedCriteria: SelectedCriteria = {
-          ...selectedCriteria,
-          criteria: selectedCriteria.criteria.map((c) => {
-            c.criterion.timeRestriction =
-              globalFilter.timeRange as TimeRangeType["timeRestriction"];
-            return c;
-          }),
-        };
-        return {
-          selectedInclusionCriteria: updatedCriteria,
-        };
-      });
-    }, */
 
     applyGlobalTimeRange: (next, includeLocal) => {
       set((state) => {
@@ -253,7 +243,7 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       set((state) => {
         const nextLogics = state.selectedInclusionCriteria.logics.map(
           (logic, i) =>
-            i === logicIndex ? (logic === "OR" ? "AND" : "OR") : logic
+            i === logicIndex ? (logic === "OR" ? "AND" : "OR") : logic,
         );
         return {
           selectedInclusionCriteria: {
@@ -268,15 +258,15 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       set((state) => {
         const currentCriteria = state.selectedInclusionCriteria;
         const oldIndex = currentCriteria.criteria.findIndex(
-          (c) => c.uid === active.id
+          (c) => c.uid === active.id,
         );
         const newIndex = currentCriteria.criteria.findIndex(
-          (c) => c.uid === over.id
+          (c) => c.uid === over.id,
         );
         const movedCriteria = arrayMove(
           currentCriteria.criteria,
           oldIndex,
-          newIndex
+          newIndex,
         );
         const nextCriteria = { ...currentCriteria, criteria: movedCriteria };
 
@@ -293,5 +283,23 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
         set({ selectedExclusionCriteria: selectedCriteria });
       }
     },
-  })
+
+    clearSelectedCriteria: () => {
+      set({
+        selectedInclusionCriteria: {
+          criteriaType: "inclusionCriteria",
+          criteria: [],
+          logics: [],
+        },
+        selectedExclusionCriteria: {
+          criteriaType: "exclusionCriteria",
+          criteria: [],
+          logics: [],
+        },
+      });
+
+      const { clearValidityItems } = useFilterValidationStore.getState();
+      clearValidityItems();
+    },
+  }),
 );

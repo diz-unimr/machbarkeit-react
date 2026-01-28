@@ -21,7 +21,7 @@ type TimeRangeOptionProps = {
   timeRestrictionData?: TimeRangeType["timeRestriction"] | null;
   onValidityChange: (isValid: boolean) => void;
   onCompleteChange: (
-    timeRange: TimeRangeType["timeRestriction"] | null
+    timeRange: TimeRangeType["timeRestriction"] | null,
   ) => void;
 };
 
@@ -33,7 +33,7 @@ const TimeRangeOption = ({
   onCompleteChange,
 }: TimeRangeOptionProps) => {
   const syncSelectedOption = (
-    next: TimeRangeType["timeRestriction"] | null
+    next: TimeRangeType["timeRestriction"] | null,
   ) => {
     if (!next) {
       return "no filter";
@@ -53,7 +53,7 @@ const TimeRangeOption = ({
   };
 
   const [selectedOption, setSelectedOption] = useState<OptionCode>(
-    () => syncSelectedOption(timeRestrictionData) ?? "no filter"
+    () => syncSelectedOption(timeRestrictionData) ?? "no filter",
   );
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({
     afterDate: timeRestrictionData?.afterDate ?? undefined,
@@ -62,7 +62,7 @@ const TimeRangeOption = ({
   const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
 
   const dropDownOptions: DropDownOption[] = [
-    { code: "no filter", display: "kein Filter" },
+    { code: "no filter", display: "Bitte wählen..." },
     { code: "at", display: "am" },
     { code: "before", display: "vor" },
     { code: "after", display: "nach" },
@@ -141,7 +141,7 @@ const TimeRangeOption = ({
 
   const IsBetweenValid = (
     selectedDate: SelectedDate,
-    selectedOption: string
+    selectedOption: string,
   ) => {
     if (selectedOption !== "between") return true;
     const afterDate = new Date(selectedDate.afterDate || "");
@@ -156,7 +156,7 @@ const TimeRangeOption = ({
 
   const handleTimeRange = (
     selectedDate: SelectedDate,
-    selectedOption: OptionCode
+    selectedOption: OptionCode,
   ): {
     timeRestriction: TimeRangeType["timeRestriction"] | null;
     isValid: boolean;
@@ -225,7 +225,7 @@ const TimeRangeOption = ({
   useEffect(() => {
     const { timeRestriction, isValid } = handleTimeRange(
       selectedDate,
-      selectedOption
+      selectedOption,
     );
 
     onValidityChange(isValid);

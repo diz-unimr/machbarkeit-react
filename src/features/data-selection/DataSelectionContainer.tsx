@@ -53,8 +53,8 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
         />
       ) : (
         <div className="px-3">
-          <div>Merkmalen</div>
-          <div>Attributliste</div>
+          <div className="font-medium">Merkmalen</div>
+          {/* <div>Attributliste</div> */}
         </div>
       )}
     </div>

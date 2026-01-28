@@ -27,19 +27,19 @@ export const Button = ({
     "!min-w-[80px] font-bold border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
 
   const isActiveClass =
-    isActive &&
-    "hover:shadow-md hover:border-gray-300 transition-all duration-150";
+    isActive && "hover:shadow-md transition-all duration-150";
 
   let typeClass = "";
   switch (type) {
     case "primary":
-      typeClass = "text-white uppercase";
+      typeClass = "text-white uppercase hover:border-gray-300";
       break;
     case "secondary":
-      typeClass = "bg-transparent text-black px-2.5 py-1.5 hover:text-white";
+      typeClass = "bg-transparent border-none px-2.5 py-1.5 hover:text-white";
       break;
     case "tertiary":
-      typeClass = `border-none bg-gray-200 ${isActive ? "hover:underline" : null} hover:bg-gray-300`;
+      typeClass = `w-fit! min-w-0! bg-transparent! border-none! m-0! px-1! text-[var(--btn-bg)] ${isActive ? "hover:underline" : null} hover:bg-transparent hover:shadow-none!`;
+      // typeClass = `border-none bg-transparent ${isActive ? "hover:underline" : null} hover:bg-transparent`;
       break;
     case "danger":
       typeClass = "flex items-center gap-1 border-none hover:text-red-700";

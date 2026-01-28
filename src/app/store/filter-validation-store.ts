@@ -11,7 +11,8 @@ type ValidityItem = {
 type FilterValidationStore = {
   validityItems: ValidityItem[];
   updateValidityItem: (item: ValidityItem) => void;
-  deleteItem: (id: string) => void;
+  deleteValidityItem: (id: string) => void;
+  clearValidityItems: () => void;
 };
 
 const useFilterValidationStore = create<FilterValidationStore>((set) => ({
@@ -23,10 +24,15 @@ const useFilterValidationStore = create<FilterValidationStore>((set) => ({
         : [...state.validityItems, newItem],
     }));
   },
-  deleteItem: (id) => {
+
+  deleteValidityItem: (id) => {
     set((state) => ({
       validityItems: state.validityItems.filter((item) => item.id !== id),
     }));
+  },
+
+  clearValidityItems: () => {
+    set({ validityItems: [] });
   },
 }));
 

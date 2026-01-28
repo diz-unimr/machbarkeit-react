@@ -18,13 +18,13 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const { ontologyResult, isLoading } = useOntology(
     activeModule?.id ?? null,
-    debouncedSearch
+    debouncedSearch,
   );
 
   useEffect(() => {
     const handler = setTimeout(
       () => setDebouncedSearch(textInput!.trim()),
-      1000
+      1000,
     );
     return () => clearTimeout(handler);
   }, [textInput]);
@@ -54,7 +54,17 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
             ) : !ontologyResult.criteria ||
               ontologyResult.criteria.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                Keine daten
+                {textInput.trim() !== "" ? (
+                  <span>
+                    Der Suchbegriff{" "}
+                    <span className="font-medium">{'"' + textInput + '"'}</span>{" "}
+                    wurde im Modul{" "}
+                    <span className="font-medium">{activeModule?.name}</span>{" "}
+                    nicht gefunden.
+                  </span>
+                ) : (
+                  "Keine daten"
+                )}
               </div>
             ) : (
               <>

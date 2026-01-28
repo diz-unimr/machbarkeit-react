@@ -17,12 +17,12 @@ const useCriteriaDnD = () => {
   const dropZoneClasses = useCallback(
     (zone: DropZone) =>
       /* min-h-[180px] */
-      `flex flex-col gap-3 border-2 border-dashed rounded-md px-4 py-5 transition-colors ${
+      `flex flex-col gap-3 border-2 border-dashed rounded-md px-4 py-4 transition-colors ${
         activeZone === zone
           ? "border-blue-500 bg-blue-50"
           : "border-[var(--color-border)] bg-white"
       }`,
-    [activeZone]
+    [activeZone],
   );
 
   const handleDragOver = useCallback(
@@ -39,7 +39,7 @@ const useCriteriaDnD = () => {
         event.dataTransfer.dropEffect = "none";
       }
     },
-    []
+    [],
   );
 
   const handleCriteriaDrop = useCallback(
@@ -58,7 +58,7 @@ const useCriteriaDnD = () => {
         };
         addNewCriteria(newCriterion, zone);
       },
-    [addNewCriteria, uid]
+    [addNewCriteria, uid],
   );
 
   const handleDragLeave = useCallback(
@@ -68,7 +68,7 @@ const useCriteriaDnD = () => {
         setActiveZone((current) => (current === zone ? null : current));
       }
     },
-    []
+    [],
   );
 
   return {

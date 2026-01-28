@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -21,11 +22,12 @@ import type { TimeRangeType } from "@features/filters/controls/type";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import useFilterValidationStore from "@app/store/filter-validation-store";
-import { TertiaryButton } from "@/components/ui/buttons/Button";
+import { Button } from "@/components/ui/buttons/Button";
 import WarningModal from "../WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
 import createQueryData from "@/app/utils/createQueryData";
 import convertToCriteriaDisplay from "@/app/utils/convertJsonToCriteriaDisplay";
+import warningIcon from "@assets/warning-icon.svg";
 
 const FeasibilityContainer = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
@@ -41,15 +43,19 @@ const FeasibilityContainer = () => {
     DroppedCriterion[]
   >([]); */
   const selectedInclusionCriteria = useSelectedCriteriaStore(
-    (s) => s.selectedInclusionCriteria
+    (s) => s.selectedInclusionCriteria,
   );
   const setSelectedCriteria = useSelectedCriteriaStore(
-    (s) => s.setSelectedCriteria
+    (s) => s.setSelectedCriteria,
+  );
+  const clearSelectedCriteria = useSelectedCriteriaStore(
+    (s) => s.clearSelectedCriteria,
   );
   const applyGlobalTimeRange = useSelectedCriteriaStore(
-    (s) => s.applyGlobalTimeRange
+    (s) => s.applyGlobalTimeRange,
   );
-  const { validityItems } = useFilterValidationStore();
+  const { validityItems, deleteValidityItem, clearValidityItems } =
+    useFilterValidationStore();
   const { updateGlobalFilter } = useGlobalFilterStore();
   const [completeFilter, setCompleteFilter] = useState<boolean>(true);
   const [hasAnyGlobalFilter, setHasAnyGlobalFilter] = useState<boolean>(false);
@@ -57,8 +63,8 @@ const FeasibilityContainer = () => {
     open: boolean;
     resolver?: (choice: SelectedChoice) => void;
   }>({ open: false });
-
   const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
+  const [actionTrigger, setActionTrigger] = useState<number>(0);
 
   const findTimeRangeConflicts = () => {
     const criteria =
@@ -67,24 +73,17 @@ const FeasibilityContainer = () => {
     const hasAnyLocal = criteria.some(
       (c) =>
         c.criterion.timeRestrictionAllowed &&
-        c.criterion.timeRestriction?.isLocalFilter === true
+        c.criterion.timeRestriction?.isLocalFilter === true,
     );
 
     const hasAnyGlobal = criteria.some(
       (c) =>
         c.criterion.timeRestrictionAllowed &&
         (!c.criterion.timeRestriction ||
-          c.criterion.timeRestriction?.isLocalFilter === false)
+          c.criterion.timeRestriction?.isLocalFilter === false),
     );
     setHasAnyGlobalFilter(hasAnyGlobal);
     return hasAnyLocal;
-    /* const { selectedInclusionCriteria } = useSelectedCriteriaStore.getState();
-    return selectedInclusionCriteria.criteria.some((c) => {
-      const tr = c.criterion.timeRestriction;
-      if (!tr) return false;
-      const isLocal = tr.isLocalFilter === true;
-      return isLocal; // || diff;
-    }); */
   };
 
   const handleWarningChoice = (selectedChoice: SelectedChoice) => {
@@ -102,7 +101,7 @@ const FeasibilityContainer = () => {
       return {
         ...prev,
         criteria: prev.criteria.map((c) =>
-          c.uid === criterion.uid ? { ...c, isExpanded: !c.isExpanded } : c
+          c.uid === criterion.uid ? { ...c, isExpanded: !c.isExpanded } : c,
         ),
       };
     });
@@ -110,7 +109,7 @@ const FeasibilityContainer = () => {
 
   const handleGlobalFilterChange = async (
     filterName: GlobalFilterName,
-    value: TimeRangeType["timeRestriction"] | null
+    value: TimeRangeType["timeRestriction"] | null,
   ) => {
     // do not have any selectedInclusionCriteria
     if (selectedInclusionCriteria.criteria.length === 0) {
@@ -143,31 +142,6 @@ const FeasibilityContainer = () => {
     }
   };
 
-  // drag Markmale into Einschlusskriterien and logic change
-  /* const handleCriteriaChange = ({
-    items,
-    isIndividualChange = false,
-  }: {
-    items: React.SetStateAction<SelectedCriteria> | null;
-    isIndividualChange?: boolean;
-  }) => {
-    //setCompleteFilter(completeFilter);
-    if (!items) return;
-    setInclusionCriteria((prev) => {
-      (async () => {
-        const next = typeof items === "function" ? items(prev) : items;
-        if (!isIndividualChange) {
-          const updated = await applyGlobalTime(next);
-          if (updated) setInclusionCriteria(updated);
-        } else {
-          setInclusionCriteria(next);
-        }
-        return setInclusionCriteria(next);
-      })();
-      return prev;
-    });
-  }; */
-
   const removeCriterion = (uid: string) => {
     setInclusionCriteria((prev) => {
       const index = prev.criteria.findIndex((c) => c.uid === uid);
@@ -184,7 +158,7 @@ const FeasibilityContainer = () => {
   };
 
   const parseAndValidateFile = async (
-    file: File
+    file: File,
   ): Promise<FeasibilityQueryData> => {
     const text = await file.text();
     const data = JSON.parse(text) as FeasibilityQueryData;
@@ -201,7 +175,7 @@ const FeasibilityContainer = () => {
   };
 
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -231,7 +205,20 @@ const FeasibilityContainer = () => {
     download(utf8JsonData, fileName + ".json", "application/json");
   };
 
+  const resetAllData = () => {
+    clearSelectedCriteria();
+    clearValidityItems();
+    updateGlobalFilter("timeRange", null);
+    updateGlobalFilter("caseType", "no filter");
+    setActionTrigger((prev) => prev + 1);
+  };
+
   useEffect(() => {
+    deleteValidityItem("global-time-range");
+  }, [actionTrigger]);
+
+  useEffect(() => {
+    console.log("validityItems: ", validityItems);
     const allValid = validityItems.every((item) => item.isValid);
     if (allValid) setCompleteFilter(true);
     else setCompleteFilter(false);
@@ -243,40 +230,55 @@ const FeasibilityContainer = () => {
         <FeasibilityQueryControl
           completeFilter={completeFilter}
           createQueryData={createQueryData}
+          onResetAllData={resetAllData}
         />
         <div
           id="feasibility-container"
-          className="flex flex-col flex-1 min-h-0 max-w-[960px] w-full px-5 py-8 mx-auto overflow-hidden"
+          className="flex flex-col flex-1 min-h-0 max-w-240 w-full px-5 py-8 mx-auto overflow-hidden"
         >
           <Card
             className="flex flex-col flex-1 min-h-0"
             bodyClassName="p-0 flex flex-col flex-1 min-h-0 gap-1"
           >
-            <div className="flex justify-end items-center py-3 border-b-[1.5px] border-[var(--color-border)]">
-              <menu className="flex gap-8 pr-5">
+            <div className="flex justify-between items-center px-5 py-3 border-b-[1.5px] border-(--color-border)">
+              <div className="flex gap-2">
+                {validityItems.filter((item) => !item.isValid).length > 0 && (
+                  <>
+                    <img src={warningIcon} className="inline w-4 mr-1" />
+                    <p className="text-xs">
+                      Nicht bestätigte Filter:{" "}
+                      {validityItems.filter((item) => !item.isValid).length}
+                    </p>
+                  </>
+                )}
+              </div>
+              <menu className="flex gap-8">
                 <li className="flex gap-7 m-auto">
-                  {/* <TertiaryButton
-                    id="load-query-btn"
-                    label="Abfragen Laden"
-                    onClick={() => {}}
-                  /> */}
                   <input
                     id="upload"
                     type="file"
                     accept="application/json"
                     hidden
-                    onChange={(e) => handleFileUpload(e)}
+                    onChange={(e) => {
+                      resetAllData();
+                      handleFileUpload(e);
+                    }}
                   />
                   <label
                     htmlFor="upload"
-                    className="flex text-sm font-medium text-gray-500 cursor-pointer hover:underline hover:text-gray-800"
+                    className="flex items-center text-[clamp(11px,1vw,14px)] font-medium cursor-pointer px-2.5 py-1.5 hover:text-white hover:rounded-[6px] hover:bg-[#0072DA]"
                   >
-                    ABFRAGE LADEN
+                    Abfrage laden
                   </label>
-                  <TertiaryButton
-                    id="save-query-btn"
-                    label="ABFRAGE SPEICHERN"
-                    isActive={completeFilter}
+                  <Button
+                    id={""}
+                    label="Abfrage speichern"
+                    type="secondary"
+                    className="m-0! font-medium!"
+                    isActive={
+                      completeFilter &&
+                      selectedInclusionCriteria.criteria.length > 0
+                    }
                     onClick={() => setSaveModalOpen(true)}
                   />
                 </li>
@@ -284,8 +286,8 @@ const FeasibilityContainer = () => {
             </div>
             <div className="flex flex-col h-full min-h-0 gap-4 p-4">
               <GlobalFilterPanel
-                // timeRangeValue={timeRangeDraft}
                 onHandleGlobalFilterChange={handleGlobalFilterChange}
+                actionTrigger={actionTrigger}
               />
               <div className="flex-1 min-h-0">
                 {inclusionCriteria.criteria.map((c, i) => (

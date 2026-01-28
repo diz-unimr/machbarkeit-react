@@ -33,7 +33,7 @@ const FeasibilityCriteriaPanel = ({
 
   const removeCriterion = (
     // zone: Exclude<DropZone, "attribute">,
-    uid: string
+    uid: string,
   ) => {
     onRemoveCriterion(uid);
   };
@@ -46,9 +46,6 @@ const FeasibilityCriteriaPanel = ({
         borderBottom: !isPanelExpanded
           ? "1.5px solid var(--color-border)"
           : undefined,
-        /* flex: isExpanded ? "1 1 auto" : "0 0 auto", */
-        // minHeight: isExpanded ? "180px" : "60px",
-        /* maxHeight: isExpanded ? "100%" : undefined, */
       }}
     >
       <div className="flex justify-between">
@@ -62,10 +59,7 @@ const FeasibilityCriteriaPanel = ({
           onClick={onToggleCriteriaPanel}
         />
       </div>
-      <div
-        className="h-full"
-        style={{ display: isPanelExpanded ? "flex" : "none" }}
-      >
+      <div className={`min-h-0 ${isPanelExpanded ? "flex-1" : "hidden"}`}>
         <Card
           className="flex flex-col flex-1 h-full" /* min-h-0 */
           bodyClassName="bg-gray-50 flex flex-col flex-1 min-h-0 overflow-hidden"
@@ -78,7 +72,6 @@ const FeasibilityCriteriaPanel = ({
             onDragLeave={handleDragLeave("inclusionCriteria")}
             onDrop={handleCriteriaDrop("inclusionCriteria")}
           >
-            <p></p>
             {selectedCriteria.criteria.length === 0 ? (
               <p className="text-sm text-gray-500 text-center">
                 Merkmale hierher ziehen, um sie als {label} zu übernehmen.

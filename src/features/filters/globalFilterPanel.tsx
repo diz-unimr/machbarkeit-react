@@ -4,7 +4,7 @@
 import Card from "@components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import useFilterValidationStore from "@app/store/filter-validation-store";
 import type { TimeRangeType } from "./controls/type";
@@ -17,12 +17,14 @@ export type CaseType = "no filter" | "imp" | "amb";
 type GlobalFilterPanelProps = {
   onHandleGlobalFilterChange: (
     filterName: GlobalFilterName,
-    value: TimeRangeType["timeRestriction"] | null
+    value: TimeRangeType["timeRestriction"] | null,
   ) => Promise<void>;
+  actionTrigger: number;
 };
 
 const GlobalFilterPanel = ({
   onHandleGlobalFilterChange,
+  actionTrigger,
 }: GlobalFilterPanelProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
@@ -34,8 +36,29 @@ const GlobalFilterPanel = ({
   >(null);
   const [isFilterComplete, setIsFilterCompleted] = useState<boolean>(true);
   const updateValidityItem = useFilterValidationStore(
-    (s) => s.updateValidityItem
+    (s) => s.updateValidityItem,
   );
+  const deleteValidityItem = useFilterValidationStore(
+    (s) => s.deleteValidityItem,
+  );
+
+  const cancelFilterChanges = () => {
+    setIsGlobalFilterEditing(false);
+    if (!globalFilter.timeRange) {
+      deleteValidityItem("global-time-range");
+      return;
+    }
+    updateValidityItem({
+      id: "global-time-range",
+      isValid: true,
+    });
+  };
+
+  useEffect(() => {
+    if (actionTrigger > 0) {
+      setIsGlobalFilterEditing(false);
+    }
+  }, [actionTrigger]);
 
   return (
     <div
@@ -62,65 +85,91 @@ const GlobalFilterPanel = ({
               <p className="mt-2 mr-2 text-end font-medium whitespace-nowrap">
                 Globaler Zeitraum :
               </p>
-              {isGlobalFilterEditing ? (
-                <div className="flex flex-col overflow-x-auto">
-                  <TimeRangeOption
-                    timeRestrictionData={globalFilter.timeRange} //data from file just on first time
-                    onValidityChange={(isValid) => {
-                      setIsFilterCompleted(isValid);
-                      if (!isValid) {
-                        updateValidityItem({
-                          id: "global-time-range",
-                          isValid,
-                        });
+              <div className="flex flex-col">
+                {isGlobalFilterEditing ? (
+                  <div className="flex flex-col overflow-x-auto">
+                    <TimeRangeOption
+                      timeRestrictionData={globalFilter.timeRange} //data from file just on first time
+                      onValidityChange={(isValid) => {
+                        setIsFilterCompleted(isValid);
+                        if (!isValid) {
+                          updateValidityItem({
+                            id: "global-time-range",
+                            isValid,
+                          });
+                        }
+                      }}
+                      onCompleteChange={(timeRange) =>
+                        setGlobalFilterTemp({
+                          ...timeRange,
+                          isLocalFilter: false,
+                        })
                       }
-                    }}
-                    onCompleteChange={(timeRange) =>
-                      setGlobalFilterTemp({
-                        ...timeRange,
-                        isLocalFilter: false,
-                      })
-                    }
-                  />
-                  <Button
-                    id={"global-btn"}
-                    label="Globaler Filter bestätigen"
-                    type="tertiary"
-                    className="!m-0 !mt-2 text-white bg-[var(--btn-bg)] hover:text-[#213547]"
-                    isActive={isFilterComplete}
-                    onClick={async () => {
-                      updateValidityItem({
-                        id: "global-time-range",
-                        isValid: isFilterComplete,
-                      });
-                      await onHandleGlobalFilterChange(
-                        "timeRange",
-                        globalFilterTemp
-                      );
-                      setIsGlobalFilterEditing((prev) => !prev);
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-col">
-                  <div className="mt-2">
+                    />
+                  </div>
+                ) : (
+                  <div className="mt-2 pl-1">
                     {formatTimeRangeLabel(globalFilter.timeRange)}
                   </div>
-                  <Button
-                    id={"global-btn"}
-                    label="Globaler Filter bearbeiten"
-                    type="tertiary"
-                    className="!m-0 !mt-2 "
-                    onClick={() => {
-                      setIsGlobalFilterEditing((prev) => !prev);
-                      updateValidityItem({
-                        id: "global-time-range",
-                        isValid: false,
-                      });
-                    }}
-                  />
+                )}
+
+                <div className="flex gap-3 pl-0.5">
+                  {(isGlobalFilterEditing || globalFilter.timeRange) && (
+                    <Button
+                      id={"clear-filter-btn"}
+                      label="Löschen"
+                      type="tertiary"
+                      onClick={() => {
+                        updateGlobalFilter("timeRange", null);
+                        setIsGlobalFilterEditing(false);
+                        deleteValidityItem("global-time-range");
+                      }}
+                    />
+                  )}
+                  {isGlobalFilterEditing ? (
+                    <>
+                      <Button
+                        id={"global-btn"}
+                        label="Abbrechen"
+                        type="tertiary"
+                        onClick={cancelFilterChanges}
+                      />
+                      <Button
+                        id={"global-btn"}
+                        label="Bestätigen"
+                        type="tertiary"
+                        isActive={isFilterComplete}
+                        onClick={async () => {
+                          updateValidityItem({
+                            id: "global-time-range",
+                            isValid: isFilterComplete,
+                          });
+                          await onHandleGlobalFilterChange(
+                            "timeRange",
+                            globalFilterTemp,
+                          );
+                          setIsGlobalFilterEditing(false);
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <Button
+                      id={"global-btn"}
+                      label={
+                        globalFilter.timeRange ? "Bearbeiten" : "Filter setzen"
+                      }
+                      type="tertiary"
+                      onClick={() => {
+                        setIsGlobalFilterEditing((prev) => !prev);
+                        updateValidityItem({
+                          id: "global-time-range",
+                          isValid: false,
+                        });
+                      }}
+                    />
+                  )}
                 </div>
-              )}
+              </div>
             </div>
             <div className="flex gap-5">
               <p className="font-medium whitespace-nowrap">Fallart :</p>

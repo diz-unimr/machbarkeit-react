@@ -29,7 +29,7 @@ const TreeItem = ({
     if (!draggable) return;
     event.dataTransfer.setData(
       DRAG_DATA_FORMATS.CRITERION,
-      JSON.stringify(criterion)
+      JSON.stringify(criterion),
     );
     event.dataTransfer.dropEffect = "copy";
     event.dataTransfer.effectAllowed = "copy";
@@ -42,7 +42,8 @@ const TreeItem = ({
   return (
     <div
       key={criterion.id}
-      className={`flex gap-2 items-start bg-white border border-[var(--color-border)] rounded p-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab active:cursor-grabbing" : "cursor-auto"}`}
+      className={`flex gap-2 items-start bg-white border border-(--color-border) rounded p-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab active:cursor-grabbing" : "cursor-auto"}`}
+      draggable={criterion.selectable}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={onArrowClick}
@@ -56,7 +57,9 @@ const TreeItem = ({
         }
       />
       {criterion.selectable ? (
-        <img src={dragHandleIcon} width={12} height={14} className="mt-1.5" />
+        <div className="pt-1.5 shrink-0">
+          <img src={dragHandleIcon} width={12} height={14} />
+        </div>
       ) : null}
       <div className={`flex gap-2`}>
         {criterion.selectable ? (

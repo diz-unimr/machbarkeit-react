@@ -35,7 +35,7 @@ const DropDown = ({
     <div>
       <div className="flex items-center">
         <select
-          className={`${size === "sm" ? "w-[95px] !text-[clamp(10px,1vw+0.3rem,12px)]" : "w-[110px]"}`}
+          className={`${size === "sm" ? "w-[95px] !text-[clamp(10px,1vw+0.3rem,12px)]" : "min-w-[110px] w-auto"}`}
           id={id ? "comparator-" + id : "comparator"}
           name="comparator"
           value={selectedValue}

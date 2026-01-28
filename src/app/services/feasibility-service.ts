@@ -6,7 +6,7 @@ import type { FeasibilityQueryData } from "@features/feasibility/feasibility-bui
 
 const feasibilityQuery = async (
   data: FeasibilityQueryData,
-  abortController: AbortController
+  abortController: AbortController,
 ): Promise<[number | null, string | null]> => {
   let numberOfPatients: number | null = null;
   let errorMessage: string | null = null;
@@ -21,13 +21,13 @@ const feasibilityQuery = async (
         },
         signal: abortController.signal,
         withCredentials: true,
-      }
+      },
     );
+
     // check if accepted
     if (response.status === 202) {
       // check location header
       const poll = response.headers.location;
-      // numberOfPatients =
       numberOfPatients = await new Promise((resolve, reject) => {
         const intervalId = setInterval(async () => {
           try {

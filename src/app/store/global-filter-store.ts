@@ -14,7 +14,7 @@ type GlobalFilterStore = {
   globalFilter: GlobalFilter;
   updateGlobalFilter: (
     filterName: GlobalFilterName,
-    value: string | (TimeRangeType["timeRestriction"] | null)
+    value: string | (TimeRangeType["timeRestriction"] | null),
   ) => void;
 };
 
