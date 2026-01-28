@@ -8,32 +8,54 @@ import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { useState } from "react";
 import feasibilityQuery from "@app/services/feasibility-service";
 import loadingSpinnerIcon from "@assets/loading_spinner.svg";
+import useFilterValidationStore from "@/app/store/filter-validation-store";
 
 const FeasibilityQueryControl = ({
   completeFilter,
   createQueryData,
+  onResetAllData,
 }: {
   completeFilter: boolean;
   createQueryData: () => FeasibilityQueryData | null;
+  onResetAllData: () => void;
 }) => {
   const [abortController, setAbortController] =
-    useState<AbortController | null>(new AbortController());
+    useState<AbortController | null>(null);
   const [isQueryRunning, setIsQueryRunning] = useState<boolean>(false);
   const [queryResult, setQueryResult] = useState<number | null>(null);
   const [errorMessageResult, setErrorMessageResult] = useState<string | null>(
-    null
+    null,
   );
-  const { selectedInclusionCriteria } = useSelectedCriteriaStore();
+  const { selectedInclusionCriteria, clearSelectedCriteria } =
+    useSelectedCriteriaStore();
+  const { validityItems } = useFilterValidationStore();
 
-  const startQuery = async () => {
-    setIsQueryRunning(true);
-    const queryData = createQueryData();
+  const clearRunningQuery = () => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+      setIsQueryRunning(false);
+      setQueryResult(null);
+      setErrorMessageResult(null);
+    }
+  };
+
+  const toggleQuery = async () => {
+    if (isQueryRunning) {
+      // Stop Query
+      clearRunningQuery();
+      return;
+    }
 
     // Start Query
+    const queryData = createQueryData();
     if (!queryData) return;
+    setIsQueryRunning(true);
+    const abortController = new AbortController();
+    setAbortController(abortController);
     const [numberOfPatients, errorMessage] = await feasibilityQuery(
       queryData,
-      abortController!
+      abortController!,
     );
     setQueryResult(numberOfPatients);
     setErrorMessageResult(errorMessage);
@@ -41,29 +63,44 @@ const FeasibilityQueryControl = ({
     setAbortController(null);
   };
 
+  const resetAllData = () => {
+    clearSelectedCriteria();
+    if (abortController) {
+      abortController.abort();
+    }
+    setAbortController(null);
+    setIsQueryRunning(false);
+    setQueryResult(null);
+    setErrorMessageResult(null);
+    onResetAllData();
+  };
+
   return (
-    <div className="flex h-[60px] bg-white border-b-[1.5px] border-[var(--color-border)]">
-      <div className="flex w-full max-w-[960px] justify-between m-auto px-8">
-        <div className="flex w-full h-[50px] items-center px-2">
-          <div>
-            <span className="font-medium mr-2">Anzahl der Patienten: </span>
-            <span>
-              {isQueryRunning ? <img src={loadingSpinnerIcon} /> : null}
-              {queryResult !== null
+    <div className="flex h-15 bg-white border-b-[1.5px] border-(--color-border)">
+      <div className="flex w-full max-w-240 justify-between m-auto px-8">
+        <div className="flex w-full h-12.5 items-center px-2">
+          <span className="font-medium mr-2">Anzahl der Patienten: </span>
+          <span>
+            {isQueryRunning && <img src={loadingSpinnerIcon} />}
+            {!isQueryRunning &&
+              (queryResult !== null
                 ? queryResult <= 3
                   ? "Das Ergebnis ist zu klein"
                   : queryResult
-                : (errorMessageResult ?? "-")}
-            </span>
-          </div>
+                : errorMessageResult || "-")}
+          </span>
         </div>
         <ButtonContainer className="p-0">
           <Button
             id="reset-query"
             type="secondary"
             label="ZURÜCKSETZEN"
-            isActive={true}
-            onClick={() => {}}
+            className="text-black"
+            isActive={
+              selectedInclusionCriteria.criteria.length > 0 ||
+              validityItems.length > 0
+            }
+            onClick={resetAllData}
           />
           <Button
             id="start-query"
@@ -72,7 +109,7 @@ const FeasibilityQueryControl = ({
             isActive={
               completeFilter && selectedInclusionCriteria.criteria.length > 0
             }
-            onClick={startQuery}
+            onClick={toggleQuery}
           />
         </ButtonContainer>
       </div>

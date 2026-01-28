@@ -14,8 +14,10 @@ import QuantityOption from "@features/filters/controls/QuantityOption";
 import TimeRangeOption from "@features/filters/controls/TimeRangeOption";
 import { Button, TertiaryButton } from "@components/ui/buttons/Button";
 import closeIcon from "@assets/close-icon.svg";
+import warningIcon from "@assets/warning-icon.svg";
 import globalFilterIcon from "@assets/global-filter-icon.svg";
 import localFilterIcon from "@assets/local-filter-icon.svg";
+import arrowImg from "@assets/tree-arrow.png";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type {
@@ -24,6 +26,7 @@ import type {
   TimeRangeType,
 } from "@features/filters/controls/type";
 import useFilterValidationStore from "@app/store/filter-validation-store";
+import ArrowButton from "@/components/ui/buttons/ArrowButton";
 
 type DragProps = {
   setNodeRef: (el: HTMLElement | null) => void;
@@ -56,7 +59,7 @@ const FeasibilityCriterionItem = ({
     useSelectedCriteriaStore();
   const { globalFilter } = useGlobalFilterStore();
   const updateValidityItem = useFilterValidationStore(
-    (s) => s.updateValidityItem
+    (s) => s.updateValidityItem,
   );
 
   const isOr = logic === "OR";
@@ -64,13 +67,13 @@ const FeasibilityCriterionItem = ({
     TimeRangeType["timeRestriction"] | null
   >(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(
-    item.isExpanded ?? false
+    item.isExpanded ?? false,
   );
   const [isLocalFilter, setIsLocalFilter] = useState<boolean>(
-    item.criterion.timeRestriction?.isLocalFilter ?? false
+    item.criterion.timeRestriction?.isLocalFilter ?? false,
   );
   const [isPrevLocalFilter, setIsPrevLocalFilter] = useState<boolean>(
-    item.criterion.timeRestriction?.isLocalFilter ?? false
+    item.criterion.timeRestriction?.isLocalFilter ?? false,
   );
   const [isLocalFilterEditing, setIsLocalFilterEditing] =
     useState<boolean>(false);
@@ -80,12 +83,12 @@ const FeasibilityCriterionItem = ({
   >(
     item.criterion.timeRestriction?.isLocalFilter
       ? item.criterion.timeRestriction
-      : null
+      : null,
   );
   const [timeRangeLabel, setTimeRangeLabel] = useState<string | null>(null);
 
   const formatTimeRangeLabel = (
-    filterValue: TimeRangeType["timeRestriction"] | null
+    filterValue: TimeRangeType["timeRestriction"] | null,
   ) => {
     if (!filterValue) return null;
 
@@ -112,7 +115,7 @@ const FeasibilityCriterionItem = ({
   };
 
   const handleTimeRangeFilter = (
-    timeRange: TimeRangeType["timeRestriction"] | null
+    timeRange: TimeRangeType["timeRestriction"] | null,
   ) => {
     const timeRangeValue = timeRange || {
       beforeDate: undefined,
@@ -127,6 +130,7 @@ const FeasibilityCriterionItem = ({
         isLocalFilter: timeRange ? timeRange.isLocalFilter : undefined,
       },
     };
+
     updateCriterionFilter(filterInfo);
   };
 
@@ -153,6 +157,7 @@ const FeasibilityCriterionItem = ({
   }, [currentTimeRestriction]);
 
   useEffect(() => {
+    setIsLocalFilterEditing(false);
     if (!item.criterion.timeRestriction) {
       setCurrentTimeRestriction(globalFilter.timeRange);
     }
@@ -176,45 +181,51 @@ const FeasibilityCriterionItem = ({
             borderColor: item.criterion.color?.btnColor,
             zIndex: 5,
           }}
-          className="relative flex border bg-white text-sm cursor-grab active:cursor-grabbing overflow-hidden h-fit"
+          className="relative flex border rounded-sm bg-white text-sm cursor-grab active:cursor-grabbing overflow-hidden h-fit"
         >
           <div
-            className="absolute left-0 top-0 bottom-0 w-14"
+            className="absolute left-0 top-0 bottom-0 w-12"
             style={{ backgroundColor: item.criterion.color?.btnColor }}
             aria-hidden="true"
           />
-          <div className="flex flex-col min-w-0 w-full p-3 pl-18">
+          <div className="flex flex-col min-w-0 w-full p-3 pl-16">
             <div className="flex flex-col w-full gap-3">
               <div
-                className={`flex w-full gap-3 hover:underline ${
-                  isExpanded
-                    ? "pb-2 border-b-[1.5px] border-(--color-border)"
-                    : ""
-                }`}
+                className="flex w-fit items-start gap-3 hover:underline"
+                onClick={() => setIsExpanded((prev) => !prev)}
               >
-                <p
-                  className="w-fit font-bold text-gray-800 whitespace-nowrap cursor-pointer"
-                  onClick={() => setIsExpanded((prev) => !prev)}
-                >
+                {/* <div className="flex items-center justify-center pt-0.5 shrink-0">
+                  <img src={dragHandleIcon} width={14} height={16} />
+                </div> */}
+                <p className="w-fit font-bold text-gray-800 whitespace-nowrap cursor-pointer">
                   {item.criterion.termCodes?.[0]?.code}
                 </p>
-                <p
-                  className="w-fit font-normal text-gray-800 cursor-pointer"
-                  onClick={() => setIsExpanded((prev) => !prev)}
-                >
+
+                <p className="w-fit font-normal text-gray-800 cursor-pointer">
                   {item.criterion.display}
                 </p>
+                <ArrowButton
+                  id={item.uid}
+                  image={arrowImg}
+                  width="12"
+                  height="12"
+                  isExpanded={isExpanded}
+                  hasChildren={true}
+                />
               </div>
               {!isExpanded && isLocalFilterEditing ? (
-                <p className="p-1 bg-amber-300 text-red-500">
-                  Bitte bestätigen Sie das Filter!!
-                </p>
+                <div className="flex gap-2 p-1 bg-[#FEF5E2]">
+                  <img src={warningIcon} className="inline w-4 mr-1" />
+                  <p className=" text-[#804909]">
+                    Bitte bestätigen Sie den Filter
+                  </p>
+                </div>
               ) : null}
             </div>
             <div
               aria-hidden={!isExpanded}
               style={{ display: isExpanded ? "block" : "none" }}
-              className="p-2 pb-0"
+              className={`p-2 pb-0 mt-3 ${isExpanded && "border-t-[1.5px] border-(--color-border)"}`}
             >
               {item.criterion.filterType === "concept" ? (
                 <ConceptOption
@@ -266,102 +277,118 @@ const FeasibilityCriterionItem = ({
                             className="text-xs font-normal text-red-600 hover:text-red-500"
                             onClick={() => {
                               handleTimeRangeFilter(null);
+                              setIsLocalFilterEditing(false);
                               setIsLocalFilter(false);
+                              setCurrentTimeRestriction(null);
                             }}
                           />
                         </div>
                       )}
                     </div>
                   ) : null}
-                  {isLocalFilter ? (
-                    <>
-                      {isLocalFilterEditing ? (
-                        <>
-                          <TimeRangeOption
-                            id={item.uid}
-                            size="sm"
-                            timeRestrictionData={
-                              isPrevLocalFilter ? currentTimeRestriction : null
-                            }
-                            onValidityChange={(isValid) => {
-                              setIsFilterCompleted(isValid);
-                              if (!isValid) {
+
+                  {isLocalFilterEditing && (
+                    <TimeRangeOption
+                      id={item.uid}
+                      size="sm"
+                      timeRestrictionData={
+                        isPrevLocalFilter ? currentTimeRestriction : null
+                      }
+                      onValidityChange={(isValid) => {
+                        setIsFilterCompleted(isValid);
+                        /* updateValidityItem({
+                          id: item.uid,
+                          isValid,
+                        }); */
+                      }}
+                      onCompleteChange={(filterValue) => {
+                        setLocalFilter({
+                          ...filterValue,
+                          isLocalFilter: true,
+                        });
+                      }}
+                    />
+                  )}
+
+                  <div className="flex gap-3 pl-0.5">
+                    {isLocalFilter ? (
+                      <>
+                        {isLocalFilterEditing ? (
+                          /* Abbrechen and Bestätigen */
+                          <>
+                            <Button
+                              id={"clear-filter-btn"}
+                              label="Abbrechen"
+                              type="tertiary"
+                              onClick={() => {
+                                setIsLocalFilterEditing(false);
+                                setIsLocalFilter(isPrevLocalFilter);
                                 updateValidityItem({
                                   id: item.uid,
-                                  isValid,
+                                  isValid: true,
                                 });
-                              }
-                            }}
-                            onCompleteChange={(filterValue) => {
-                              setLocalFilter({
-                                ...filterValue,
-                                isLocalFilter: true,
+                              }}
+                            />
+                            <Button
+                              id={item.criterion.id + "-btn"}
+                              label="Bestätigen"
+                              type="tertiary"
+                              isActive={isFilterCompleted}
+                              onClick={() => {
+                                setIsLocalFilterEditing((prev) => !prev);
+                                setIsPrevLocalFilter(isLocalFilter);
+                                handleTimeRangeFilter(localFilter);
+                                updateValidityItem({
+                                  id: item.uid,
+                                  isValid: isFilterCompleted,
+                                });
+                              }}
+                            />
+                          </>
+                        ) : (
+                          /* Bearbeiten */
+                          <Button
+                            id={item.criterion.id + "-btn"}
+                            label="Lokaler Filter bearbeiten"
+                            type="tertiary"
+                            onClick={() => {
+                              setIsLocalFilterEditing((prev) => !prev);
+                              updateValidityItem({
+                                id: item.uid,
+                                isValid: false,
                               });
                             }}
                           />
+                        )}
+
+                        {globalFilter.timeRange && (
+                          /* Auf globalen Filter zurücksetzen */
                           <Button
                             id={item.criterion.id + "-btn"}
-                            label="Lokaler Filter bestätigen"
+                            label="Auf globalen Filter zurücksetzen"
                             type="tertiary"
-                            className="m-0! mt-2! text-white bg-(--btn-bg) hover:text-[#213547]"
-                            isActive={isFilterCompleted}
                             onClick={() => {
-                              setIsLocalFilterEditing((prev) => !prev);
+                              setIsLocalFilterEditing(false);
                               setIsPrevLocalFilter(isLocalFilter);
-                              handleTimeRangeFilter(localFilter);
+                              setIsLocalFilter(false);
                               updateValidityItem({
                                 id: item.uid,
                                 isValid: isFilterCompleted,
                               });
+                              handleTimeRangeFilter({
+                                ...globalFilter.timeRange,
+                                isLocalFilter: false,
+                              });
                             }}
                           />
-                        </>
-                      ) : (
-                        <Button
-                          id={item.criterion.id + "-btn"}
-                          label="Lokaler Filter bearbeiten"
-                          type="tertiary"
-                          className="m-0! mt-2!"
-                          onClick={() => {
-                            setIsLocalFilterEditing((prev) => !prev);
-                            updateValidityItem({
-                              id: item.uid,
-                              isValid: false,
-                            });
-                          }}
-                        />
-                      )}
-
-                      {globalFilter.timeRange ? (
-                        <Button
-                          id={item.criterion.id + "-btn"}
-                          label="Auf Globalfilter zurücksetzen"
-                          type="tertiary"
-                          className="m-0! mt-2!"
-                          onClick={() => {
-                            setIsLocalFilterEditing(false);
-                            setIsPrevLocalFilter(isLocalFilter);
-                            setIsLocalFilter(false);
-                            updateValidityItem({
-                              id: item.uid,
-                              isValid: isFilterCompleted,
-                            });
-                            handleTimeRangeFilter({
-                              ...globalFilter.timeRange,
-                              isLocalFilter: false,
-                            });
-                          }}
-                        />
-                      ) : null}
-                    </>
-                  ) : (
-                    /* not local */
-                    <>
+                        )}
+                      </>
+                    ) : (
+                      /* Lokalen Filter setzen */
                       <Button
                         id={item.criterion.id + "-btn"}
                         label="Lokaler Filter setzen"
                         type="tertiary"
-                        className="m-0! mt-2!"
                         onClick={() => {
                           setIsPrevLocalFilter(isLocalFilter);
                           setIsLocalFilter((prev) => !prev);
@@ -372,8 +399,8 @@ const FeasibilityCriterionItem = ({
                           });
                         }}
                       />
-                    </>
-                  )}
+                    )}
+                  </div>
                 </div>
               ) : null}
             </div>
