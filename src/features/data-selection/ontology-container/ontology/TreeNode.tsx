@@ -22,7 +22,7 @@ const TreeNode = ({ criterion, searchTerm }: TreeNodeProps) => {
     <>
       {((criterion.children && criterion.children.length > 0) ||
         criterion.selectable) && (
-        <li className="list-none pl-3">
+        <li className={`list-none ${criterion.parentId ? "pl-5" : "pl-0"}`}>
           <div className="flex gap-[clamp(10px,1.5%,15px)] items-center mb-2.5">
             <TreeItem
               criterion={criterion}

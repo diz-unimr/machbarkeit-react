@@ -74,10 +74,12 @@ const useOntology = (
       setIsLoading(false);
       return;
     }
-
+    // delete old request if any
     fetchController.current?.abort();
+    //create new abort controller for this request
     const controller = new AbortController();
     fetchController.current = controller;
+    
     setIsLoading(true);
 
     const fetchOntology = async () => {

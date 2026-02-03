@@ -54,7 +54,6 @@ const FeasibilityCriteriaPanel = ({
           id="characteristic-btn"
           image={accordionArrow}
           mode="rotate-left"
-          width="28"
           isExpanded={isPanelExpanded}
           onClick={onToggleCriteriaPanel}
         />

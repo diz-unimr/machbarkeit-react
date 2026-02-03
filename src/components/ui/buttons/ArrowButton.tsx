@@ -17,8 +17,8 @@ type ArrowButtonProp = {
 const ArrowButton = ({
   id,
   image = accordionArrow,
-  width = "14",
-  height = "14",
+  width = "18",
+  height = "18",
   mode = "rotate-right",
   isExpanded,
   hasChildren = true,
@@ -29,7 +29,7 @@ const ArrowButton = ({
       disabled={!hasChildren}
       onClick={onClick}
       aria-expanded={isExpanded}
-      className={`!p-0 !mr-0 ${!hasChildren && "!opacity-0"}`}
+      className={`p-0! mr-0! ${!hasChildren && "opacity-0!"}`}
     >
       <img
         key={id}
