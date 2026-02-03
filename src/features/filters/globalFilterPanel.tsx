@@ -4,6 +4,7 @@
 import Card from "@components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
+import warningIcon from "@assets/warning-icon.svg";
 import { useEffect, useState } from "react";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import useFilterValidationStore from "@app/store/filter-validation-store";
@@ -69,11 +70,19 @@ const GlobalFilterPanel = ({
       }}
     >
       <div className="flex justify-between">
-        <p className="text-lg font-medium p-2">Global Filter</p>
+        <div className="flex gap-3">
+          <p className="text-lg font-medium p-2">Globaler Filter</p>
+          {!isExpanded && isGlobalFilterEditing && (
+            <div className="flex gap-2 items-center p-1">
+              <img src={warningIcon} className="inline w-4 mr-1" />
+              <p className=" text-[#804909]">Bitte bestätigen Sie den Filter</p>
+            </div>
+          )}
+        </div>
+
         <ArrowButton
           id="global-filter-btn"
           mode="rotate-left"
-          width="28"
           isExpanded={isExpanded}
           onClick={() => setIsExpanded((prev) => !prev)}
         />
@@ -113,21 +122,24 @@ const GlobalFilterPanel = ({
                   </div>
                 )}
 
-                <div className="flex gap-3 pl-0.5">
+                <div className="flex gap-10 pl-0.5">
                   {(isGlobalFilterEditing || globalFilter.timeRange) && (
                     <Button
                       id={"clear-filter-btn"}
                       label="Löschen"
                       type="tertiary"
-                      onClick={() => {
-                        updateGlobalFilter("timeRange", null);
+                      onClick={async () => {
+                        await onHandleGlobalFilterChange("timeRange", null);
                         setIsGlobalFilterEditing(false);
-                        deleteValidityItem("global-time-range");
+                        updateValidityItem({
+                          id: "global-time-range",
+                          isValid: true,
+                        });
                       }}
                     />
                   )}
                   {isGlobalFilterEditing ? (
-                    <>
+                    <div className="flex gap-2">
                       <Button
                         id={"global-btn"}
                         label="Abbrechen"
@@ -151,7 +163,7 @@ const GlobalFilterPanel = ({
                           setIsGlobalFilterEditing(false);
                         }}
                       />
-                    </>
+                    </div>
                   ) : (
                     <Button
                       id={"global-btn"}

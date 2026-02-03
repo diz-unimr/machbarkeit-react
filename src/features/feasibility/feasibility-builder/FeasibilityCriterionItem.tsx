@@ -17,7 +17,6 @@ import closeIcon from "@assets/close-icon.svg";
 import warningIcon from "@assets/warning-icon.svg";
 import globalFilterIcon from "@assets/global-filter-icon.svg";
 import localFilterIcon from "@assets/local-filter-icon.svg";
-import arrowImg from "@assets/tree-arrow.png";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type {
@@ -197,30 +196,29 @@ const FeasibilityCriterionItem = ({
                 {/* <div className="flex items-center justify-center pt-0.5 shrink-0">
                   <img src={dragHandleIcon} width={14} height={16} />
                 </div> */}
-                <p className="w-fit font-bold text-gray-800 whitespace-nowrap cursor-pointer">
+                <p className="w-fit mt-0.5 font-bold text-gray-800 whitespace-nowrap cursor-pointer">
                   {item.criterion.termCodes?.[0]?.code}
                 </p>
 
-                <p className="w-fit font-normal text-gray-800 cursor-pointer">
+                <p className="w-fit mt-0.5 font-normal text-gray-800 cursor-pointer">
                   {item.criterion.display}
                 </p>
                 <ArrowButton
                   id={item.uid}
-                  image={arrowImg}
-                  width="12"
-                  height="12"
+                  mode="rotate-left"
+                  width="14"
                   isExpanded={isExpanded}
                   hasChildren={true}
                 />
               </div>
-              {!isExpanded && isLocalFilterEditing ? (
+              {!isExpanded && isLocalFilterEditing && (
                 <div className="flex gap-2 p-1 bg-[#FEF5E2]">
                   <img src={warningIcon} className="inline w-4 mr-1" />
                   <p className=" text-[#804909]">
                     Bitte bestätigen Sie den Filter
                   </p>
                 </div>
-              ) : null}
+              )}
             </div>
             <div
               aria-hidden={!isExpanded}
@@ -280,6 +278,10 @@ const FeasibilityCriterionItem = ({
                               setIsLocalFilterEditing(false);
                               setIsLocalFilter(false);
                               setCurrentTimeRestriction(null);
+                              updateValidityItem({
+                                id: item.uid,
+                                isValid: true,
+                              });
                             }}
                           />
                         </div>
@@ -309,13 +311,34 @@ const FeasibilityCriterionItem = ({
                       }}
                     />
                   )}
-
-                  <div className="flex gap-3 pl-0.5">
+                  <div className="flex gap-10 pl-0.5">
                     {isLocalFilter ? (
                       <>
+                        {globalFilter.timeRange && (
+                          /* Auf globalen Filter zurücksetzen */
+                          <Button
+                            id={item.criterion.id + "-btn"}
+                            label="Auf globalen Filter zurücksetzen"
+                            type="tertiary"
+                            onClick={() => {
+                              setIsLocalFilterEditing(false);
+                              setIsPrevLocalFilter(isLocalFilter);
+                              setIsLocalFilter(false);
+                              updateValidityItem({
+                                id: item.uid,
+                                isValid: isFilterCompleted,
+                              });
+                              handleTimeRangeFilter({
+                                ...globalFilter.timeRange,
+                                isLocalFilter: false,
+                              });
+                            }}
+                          />
+                        )}
+
                         {isLocalFilterEditing ? (
                           /* Abbrechen and Bestätigen */
-                          <>
+                          <div className="flex gap-2">
                             <Button
                               id={"clear-filter-btn"}
                               label="Abbrechen"
@@ -344,7 +367,7 @@ const FeasibilityCriterionItem = ({
                                 });
                               }}
                             />
-                          </>
+                          </div>
                         ) : (
                           /* Bearbeiten */
                           <Button
@@ -360,12 +383,13 @@ const FeasibilityCriterionItem = ({
                             }}
                           />
                         )}
-
-                        {globalFilter.timeRange && (
-                          /* Auf globalen Filter zurücksetzen */
+                      </>
+                    ) : (
+                      <>
+                        {!currentTimeRestriction && globalFilter.timeRange && (
                           <Button
-                            id={item.criterion.id + "-btn"}
-                            label="Auf globalen Filter zurücksetzen"
+                            id={item.criterion.id + "-global-btn"}
+                            label="Globaler Filter setzen"
                             type="tertiary"
                             onClick={() => {
                               setIsLocalFilterEditing(false);
@@ -382,23 +406,22 @@ const FeasibilityCriterionItem = ({
                             }}
                           />
                         )}
+                        {/* Lokalen Filter setzen */}
+                        <Button
+                          id={item.criterion.id + "-btn"}
+                          label="Lokaler Filter setzen"
+                          type="tertiary"
+                          onClick={() => {
+                            setIsPrevLocalFilter(isLocalFilter);
+                            setIsLocalFilter((prev) => !prev);
+                            setIsLocalFilterEditing((prev) => !prev);
+                            updateValidityItem({
+                              id: item.uid,
+                              isValid: false,
+                            });
+                          }}
+                        />
                       </>
-                    ) : (
-                      /* Lokalen Filter setzen */
-                      <Button
-                        id={item.criterion.id + "-btn"}
-                        label="Lokaler Filter setzen"
-                        type="tertiary"
-                        onClick={() => {
-                          setIsPrevLocalFilter(isLocalFilter);
-                          setIsLocalFilter((prev) => !prev);
-                          setIsLocalFilterEditing((prev) => !prev);
-                          updateValidityItem({
-                            id: item.uid,
-                            isValid: false,
-                          });
-                        }}
-                      />
                     )}
                   </div>
                 </div>
