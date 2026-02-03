@@ -63,6 +63,8 @@ const FeasibilityContainer = () => {
     open: boolean;
     resolver?: (choice: SelectedChoice) => void;
   }>({ open: false });
+  const [hasGlobalFilterDeleteAction, setHasGlobalFilterDeleteAction] =
+    useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
   const [actionTrigger, setActionTrigger] = useState<number>(0);
 
@@ -117,6 +119,11 @@ const FeasibilityContainer = () => {
       return;
     }
 
+    if (!value) {
+      // removing global time range filter
+      setHasGlobalFilterDeleteAction(true);
+    }
+
     const hasConflicts = findTimeRangeConflicts();
     // do not have any conflicts
     if (!hasConflicts) {
@@ -128,6 +135,13 @@ const FeasibilityContainer = () => {
     // has some conflict
     const choice = await requestWarningConfirmation();
     if (choice === "cancel") return;
+
+    if (choice === "confirm") {
+      applyGlobalTimeRange(value, false);
+      updateGlobalFilter(filterName, value);
+      deleteValidityItem("global-time-range");
+      return;
+    }
 
     if (choice === "replace all") {
       applyGlobalTimeRange(value, true);
@@ -245,7 +259,7 @@ const FeasibilityContainer = () => {
                 {validityItems.filter((item) => !item.isValid).length > 0 && (
                   <>
                     <img src={warningIcon} className="inline w-4 mr-1" />
-                    <p className="text-xs">
+                    <p className="text-sm">
                       Nicht bestätigte Filter:{" "}
                       {validityItems.filter((item) => !item.isValid).length}
                     </p>
@@ -315,6 +329,7 @@ const FeasibilityContainer = () => {
       <WarningModal
         open={warningModal.open}
         hasAnyGlobalFilter={hasAnyGlobalFilter}
+        hasGlobalFilterDeleteAction={hasGlobalFilterDeleteAction}
         onClick={(choice) => handleWarningChoice(choice)}
       />
       <SaveQueryModal

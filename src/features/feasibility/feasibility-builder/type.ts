@@ -22,7 +22,11 @@ export type CriterionNode = {
   isExpanded: boolean;
 };
 
-export type SelectedChoice = "replace all" | "replace global" | "cancel";
+export type SelectedChoice =
+  | "replace all"
+  | "replace global"
+  | "confirm"
+  | "cancel";
 
 export type LogicOperator = "AND" | "OR";
 
