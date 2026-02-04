@@ -5,10 +5,12 @@
 
 const login = async () => {
   const loginUrl = `${import.meta.env.VITE_BACKEND_API_BASE}/login?next=${import.meta.env.VITE_BASE_URL}`;
+  
   const res = await fetch(loginUrl, {
     credentials: "include",
     redirect: "manual",
   });
+  console.log(res);
 
   if (res.type === "opaqueredirect") {
     window.location.href = res.url;

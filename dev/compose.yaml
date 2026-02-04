@@ -21,7 +21,7 @@ services:
     image: ghcr.io/diz-unimr/machbarkeit-query:1.1.3
     environment:
       APP__LOG_LEVEL: debug
-      FEASIBILITY__BASE_URL: https://feasibility-test.diz.uni-marburg.de/query/execute
+      FEASIBILITY__BASE_URL: http://feasibility-test.diz.uni-marburg.de:8080/query/execute
       BROKER__URL: ws://backend:3000/feasibility/ws
       BROKER__AUTH__CLIENT_CREDENTIALS__CLIENT_ID: machbarkeit
       BROKER__AUTH__CLIENT_CREDENTIALS__CLIENT_SECRET: ${AUTH__OIDC__CLIENT_SECRET}

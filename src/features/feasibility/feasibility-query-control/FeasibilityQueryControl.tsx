@@ -91,6 +91,7 @@ const FeasibilityQueryControl = ({
           </span>
         </div>
         <ButtonContainer className="p-0">
+          {/* Warning Modal */}
           <Button
             id="reset-query"
             type="secondary"
