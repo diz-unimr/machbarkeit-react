@@ -1,9 +1,10 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import axios, { type AxiosResponse, AxiosError } from "axios";
-import type { Criterion } from "@app/types/ontologyType";
+import axios, {type AxiosResponse, AxiosError} from "axios";
+import type {Criterion} from "@app/types/ontologyType";
 import transformObjectKeys from "@app/utils/transformObjectKeys";
+import login from "@app/services/loginService.ts";
 
 export const getConcept = async (id: string): Promise<Criterion | null> => {
   let response: AxiosResponse;
@@ -16,9 +17,9 @@ export const getConcept = async (id: string): Promise<Criterion | null> => {
     const conceptResponse = transformObjectKeys([response.data]) as Criterion[];
     return conceptResponse[0];
   } catch (error) {
-    if ((error as AxiosError).code === "ERR_NETWORK") {
-      alert("Network Error");
-    }
+    // todo: error handling
+    console.log(error);
+    await login();
     return null;
   }
 };
@@ -39,9 +40,9 @@ export const getOntology = async (
 
     return [response, apiResponse.status];
   } catch (error) {
-    if ((error as AxiosError).code === "ERR_NETWORK") {
-      alert("Network Error");
-    }
+    // todo: error handling
+    console.log(error);
+    await login();
     return [null, (error as AxiosError)?.status ?? 0]; // Return null and error status
   }
 };
