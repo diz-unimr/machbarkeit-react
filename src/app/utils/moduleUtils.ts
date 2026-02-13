@@ -21,17 +21,13 @@ const moduleColor: ModuleColorMap = {
     bgColor: "#D6EAF8",
   },
   Diagnose: {
-    btnColor: "#E84393", // E84393
-    bgColor: "#F7CBE6", // F7D1E6
+    btnColor: "#E84393",
+    bgColor: "#F7CBE6",
   },
   Procedure: {
     btnColor: "#9B59B6",
     bgColor: "#D0CBF7",
   },
-  /* Laboruntersuchung: {
-    btnColor: "#E67E22",
-    bgColor: "#F7D9B8",
-  }, */
   Laboruntersuchung: {
     btnColor: "#27AE60",
     bgColor: "#C8F1D8",

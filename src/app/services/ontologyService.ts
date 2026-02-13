@@ -1,8 +1,8 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import axios, {type AxiosResponse, AxiosError} from "axios";
-import type {Criterion} from "@app/types/ontologyType";
+import axios, { type AxiosResponse, AxiosError } from "axios";
+import type { Criterion } from "@app/types/ontologyType";
 import transformObjectKeys from "@app/utils/transformObjectKeys";
 import login from "@app/services/loginService.ts";
 
@@ -26,7 +26,7 @@ export const getConcept = async (id: string): Promise<Criterion | null> => {
 
 export const getOntology = async (
   moduleId: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<[Criterion[] | null, number]> => {
   let apiResponse: AxiosResponse;
   try {
@@ -50,7 +50,7 @@ export const getOntology = async (
 export const getFlatOntology = async (
   moduleId: string,
   searchText: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<[Criterion[] | null, number]> => {
   let apiResponse: AxiosResponse;
   try {
@@ -69,7 +69,7 @@ export const getFlatOntology = async (
           "Content-Type": "application/json",
           "Cache-Control": "max-age=3600",
         },
-      }
+      },
     );
     const response = transformObjectKeys(apiResponse.data) as Criterion[];
     return [response, apiResponse.status];

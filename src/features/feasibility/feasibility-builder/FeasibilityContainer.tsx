@@ -205,9 +205,6 @@ const FeasibilityContainer = () => {
     );
   }, [selectedInclusionCriteria.criteria, globalFilter.isEditing]);
 
-  useEffect(() => {
-    console.log(selectedInclusionCriteria);
-  }, [selectedInclusionCriteria]);
   return (
     <>
       <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
@@ -249,7 +246,7 @@ const FeasibilityContainer = () => {
                   />
                   <label
                     htmlFor="upload"
-                    className="flex items-center text-[clamp(11px,1vw,14px)] font-medium cursor-pointer px-2.5 py-1.5 hover:text-white hover:rounded-[6px] hover:bg-[#0072DA]"
+                    className="flex items-center text-[clamp(11px,1vw,14px)] font-medium cursor-pointer px-2.5 py-1.5 hover:text-white hover:rounded-md hover:bg-[#0072DA]"
                   >
                     Abfrage laden
                   </label>

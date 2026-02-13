@@ -6,34 +6,38 @@ import { getModuleName } from "@app/utils/moduleUtils";
 
 const sortLaboruntersuchung = (
   selectable: Criterion[],
-  nonSelectable: Criterion[]
+  nonSelectable: Criterion[],
 ) => {
   let merged: Criterion[] = [];
 
   /* const loinc = selectable.filter((i) =>
-    i.termCodes?.some((c) => c.system === "http://loinc.org")
-  ); */
+    i.termCodes?.some((c) => c.system === "http://loinc.org"),
+  );
   const swisslab = selectable.filter((i) =>
     i.termCodes?.some(
       (c) =>
-        c.system === "https://fhir.diz.uni-marburg.de/CodeSystem/swisslab-code"
-    )
+        c.system === "https://fhir.diz.uni-marburg.de/CodeSystem/swisslab-code",
+    ),
   );
 
-  /* loinc.sort((a, b) =>
-    (a.termCodes?.[1]?.code ?? "").localeCompare(b.termCodes?.[1]?.code ?? "")
-  ); */
+  loinc.sort((a, b) =>
+    (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
+  );
   swisslab.sort((a, b) =>
-    (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? "")
-  );
+    (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
+  ); */
 
+  const code = selectable.sort((a, b) =>
+    (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
+  );
+  merged = [...nonSelectable, ...code];
   // merged = [...nonSelectable, ...loinc, ...swisslab];
-  merged = [...nonSelectable, ...swisslab];
+  // merged = [...nonSelectable, ...swisslab];
   return merged;
 };
 
 const sortOntologyTree = (
-  ontologyTree: Criterion[]
+  ontologyTree: Criterion[],
 ): Criterion[] | undefined => {
   if (!ontologyTree) return ontologyTree;
 
@@ -49,7 +53,9 @@ const sortOntologyTree = (
   } else {
     nonSelectable.sort((a, b) => a.display.localeCompare(b.display));
     selectable.sort((a, b) =>
-      (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? "")
+      (a.termCodes?.[0]?.code ?? "").localeCompare(
+        b.termCodes?.[0]?.code ?? "",
+      ),
     );
     merged = [...nonSelectable, ...selectable];
   }
