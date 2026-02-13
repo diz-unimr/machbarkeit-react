@@ -26,17 +26,3 @@ const getModules = async (): Promise<Module[] | null> => {
 };
 
 export default getModules;
-
-/* 
-	[User clicks "Load Merkmale"]
-			↓
-	Component → useMerkmale() (hook)  add cleaned data into store
-			↓
-	useMerkmale → getMerkmale() (service)  cleaning data
-			↓
-	getMerkmale → /api/merkmale (API)
-			↓
-	Backend → Database → returns JSON
-			↓
-	Service clean data → store → UI render
-*/

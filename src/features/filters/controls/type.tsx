@@ -30,3 +30,5 @@ export type TimeRangeType = {
     isLocalFilter?: boolean;
   };
 };
+
+export type CaseType = "no filter" | "imp" | "amb";

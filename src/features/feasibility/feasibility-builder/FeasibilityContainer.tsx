@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -16,12 +15,10 @@ import type {
 import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQueryControl";
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
 import GlobalFilterPanel, {
-  type GlobalFilterName,
+  type globalFilterWarning,
 } from "@features/filters/globalFilterPanel";
-import type { TimeRangeType } from "@features/filters/controls/type";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
-import useFilterValidationStore from "@app/store/filter-validation-store";
 import { Button } from "@/components/ui/buttons/Button";
 import WarningModal from "../WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
@@ -54,43 +51,23 @@ const FeasibilityContainer = () => {
   const applyGlobalTimeRange = useSelectedCriteriaStore(
     (s) => s.applyGlobalTimeRange,
   );
-  const { validityItems, deleteValidityItem, clearValidityItems } =
-    useFilterValidationStore();
-  const { updateGlobalFilter } = useGlobalFilterStore();
-  const [completeFilter, setCompleteFilter] = useState<boolean>(true);
-  const [hasAnyGlobalFilter, setHasAnyGlobalFilter] = useState<boolean>(false);
+  const stopEditing = useGlobalFilterStore((s) => s.stopEditing);
+  const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
+  const updateGlobalFilter = useGlobalFilterStore((s) => s.updateGlobalFilter);
+  const [completedFilter, setCompletedFilter] = useState<boolean>(false);
+  const [hasAnyLocalFilter, setHasAnyLocalFilter] = useState<boolean>(false);
   const [warningModal, setWarningModal] = useState<{
     open: boolean;
     resolver?: (choice: SelectedChoice) => void;
   }>({ open: false });
-  const [hasGlobalFilterDeleteAction, setHasGlobalFilterDeleteAction] =
-    useState(false);
+  const [isDeleteAction, setIsDeleteAction] = useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
-  const [actionTrigger, setActionTrigger] = useState<number>(0);
-
-  const findTimeRangeConflicts = () => {
-    const criteria =
-      useSelectedCriteriaStore.getState().selectedInclusionCriteria.criteria;
-
-    const hasAnyLocal = criteria.some(
-      (c) =>
-        c.criterion.timeRestrictionAllowed &&
-        c.criterion.timeRestriction?.isLocalFilter === true,
-    );
-
-    const hasAnyGlobal = criteria.some(
-      (c) =>
-        c.criterion.timeRestrictionAllowed &&
-        (!c.criterion.timeRestriction ||
-          c.criterion.timeRestriction?.isLocalFilter === false),
-    );
-    setHasAnyGlobalFilter(hasAnyGlobal);
-    return hasAnyLocal;
-  };
+  const [numberOfEditing, setNumberOfEditing] = useState<number>(0);
 
   const handleWarningChoice = (selectedChoice: SelectedChoice) => {
     warningModal.resolver?.(selectedChoice);
     setWarningModal({ open: false });
+    setIsDeleteAction(false);
   };
 
   const requestWarningConfirmation = () =>
@@ -109,51 +86,34 @@ const FeasibilityContainer = () => {
     });
   };
 
-  const handleGlobalFilterChange = async (
-    filterName: GlobalFilterName,
-    value: TimeRangeType["timeRestriction"] | null,
-  ) => {
-    // do not have any selectedInclusionCriteria
-    if (selectedInclusionCriteria.criteria.length === 0) {
-      updateGlobalFilter(filterName, value);
-      return;
-    }
-
-    if (!value) {
-      // removing global time range filter
-      setHasGlobalFilterDeleteAction(true);
-    }
-
-    const hasConflicts = findTimeRangeConflicts();
-    // do not have any conflicts
-    if (!hasConflicts) {
-      applyGlobalTimeRange(value, true);
-      updateGlobalFilter(filterName, value);
-      return;
-    }
-
-    // has some conflict
+  const handleWarning = async (warning: globalFilterWarning) => {
+    setHasAnyLocalFilter(warning.hasLocalFilter);
+    setIsDeleteAction(warning.isDeleteAction);
     const choice = await requestWarningConfirmation();
-    if (choice === "cancel") return;
 
-    if (choice === "confirm") {
-      applyGlobalTimeRange(value, false);
-      updateGlobalFilter(filterName, value);
-      deleteValidityItem("global-time-range");
-      return;
+    switch (choice) {
+      case "cancel":
+        return;
+      case "confirm":
+        applyGlobalTimeRange(warning.value, false);
+        updateGlobalFilter(warning.filterName, warning.value);
+        break;
+      case "delete":
+        applyGlobalTimeRange(null, false);
+        updateGlobalFilter(warning.filterName, null);
+        break;
+      case "replace global":
+        applyGlobalTimeRange(warning.value, false);
+        updateGlobalFilter(warning.filterName, warning.value);
+        break;
+      case "replace all":
+        applyGlobalTimeRange(warning.value, true);
+        updateGlobalFilter(warning.filterName, warning.value);
+        break;
+      default:
+        return;
     }
-
-    if (choice === "replace all") {
-      applyGlobalTimeRange(value, true);
-      updateGlobalFilter(filterName, value);
-      return;
-    }
-
-    if (choice === "replace global") {
-      applyGlobalTimeRange(value, false);
-      updateGlobalFilter(filterName, value);
-      return;
-    }
+    stopEditing();
   };
 
   const removeCriterion = (uid: string) => {
@@ -221,28 +181,38 @@ const FeasibilityContainer = () => {
 
   const resetAllData = () => {
     clearSelectedCriteria();
-    clearValidityItems();
     updateGlobalFilter("timeRange", null);
     updateGlobalFilter("caseType", "no filter");
-    setActionTrigger((prev) => prev + 1);
+    stopEditing();
   };
 
   useEffect(() => {
-    deleteValidityItem("global-time-range");
-  }, [actionTrigger]);
+    const hasEditing =
+      selectedInclusionCriteria.criteria.some((c) => c.isEditing) ||
+      globalFilter.isEditing;
+    if (hasEditing) {
+      const numberOfSelectedCriteriaEditing =
+        selectedInclusionCriteria.criteria.filter((c) => c.isEditing).length;
+      const numberOfGlobalFilterEditing = globalFilter.isEditing ? 1 : 0;
+      const numberOfTotalEditing =
+        numberOfSelectedCriteriaEditing + numberOfGlobalFilterEditing;
+      setNumberOfEditing(numberOfTotalEditing);
+    } else {
+      setNumberOfEditing(0);
+    }
+    setCompletedFilter(
+      !hasEditing && selectedInclusionCriteria.criteria.length > 0,
+    );
+  }, [selectedInclusionCriteria.criteria, globalFilter.isEditing]);
 
   useEffect(() => {
-    console.log("validityItems: ", validityItems);
-    const allValid = validityItems.every((item) => item.isValid);
-    if (allValid) setCompleteFilter(true);
-    else setCompleteFilter(false);
-  }, [validityItems]);
-
+    console.log(selectedInclusionCriteria);
+  }, [selectedInclusionCriteria]);
   return (
     <>
       <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
         <FeasibilityQueryControl
-          completeFilter={completeFilter}
+          completedFilter={completedFilter}
           createQueryData={createQueryData}
           onResetAllData={resetAllData}
         />
@@ -256,12 +226,11 @@ const FeasibilityContainer = () => {
           >
             <div className="flex justify-between items-center px-5 py-3 border-b-[1.5px] border-(--color-border)">
               <div className="flex gap-2">
-                {validityItems.filter((item) => !item.isValid).length > 0 && (
+                {numberOfEditing > 0 && (
                   <>
                     <img src={warningIcon} className="inline w-4 mr-1" />
                     <p className="text-sm">
-                      Nicht bestätigte Filter:{" "}
-                      {validityItems.filter((item) => !item.isValid).length}
+                      Nicht bestätigte Filter: {numberOfEditing}
                     </p>
                   </>
                 )}
@@ -289,20 +258,14 @@ const FeasibilityContainer = () => {
                     label="Abfrage speichern"
                     type="secondary"
                     className="m-0! font-medium!"
-                    isActive={
-                      completeFilter &&
-                      selectedInclusionCriteria.criteria.length > 0
-                    }
+                    isActive={completedFilter}
                     onClick={() => setSaveModalOpen(true)}
                   />
                 </li>
               </menu>
             </div>
             <div className="flex flex-col h-full min-h-0 gap-4 p-4">
-              <GlobalFilterPanel
-                onHandleGlobalFilterChange={handleGlobalFilterChange}
-                actionTrigger={actionTrigger}
-              />
+              <GlobalFilterPanel onHandleWarning={handleWarning} />
               <div className="flex-1 min-h-0">
                 {inclusionCriteria.criteria.map((c, i) => (
                   <div key={i}>
@@ -328,8 +291,8 @@ const FeasibilityContainer = () => {
       </div>
       <WarningModal
         open={warningModal.open}
-        hasAnyGlobalFilter={hasAnyGlobalFilter}
-        hasGlobalFilterDeleteAction={hasGlobalFilterDeleteAction}
+        hasAnyLocalFilter={hasAnyLocalFilter}
+        isDeleteAction={isDeleteAction}
         onClick={(choice) => handleWarningChoice(choice)}
       />
       <SaveQueryModal

@@ -64,17 +64,17 @@ const FeasibilityCriteriaSortableList = ({
   selectedCriteria: SelectedCriteria;
   onRemove: (uid: string) => void;
 }) => {
-  const { reOrderCriteria } = useSelectedCriteriaStore();
+  const reOrderCriteria = useSelectedCriteriaStore((s) => s.reOrderCriteria);
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
-    })
+    }),
   );
 
   const activeItem = useMemo(
     () => selectedCriteria.criteria.find((i) => i.uid === activeId) ?? null,
-    [selectedCriteria, activeId]
+    [selectedCriteria, activeId],
   );
 
   return (
@@ -82,7 +82,9 @@ const FeasibilityCriteriaSortableList = ({
       sensors={sensors}
       collisionDetection={closestCenter}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-      onDragStart={({ active }) => setActiveId(active.id as string)}
+      onDragStart={({ active }) => {
+        setActiveId(active.id as string);
+      }}
       onDragEnd={({ active, over }) => {
         setActiveId(null);
         if (!over || active.id === over.id) return;
@@ -115,7 +117,7 @@ const FeasibilityCriteriaSortableList = ({
         {activeItem ? (
           <FeasibilityCriterionItem
             index={selectedCriteria.criteria.findIndex(
-              (i) => i.uid === activeItem.uid
+              (i) => i.uid === activeItem.uid,
             )}
             item={activeItem}
           />

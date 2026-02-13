@@ -28,7 +28,7 @@ const ModulesPanel = ({ onHandleModules }: ModulesPanelProps) => {
 
   return (
     <div className="flex-none w-full h-fit overflow-x-auto overflow-y-hidden">
-      <menu className="flex w-full p-3  border-b-2 border-b-[var(--color-border)]">
+      <menu className="flex w-full p-3  border-b-2 border-b-(--color-border)">
         <li className="flex gap-7 m-auto">
           {modules?.map((module, index) => (
             <div

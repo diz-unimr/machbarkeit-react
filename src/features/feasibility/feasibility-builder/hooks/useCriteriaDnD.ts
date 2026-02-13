@@ -9,7 +9,7 @@ import type { DropZone, CriterionNode } from "../type";
 import generateId from "@/app/utils/generateUID";
 
 const useCriteriaDnD = () => {
-  const { addNewCriteria } = useSelectedCriteriaStore();
+  const addNewCriterion = useSelectedCriteriaStore((s) => s.addNewCriterion);
   const [activeZone, setActiveZone] = useState<DropZone | null>(null);
 
   const uid = generateId();
@@ -55,10 +55,11 @@ const useCriteriaDnD = () => {
           uid: uid,
           criterion,
           isExpanded: false,
+          isEditing: false,
         };
-        addNewCriteria(newCriterion, zone);
+        addNewCriterion(newCriterion, zone);
       },
-    [addNewCriteria, uid],
+    [addNewCriterion, uid],
   );
 
   const handleDragLeave = useCallback(

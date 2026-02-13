@@ -32,7 +32,7 @@ const Card = ({
       ref={ref}
       className={twMerge(`flex flex-col w-full
         relative 
-        border-2 border-[var(--color-border)]
+        border-2 border-(--color-border)
         rounded-md
         bg-white
         ${className}`)}

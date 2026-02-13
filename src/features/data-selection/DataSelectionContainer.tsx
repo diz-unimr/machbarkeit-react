@@ -30,8 +30,8 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
   };
 
   return (
-    <div className="flex flex-col h-full border-[var(--color-border)]">
-      <div className="flex h-[60px] justify-between px-2 py-3 border-b-[1.5px] border-[var(--color-border)]">
+    <div className="flex flex-col h-full border-(--color-border)">
+      <div className="flex h-[60px] justify-between px-2 py-3 border-b-[1.5px] border-(--color-border)">
         <div className="flex gap-3 items-start">
           <img src={appIcon} width={20} height={20} className="text-black" />
         </div>

@@ -11,7 +11,7 @@ import useModulesStore from "@app/store/modules-store";
 
 const setModuleColor = (
   nodes: Criterion[],
-  color: ModuleColorProps | undefined
+  color: ModuleColorProps | undefined,
 ) => {
   nodes.forEach((node) => {
     node.color = color;
@@ -26,7 +26,7 @@ const matchesSearchTerm = (node: Criterion, term: string) => {
   const termLower = term.toLowerCase();
   const displayMatch = node.display?.toLowerCase().includes(termLower);
   const codeMatch = node.termCodes?.some((tc) =>
-    tc.code?.toLowerCase().includes(termLower)
+    tc.code?.toLowerCase().includes(termLower),
   );
   return displayMatch || codeMatch;
 };
@@ -54,14 +54,15 @@ const collectMatches = (nodes: Criterion[], term: string): Criterion[] => {
 
 const useOntology = (
   moduleId: string | null,
-  textSearch: string
+  textSearch: string,
 ): {
   ontologyResult: { criteria: Criterion[] | null; status?: number };
   isLoading: boolean;
 } => {
   const fetchController = useRef<AbortController | null>(null);
-  const { ontology, setOntology } = useOntologiesStore();
-  const { modules } = useModulesStore();
+  const ontology = useOntologiesStore((s) => s.ontology);
+  const setOntology = useOntologiesStore((s) => s.setOntology);
+  const modules = useModulesStore((s) => s.modules);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -79,10 +80,10 @@ const useOntology = (
     //create new abort controller for this request
     const controller = new AbortController();
     fetchController.current = controller;
-    
+
     setIsLoading(true);
 
-    const fetchOntology = async () => {
+    (async () => {
       try {
         const [data, status] = await getOntology(moduleId, controller.signal);
         if (controller.signal.aborted) return;
@@ -98,8 +99,7 @@ const useOntology = (
           setIsLoading(false);
         }
       }
-    };
-    fetchOntology();
+    })();
 
     return () => controller.abort();
   }, [moduleId, ontology, modules]);

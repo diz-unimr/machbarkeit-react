@@ -8,14 +8,14 @@ import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { useState } from "react";
 import feasibilityQuery from "@app/services/feasibility-service";
 import loadingSpinnerIcon from "@assets/loading_spinner.svg";
-import useFilterValidationStore from "@/app/store/filter-validation-store";
+import useGlobalFilterStore from "@/app/store/global-filter-store";
 
 const FeasibilityQueryControl = ({
-  completeFilter,
+  completedFilter,
   createQueryData,
   onResetAllData,
 }: {
-  completeFilter: boolean;
+  completedFilter: boolean;
   createQueryData: () => FeasibilityQueryData | null;
   onResetAllData: () => void;
 }) => {
@@ -26,9 +26,13 @@ const FeasibilityQueryControl = ({
   const [errorMessageResult, setErrorMessageResult] = useState<string | null>(
     null,
   );
-  const { selectedInclusionCriteria, clearSelectedCriteria } =
-    useSelectedCriteriaStore();
-  const { validityItems } = useFilterValidationStore();
+  const selectedInclusionCriteria = useSelectedCriteriaStore(
+    (s) => s.selectedInclusionCriteria,
+  );
+  const clearSelectedCriteria = useSelectedCriteriaStore(
+    (s) => s.clearSelectedCriteria,
+  );
+  const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
 
   const clearRunningQuery = () => {
     if (abortController) {
@@ -75,6 +79,12 @@ const FeasibilityQueryControl = ({
     onResetAllData();
   };
 
+  const isResetActived =
+    selectedInclusionCriteria.criteria.length > 0 ||
+    !!globalFilter.timeRange ||
+    globalFilter.isEditing ||
+    globalFilter.caseType !== "no filter";
+
   return (
     <div className="flex h-15 bg-white border-b-[1.5px] border-(--color-border)">
       <div className="flex w-full max-w-240 justify-between m-auto px-8">
@@ -97,19 +107,14 @@ const FeasibilityQueryControl = ({
             type="secondary"
             label="ZURÜCKSETZEN"
             className="text-black"
-            isActive={
-              selectedInclusionCriteria.criteria.length > 0 ||
-              validityItems.length > 0
-            }
+            isActive={isResetActived}
             onClick={resetAllData}
           />
           <Button
             id="start-query"
             type="primary"
             label={!isQueryRunning ? "ABFRAGE STARTEN" : "ABFRAGE STOPPEN"}
-            isActive={
-              completeFilter && selectedInclusionCriteria.criteria.length > 0
-            }
+            isActive={completedFilter}
             onClick={toggleQuery}
           />
         </ButtonContainer>

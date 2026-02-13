@@ -35,7 +35,7 @@ const InputTextField = ({
   const rootClassName = twMerge(
     "flex flex-col justify-center w-full relative px-1 my-2",
     width,
-    className
+    className,
   );
 
   return (
@@ -54,12 +54,12 @@ const InputTextField = ({
               min={type === "number" ? 0 : undefined}
               value={value}
               placeholder=""
-              className={`w-full h-full truncate !rounded-md !border !border-[#c0c7ce] outline-0  ${type === "search" ? "pl-10" : "pl-3"}`}
+              className={`w-full h-full truncate rounded-md! border! border-[#c0c7ce]! outline-0  ${type === "search" ? "pl-10" : "pl-3"}`}
             />
             <label
               htmlFor={id}
               className={`flex items-center absolute left-0 px-1 text-sm cursor-auto transition-all duration-200 ${type === "search" ? "ml-10" : "ml-3"}
-								${(value && value.toString().length > 0) || isFocused ? "-top-2.5 !text-xs font-semibold bg-white" : "h-full top-0"}`}
+								${(value && value.toString().length > 0) || isFocused ? "-top-2.5 text-xs! font-semibold bg-white" : "h-full top-0"}`}
             >
               {label}
             </label>
@@ -72,7 +72,7 @@ const InputTextField = ({
           {type !== "number" && value && value.toString().length > 0 && (
             <p
               onClick={() => onClearText()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 !bg-white cursor-pointer"
+              className="absolute right-2 top-1/2 -translate-y-1/2 px-2 text-slate-600 bg-white! cursor-pointer"
             >
               <img src={closeIcon} />
             </p>

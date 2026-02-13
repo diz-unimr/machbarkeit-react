@@ -20,13 +20,15 @@ export type CriterionNode = {
   uid: string;
   criterion: Criterion;
   isExpanded: boolean;
+  isEditing?: boolean;
 };
 
 export type SelectedChoice =
   | "replace all"
   | "replace global"
   | "confirm"
-  | "cancel";
+  | "cancel"
+  | "delete";
 
 export type LogicOperator = "AND" | "OR";
 

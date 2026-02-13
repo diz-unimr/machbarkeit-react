@@ -2,26 +2,30 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { TimeRangeType } from "@features/filters/controls/type";
+import type { CaseType, TimeRangeType } from "@features/filters/controls/type";
 import type { GlobalFilterName } from "@features/filters/globalFilterPanel";
 
 export type GlobalFilter = {
   timeRange: TimeRangeType["timeRestriction"] | null;
-  caseType: string | null;
+  caseType: CaseType | null;
+  isEditing: boolean;
 };
 
 type GlobalFilterStore = {
   globalFilter: GlobalFilter;
   updateGlobalFilter: (
     filterName: GlobalFilterName,
-    value: string | (TimeRangeType["timeRestriction"] | null),
+    value: CaseType | (TimeRangeType["timeRestriction"] | null),
   ) => void;
+  startEditing: () => void;
+  stopEditing: () => void;
 };
 
 const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
   globalFilter: {
     timeRange: null,
     caseType: "no filter",
+    isEditing: false,
   },
 
   updateGlobalFilter: (filterName, value) => {
@@ -40,6 +44,22 @@ const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
       };
     });
   },
+
+  startEditing: () =>
+    set((state) => ({
+      globalFilter: {
+        ...state.globalFilter,
+        isEditing: true,
+      },
+    })),
+
+  stopEditing: () =>
+    set((state) => ({
+      globalFilter: {
+        ...state.globalFilter,
+        isEditing: false,
+      },
+    })),
 }));
 
 export default useGlobalFilterStore;

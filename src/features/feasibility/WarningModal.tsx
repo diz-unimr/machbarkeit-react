@@ -7,52 +7,107 @@ import type { SelectedChoice } from "./feasibility-builder/type";
 
 type WarningModalProps = {
   open: boolean;
-  hasAnyGlobalFilter: boolean;
-  hasGlobalFilterDeleteAction?: boolean;
+  hasAnyLocalFilter: boolean;
+  isDeleteAction?: boolean;
+  minWidth?: string;
+  minHeight?: string;
   onClick: (choice: SelectedChoice) => void;
 };
 
 const WarningModal = ({
   open,
-  hasAnyGlobalFilter,
-  hasGlobalFilterDeleteAction,
+  hasAnyLocalFilter,
+  isDeleteAction,
   onClick,
 }: WarningModalProps) => {
-  console.log(hasGlobalFilterDeleteAction);
+  const confirmBtn = (
+    <Button
+      type="primary"
+      id="confirm-btn"
+      label="Bestätigen"
+      onClick={() => onClick("confirm")}
+    />
+  );
+  const cancelBtn = (
+    <Button
+      type="secondary"
+      id="cancel-btn"
+      label="ABBRECHEN"
+      onClick={() => onClick("cancel")}
+    />
+  );
+  const deleteBtn = (
+    <Button
+      type="primary"
+      id="delete-btn"
+      label="LÖSCHEN"
+      className="bg-red-800 text-white border-red-800 hover:bg-red-800"
+      onClick={() => onClick("delete")}
+    />
+  );
+  const replaceAllFilterBtn = (
+    <Button
+      type="primary"
+      id="replace-all-filter-btn"
+      label="Auf alle Filter ersetzen/aktualisieren"
+      onClick={() => onClick("replace all")}
+    />
+  );
+  const replaceGlobalFilterBtn = (
+    <Button
+      type="primary"
+      id="replace-global-filter-btn"
+      label="Nur auf bestehende globalen Filter ersetzen/aktualisieren"
+      onClick={() => onClick("replace global")}
+    />
+  );
+
+  let warningTitle;
+  let warningText;
+  let btnGroup;
+
+  if (isDeleteAction) {
+    warningTitle = "Globalen Filter löschen/entfernen";
+    warningText =
+      "Sind Sie sicher, dass Sie den globalen Filter löschen/entfernen möchten?";
+    btnGroup = (
+      <>
+        {cancelBtn}
+        {deleteBtn}
+      </>
+    );
+  } else if (hasAnyLocalFilter) {
+    warningTitle = "Globalen Filter anwenden";
+    warningText = (
+      <>
+        Einige oder alle Kriterien verwenden derzeit lokale Filter.
+        <br />
+        Soll der globale Filter nur bestehende globale Einstellungen
+        aktualisieren oder alle lokalen Filter ersetzen?
+      </>
+    );
+    btnGroup = (
+      <>
+        {cancelBtn}
+        {replaceGlobalFilterBtn}
+        {replaceAllFilterBtn}
+      </>
+    );
+  } else {
+    warningTitle = "Globalen Filter anwenden";
+    warningText =
+      "Möchten Sie den neuen globalen Filter auf alle Kriterien anwenden?";
+    btnGroup = (
+      <>
+        {cancelBtn}
+        {confirmBtn}
+      </>
+    );
+  }
+
   return (
-    <PopupModal
-      open={open}
-      title="Global Filter Warning"
-      message={
-        hasGlobalFilterDeleteAction
-          ? "Sind Sie sicher, dass Sie den globalen Filter löschen möchten?"
-          : "Auf Filter in allen Elemente ersetzen"
-      }
-    >
-      <Button
-        type="secondary"
-        id="cancel-btn"
-        label="ABBRECHEN"
-        onClick={() => onClick("cancel")}
-      />
-
-      <Button
-        type="primary"
-        id="confirm-btn"
-        label="Bestätigen"
-        onClick={() =>
-          onClick(hasGlobalFilterDeleteAction ? "confirm" : "replace all")
-        }
-      />
-
-      {hasAnyGlobalFilter && !hasGlobalFilterDeleteAction && (
-        <Button
-          type="primary"
-          id="confirm-global-btn"
-          label="Nur auf globalen Filter"
-          onClick={() => onClick("replace global")}
-        />
-      )}
+    <PopupModal open={open} title={warningTitle} message={warningText}>
+      {btnGroup}
     </PopupModal>
   );
 };

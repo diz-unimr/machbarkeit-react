@@ -24,7 +24,7 @@ import type {
   /* QuantityType, */
   TimeRangeType,
 } from "@features/filters/controls/type";
-import useFilterValidationStore from "@app/store/filter-validation-store";
+// import useFilterValidationStore from "@app/store/filter-validation-store";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
 
 type DragProps = {
@@ -54,12 +54,14 @@ const FeasibilityCriterionItem = ({
     isDragging: false,
   },
 }: FeasibilityCriterionItemProps) => {
-  const { removeCriterion, toggleLogic, updateCriterionFilter } =
-    useSelectedCriteriaStore();
-  const { globalFilter } = useGlobalFilterStore();
-  const updateValidityItem = useFilterValidationStore(
-    (s) => s.updateValidityItem,
+  const startEditing = useSelectedCriteriaStore((s) => s.startEditing);
+  const stopEditing = useSelectedCriteriaStore((s) => s.stopEditing);
+  const removeCriterion = useSelectedCriteriaStore((s) => s.removeCriterion);
+  const toggleLogic = useSelectedCriteriaStore((s) => s.toggleLogic);
+  const updateCriterionFilter = useSelectedCriteriaStore(
+    (s) => s.updateCriterionFilter,
   );
+  const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
 
   const isOr = logic === "OR";
   const [localFilter, setLocalFilter] = useState<
@@ -131,6 +133,7 @@ const FeasibilityCriterionItem = ({
     };
 
     updateCriterionFilter(filterInfo);
+    stopEditing("inclusionCriteria", item.uid);
   };
 
   useEffect(() => {
@@ -157,7 +160,7 @@ const FeasibilityCriterionItem = ({
 
   useEffect(() => {
     setIsLocalFilterEditing(false);
-    if (!item.criterion.timeRestriction) {
+    if (!item.criterion.timeRestriction && globalFilter.timeRange) {
       setCurrentTimeRestriction(globalFilter.timeRange);
     }
   }, [globalFilter.timeRange]);
@@ -253,7 +256,7 @@ const FeasibilityCriterionItem = ({
                             {isLocalFilter ? (
                               <>
                                 <img src={localFilterIcon} /> Lokaler Zeitraum:
-                                {!isLocalFilterEditing ? (
+                                {!item.isEditing ? (
                                   <span className="font-medium">
                                     {timeRangeLabel}
                                   </span>
@@ -278,10 +281,6 @@ const FeasibilityCriterionItem = ({
                               setIsLocalFilterEditing(false);
                               setIsLocalFilter(false);
                               setCurrentTimeRestriction(null);
-                              updateValidityItem({
-                                id: item.uid,
-                                isValid: true,
-                              });
                             }}
                           />
                         </div>
@@ -289,7 +288,7 @@ const FeasibilityCriterionItem = ({
                     </div>
                   ) : null}
 
-                  {isLocalFilterEditing && (
+                  {item.isEditing && (
                     <TimeRangeOption
                       id={item.uid}
                       size="sm"
@@ -298,10 +297,6 @@ const FeasibilityCriterionItem = ({
                       }
                       onValidityChange={(isValid) => {
                         setIsFilterCompleted(isValid);
-                        /* updateValidityItem({
-                          id: item.uid,
-                          isValid,
-                        }); */
                       }}
                       onCompleteChange={(filterValue) => {
                         setLocalFilter({
@@ -314,20 +309,15 @@ const FeasibilityCriterionItem = ({
                   <div className="flex gap-10 pl-0.5">
                     {isLocalFilter ? (
                       <>
-                        {globalFilter.timeRange && (
+                        {globalFilter.timeRange && ( // or set globalFilter.timeRange on isActive
                           /* Auf globalen Filter zurücksetzen */
                           <Button
                             id={item.criterion.id + "-btn"}
                             label="Auf globalen Filter zurücksetzen"
                             type="tertiary"
                             onClick={() => {
-                              setIsLocalFilterEditing(false);
                               setIsPrevLocalFilter(isLocalFilter);
                               setIsLocalFilter(false);
-                              updateValidityItem({
-                                id: item.uid,
-                                isValid: isFilterCompleted,
-                              });
                               handleTimeRangeFilter({
                                 ...globalFilter.timeRange,
                                 isLocalFilter: false,
@@ -336,7 +326,7 @@ const FeasibilityCriterionItem = ({
                           />
                         )}
 
-                        {isLocalFilterEditing ? (
+                        {item.isEditing ? (
                           /* Abbrechen and Bestätigen */
                           <div className="flex gap-2">
                             <Button
@@ -344,12 +334,8 @@ const FeasibilityCriterionItem = ({
                               label="Abbrechen"
                               type="tertiary"
                               onClick={() => {
-                                setIsLocalFilterEditing(false);
                                 setIsLocalFilter(isPrevLocalFilter);
-                                updateValidityItem({
-                                  id: item.uid,
-                                  isValid: true,
-                                });
+                                stopEditing("inclusionCriteria", item.uid);
                               }}
                             />
                             <Button
@@ -358,13 +344,8 @@ const FeasibilityCriterionItem = ({
                               type="tertiary"
                               isActive={isFilterCompleted}
                               onClick={() => {
-                                setIsLocalFilterEditing((prev) => !prev);
                                 setIsPrevLocalFilter(isLocalFilter);
                                 handleTimeRangeFilter(localFilter);
-                                updateValidityItem({
-                                  id: item.uid,
-                                  isValid: isFilterCompleted,
-                                });
                               }}
                             />
                           </div>
@@ -375,11 +356,7 @@ const FeasibilityCriterionItem = ({
                             label="Lokaler Filter bearbeiten"
                             type="tertiary"
                             onClick={() => {
-                              setIsLocalFilterEditing((prev) => !prev);
-                              updateValidityItem({
-                                id: item.uid,
-                                isValid: false,
-                              });
+                              startEditing("inclusionCriteria", item.uid);
                             }}
                           />
                         )}
@@ -392,13 +369,8 @@ const FeasibilityCriterionItem = ({
                             label="Globaler Filter setzen"
                             type="tertiary"
                             onClick={() => {
-                              setIsLocalFilterEditing(false);
                               setIsPrevLocalFilter(isLocalFilter);
                               setIsLocalFilter(false);
-                              updateValidityItem({
-                                id: item.uid,
-                                isValid: isFilterCompleted,
-                              });
                               handleTimeRangeFilter({
                                 ...globalFilter.timeRange,
                                 isLocalFilter: false,
@@ -414,11 +386,7 @@ const FeasibilityCriterionItem = ({
                           onClick={() => {
                             setIsPrevLocalFilter(isLocalFilter);
                             setIsLocalFilter((prev) => !prev);
-                            setIsLocalFilterEditing((prev) => !prev);
-                            updateValidityItem({
-                              id: item.uid,
-                              isValid: false,
-                            });
+                            startEditing("inclusionCriteria", item.uid);
                           }}
                         />
                       </>

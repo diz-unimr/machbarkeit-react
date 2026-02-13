@@ -16,7 +16,6 @@ import type {
   TimeRangeType,
 } from "@features/filters/controls/type";
 import useGlobalFilterStore from "./global-filter-store";
-import useFilterValidationStore from "./filter-validation-store";
 
 export type FilterProps =
   | {
@@ -38,16 +37,17 @@ export type FilterProps =
 type selectedCriteriaStore = {
   selectedInclusionCriteria: SelectedCriteria;
   selectedExclusionCriteria: SelectedCriteria;
-  addNewCriteria: (newCriterion: CriterionNode, zone: DropZone) => void;
-  removeCriterion: (idex: number, uid: string, zone: string) => void;
+  addNewCriterion: (newCriterion: CriterionNode, zone: DropZone) => void;
+  startEditing: (zone: DropZone, uid: string) => void;
+  stopEditing: (zone: DropZone, uid: string) => void;
+  removeCriterion: (idex: number, uid: string, zone: DropZone) => void;
   updateCriterionFilter: (filterInfo: FilterProps | null) => void;
-  // applyGlobalFilter: (filterName: "timeRange") => void;
   applyGlobalTimeRange: (
     next: TimeRangeType["timeRestriction"] | null,
     includeLocal: boolean,
   ) => void;
   toggleLogic: (logicIndex: number) => void;
-  reOrderCriteria: (active: Active, over: Over, zone: string) => void;
+  reOrderCriteria: (active: Active, over: Over, zone: DropZone) => void;
   setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
   clearSelectedCriteria: () => void;
 };
@@ -64,10 +64,9 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       criteria: [],
       logics: [],
     },
-    addNewCriteria: (newCriterion, zone) => {
+    addNewCriterion: (newCriterion, zone) => {
       set((state) => {
         const { globalFilter } = useGlobalFilterStore.getState();
-        const { updateValidityItem } = useFilterValidationStore.getState();
         const nextCriteria = [
           ...state.selectedInclusionCriteria.criteria,
           newCriterion.criterion.timeRestrictionAllowed &&
@@ -89,11 +88,6 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
                 "AND" as LogicOperator,
               ]
             : [];
-
-        updateValidityItem({
-          id: newCriterion.uid,
-          isValid: true,
-        });
 
         if (zone === "inclusionCriteria") {
           return {
@@ -119,9 +113,56 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
       });
     },
 
+    startEditing: (zone, uid) =>
+      set((state) => {
+        if (zone === "inclusionCriteria") {
+          return {
+            selectedInclusionCriteria: {
+              ...state.selectedInclusionCriteria,
+              criteria: state.selectedInclusionCriteria.criteria.map((c) =>
+                c.uid === uid ? { ...c, isEditing: true } : c,
+              ),
+            },
+          };
+        } else if (zone === "exclusionCriteria") {
+          return {
+            selectedExclusionCriteria: {
+              ...state.selectedExclusionCriteria,
+              criteria: state.selectedExclusionCriteria.criteria.map((c) =>
+                c.uid === uid ? { ...c, isEditing: true } : c,
+              ),
+            },
+          };
+        }
+        return state;
+      }),
+
+    stopEditing: (zone, uid) =>
+      set((state) => {
+        if (zone === "inclusionCriteria") {
+          return {
+            selectedInclusionCriteria: {
+              ...state.selectedInclusionCriteria,
+              criteria: state.selectedInclusionCriteria.criteria.map((c) =>
+                c.uid === uid ? { ...c, isEditing: false } : c,
+              ),
+            },
+          };
+        } else if (zone === "exclusionCriteria") {
+          return {
+            selectedExclusionCriteria: {
+              ...state.selectedExclusionCriteria,
+              criteria: state.selectedExclusionCriteria.criteria.map((c) =>
+                c.uid === uid ? { ...c, isEditing: false } : c,
+              ),
+            },
+          };
+        }
+        return state;
+      }),
+
     removeCriterion: (index, uid, zone) => {
       set((state) => {
-        const { deleteValidityItem } = useFilterValidationStore.getState();
         const currentCriteria = state.selectedInclusionCriteria;
         const nextCriteria = currentCriteria.criteria.filter(
           (c) => c.uid !== uid,
@@ -132,8 +173,6 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
             return i != index - 1;
           else return i != index;
         });
-
-        deleteValidityItem(uid);
 
         if (zone === "inclusionCriteria") {
           return {
@@ -297,9 +336,6 @@ export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
           logics: [],
         },
       });
-
-      const { clearValidityItems } = useFilterValidationStore.getState();
-      clearValidityItems();
     },
   }),
 );
