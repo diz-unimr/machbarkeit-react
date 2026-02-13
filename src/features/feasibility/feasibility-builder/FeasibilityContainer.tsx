@@ -205,9 +205,7 @@ const FeasibilityContainer = () => {
     );
   }, [selectedInclusionCriteria.criteria, globalFilter.isEditing]);
 
-  useEffect(() => {
-    console.log(selectedInclusionCriteria);
-  }, [selectedInclusionCriteria]);
+
   return (
     <>
       <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
