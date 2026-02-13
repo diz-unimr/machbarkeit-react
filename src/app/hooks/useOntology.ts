@@ -1,12 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
-    SPDX-License-Identifier: AGPL-3.0-or-later */
+// eslint-disable react-hooks/exhaustive-deps
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import useOntologiesStore from "@/app/store/ontologies-store";
 import { getOntology } from "@app/services/ontologyService";
 import type { Criterion, ModuleColorProps } from "@app/types/ontologyType";
-import { httpStatusMessages } from "@app/constants/httpStatusMessage";
 import useModulesStore from "@app/store/modules-store";
 
 const setModuleColor = (
@@ -60,9 +57,8 @@ const useOntology = (
   isLoading: boolean;
 } => {
   const fetchController = useRef<AbortController | null>(null);
-  const ontology = useOntologiesStore((s) => s.ontology);
-  const setOntology = useOntologiesStore((s) => s.setOntology);
-  const modules = useModulesStore((s) => s.modules);
+  const { ontology, setOntology } = useOntologiesStore();
+  const { modules } = useModulesStore();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -83,15 +79,14 @@ const useOntology = (
 
     setIsLoading(true);
 
-    (async () => {
+    const fetchOntology = async () => {
       try {
         const [data, status] = await getOntology(moduleId, controller.signal);
         if (controller.signal.aborted) return;
         if (data) {
           setModuleColor(data, modules.find((m) => m.id === moduleId)?.color);
           setOntology(data);
-        } else if (status !== 200 && status !== 400)
-          alert(httpStatusMessages[status]);
+        }
       } catch {
         // ignore error, state remains null until fetch succeeds
       } finally {
@@ -99,10 +94,11 @@ const useOntology = (
           setIsLoading(false);
         }
       }
-    })();
+    };
+    fetchOntology();
 
     return () => controller.abort();
-  }, [moduleId, ontology, modules]);
+  }, [moduleId, ontology, modules, setOntology]);
 
   const memoizedResult = useMemo(() => {
     if (!moduleId) {
