@@ -34,7 +34,7 @@ export type FilterProps =
       filterValue: TimeRangeType["timeRestriction"] | null;
     };
 
-type selectedCriteriaStore = {
+type SelectedCriteriaStore = {
   selectedInclusionCriteria: SelectedCriteria;
   selectedExclusionCriteria: SelectedCriteria;
   addNewCriterion: (newCriterion: CriterionNode, zone: DropZone) => void;
@@ -52,7 +52,7 @@ type selectedCriteriaStore = {
   clearSelectedCriteria: () => void;
 };
 
-export const useSelectedCriteriaStore = create<selectedCriteriaStore>(
+export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
   (set) => ({
     selectedInclusionCriteria: {
       criteriaType: "inclusionCriteria",

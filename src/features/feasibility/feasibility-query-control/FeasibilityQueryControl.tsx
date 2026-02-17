@@ -1,14 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@components/ui/buttons/Button";
 import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
 import type { FeasibilityQueryData } from "@features/feasibility/feasibility-builder/type";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
-import { useState } from "react";
+import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
 import feasibilityQuery from "@app/services/feasibility-service";
 import loadingSpinnerIcon from "@assets/loading_spinner.svg";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
+import { AxiosError } from "axios";
 
 const FeasibilityQueryControl = ({
   completedFilter,
@@ -19,9 +22,12 @@ const FeasibilityQueryControl = ({
   createQueryData: () => FeasibilityQueryData | null;
   onResetAllData: () => void;
 }) => {
-  const [abortController, setAbortController] =
-    useState<AbortController | null>(null);
-  const [isQueryRunning, setIsQueryRunning] = useState<boolean>(false);
+  const abortController = useRef<AbortController | null>(null);
+  const isQueryRunning = useFeasibilityQueryStore((s) => s.isQueryRunning);
+  const startQueryRunning = useFeasibilityQueryStore(
+    (s) => s.startQueryRunning,
+  );
+  const stopQueryRunning = useFeasibilityQueryStore((s) => s.stopQueryRunning);
   const [queryResult, setQueryResult] = useState<number | null>(null);
   const [errorMessageResult, setErrorMessageResult] = useState<string | null>(
     null,
@@ -35,13 +41,11 @@ const FeasibilityQueryControl = ({
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
 
   const clearRunningQuery = () => {
-    if (abortController) {
-      abortController.abort();
-      setAbortController(null);
-      setIsQueryRunning(false);
-      setQueryResult(null);
-      setErrorMessageResult(null);
-    }
+    abortController.current?.abort();
+    abortController.current = null;
+    stopQueryRunning();
+    setQueryResult(null);
+    setErrorMessageResult(null);
   };
 
   const toggleQuery = async () => {
@@ -50,30 +54,39 @@ const FeasibilityQueryControl = ({
       clearRunningQuery();
       return;
     }
-
     // Start Query
     const queryData = createQueryData();
     if (!queryData) return;
-    setIsQueryRunning(true);
-    const abortController = new AbortController();
-    setAbortController(abortController);
-    const [numberOfPatients, errorMessage] = await feasibilityQuery(
-      queryData,
-      abortController!,
-    );
-    setQueryResult(numberOfPatients);
-    setErrorMessageResult(errorMessage);
-    setIsQueryRunning(false);
-    setAbortController(null);
+    startQueryRunning();
+
+    // abort old controller
+    abortController.current?.abort();
+    // create new controller
+    const controller = new AbortController();
+    abortController.current = controller;
+
+    try {
+      const [numberOfPatients, errorMessage] = await feasibilityQuery(
+        queryData,
+        controller,
+      );
+
+      setQueryResult(numberOfPatients);
+      setErrorMessageResult(errorMessage);
+    } catch (error) {
+      if ((error as AxiosError).name !== "AbortError") {
+        setErrorMessageResult("Unexpected error");
+      }
+    } finally {
+      stopQueryRunning();
+    }
   };
 
   const resetAllData = () => {
+    abortController.current?.abort();
+    abortController.current = null;
     clearSelectedCriteria();
-    if (abortController) {
-      abortController.abort();
-    }
-    setAbortController(null);
-    setIsQueryRunning(false);
+    stopQueryRunning();
     setQueryResult(null);
     setErrorMessageResult(null);
     onResetAllData();
@@ -84,6 +97,10 @@ const FeasibilityQueryControl = ({
     !!globalFilter.timeRange ||
     globalFilter.isEditing ||
     globalFilter.caseType !== "no filter";
+
+  useEffect(() => {
+    clearRunningQuery();
+  }, [selectedInclusionCriteria, globalFilter]);
 
   return (
     <div className="flex h-15 bg-white border-b-[1.5px] border-(--color-border)">

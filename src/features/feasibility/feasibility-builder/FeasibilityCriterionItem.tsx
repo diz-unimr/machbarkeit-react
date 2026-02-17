@@ -165,6 +165,10 @@ const FeasibilityCriterionItem = ({
     }
   }, [globalFilter.timeRange]);
 
+  useEffect(() => {
+    setIsExpanded(true);
+  }, [timeRangeLabel]);
+
   return (
     <div ref={dragProps.setNodeRef} className="relative">
       <li

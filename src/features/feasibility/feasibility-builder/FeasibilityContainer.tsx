@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -19,6 +20,7 @@ import GlobalFilterPanel, {
 } from "@features/filters/globalFilterPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
+import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
 import { Button } from "@/components/ui/buttons/Button";
 import WarningModal from "../WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
@@ -54,6 +56,7 @@ const FeasibilityContainer = () => {
   const stopEditing = useGlobalFilterStore((s) => s.stopEditing);
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
   const updateGlobalFilter = useGlobalFilterStore((s) => s.updateGlobalFilter);
+  const isQueryRunning = useFeasibilityQueryStore((s) => s.isQueryRunning);
   const [completedFilter, setCompletedFilter] = useState<boolean>(false);
   const [hasAnyLocalFilter, setHasAnyLocalFilter] = useState<boolean>(false);
   const [warningModal, setWarningModal] = useState<{
@@ -204,6 +207,11 @@ const FeasibilityContainer = () => {
       !hasEditing && selectedInclusionCriteria.criteria.length > 0,
     );
   }, [selectedInclusionCriteria.criteria, globalFilter.isEditing]);
+
+  useEffect(() => {
+    if (!isQueryRunning) return;
+    // TODO: show warning popup
+  }, [selectedInclusionCriteria, globalFilter]);
 
   return (
     <>
