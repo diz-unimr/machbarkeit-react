@@ -89,9 +89,9 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
                   {activeModule?.name}
                 </p>
                 {activeModule?.name === "Laboruntersuchung" && (
-                  <div className="w-full flex mb-5 border-b border-gray-200 ">
+                  <div className="mb-5 px-8 border-b border-gray-200 ">
                     <ul
-                      className="w-full flex gap-5 m-5 justify-center text-sm font-medium text-center"
+                      className="w-full flex gap-5 m-8 justify-center text-sm font-medium text-center"
                       role="tablist"
                     >
                       {/* Tab: SWISSLAB */}

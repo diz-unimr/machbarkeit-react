@@ -68,7 +68,7 @@ const FeasibilityCriterionItem = ({
     TimeRangeType["timeRestriction"] | null
   >(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(
-    item.isExpanded ?? false,
+    !!(item.isExpanded || item.criterion.filterType),
   );
   const [isLocalFilter, setIsLocalFilter] = useState<boolean>(
     item.criterion.timeRestriction?.isLocalFilter ?? false,
@@ -166,7 +166,9 @@ const FeasibilityCriterionItem = ({
   }, [globalFilter.timeRange]);
 
   useEffect(() => {
-    setIsExpanded(!!timeRangeLabel);
+    if (timeRangeLabel !== null) {
+      setIsExpanded(true);
+    }
   }, [timeRangeLabel]);
 
   return (
@@ -203,6 +205,14 @@ const FeasibilityCriterionItem = ({
                 {/* <div className="flex items-center justify-center pt-0.5 shrink-0">
                   <img src={dragHandleIcon} width={14} height={16} />
                 </div> */}
+                <ArrowButton
+                  id={item.uid}
+                  mode="rotate-left"
+                  width="14"
+                  isExpanded={isExpanded}
+                  hasChildren={true}
+                  className="mt-0.5!"
+                />
                 <p className="w-fit mt-0.5 font-bold text-gray-800 whitespace-nowrap cursor-pointer">
                   {item.criterion.termCodes?.[0]?.code}
                 </p>
@@ -210,14 +220,8 @@ const FeasibilityCriterionItem = ({
                 <p className="w-fit mt-0.5 font-normal text-gray-800 cursor-pointer">
                   {item.criterion.display}
                 </p>
-                <ArrowButton
-                  id={item.uid}
-                  mode="rotate-left"
-                  width="14"
-                  isExpanded={isExpanded}
-                  hasChildren={true}
-                />
               </div>
+
               {!isExpanded && isLocalFilterEditing && (
                 <div className="flex gap-2 p-1 bg-[#FEF5E2]">
                   <img src={warningIcon} className="inline w-4 mr-1" />
@@ -235,17 +239,26 @@ const FeasibilityCriterionItem = ({
               {item.criterion.filterType === "concept" ? (
                 <ConceptOption
                   criterion={item.criterion}
-                  onChange={(value) =>
+                  onChange={(value) => {
+                    console.log("Selected concepts:", value);
+                    if (value === null) {
+                      startEditing("inclusionCriteria", item.uid);
+                      setIsLocalFilterEditing(true);
+                    } else {
+                      stopEditing("inclusionCriteria", item.uid);
+                      setIsLocalFilterEditing(false);
+                    }
                     updateCriterionFilter({
                       uid: item.uid,
                       filterType: "concept",
                       filterValue: value,
-                    })
-                  }
+                    });
+                  }}
                 />
               ) : item.criterion.filterType === "quantity" ? (
                 <QuantityOption
                   criterion={item.criterion}
+                  size="sm"
                   onChange={() => {}}
                 />
               ) : item.criterion.timeRestrictionAllowed ? (
@@ -340,6 +353,7 @@ const FeasibilityCriterionItem = ({
                               onClick={() => {
                                 setIsLocalFilter(isPrevLocalFilter);
                                 stopEditing("inclusionCriteria", item.uid);
+                                setIsLocalFilterEditing(false);
                               }}
                             />
                             <Button
@@ -350,6 +364,7 @@ const FeasibilityCriterionItem = ({
                               onClick={() => {
                                 setIsPrevLocalFilter(isLocalFilter);
                                 handleTimeRangeFilter(localFilter);
+                                setIsLocalFilterEditing(false);
                               }}
                             />
                           </div>
@@ -361,6 +376,7 @@ const FeasibilityCriterionItem = ({
                             type="tertiary"
                             onClick={() => {
                               startEditing("inclusionCriteria", item.uid);
+                              setIsLocalFilterEditing(true);
                             }}
                           />
                         )}
@@ -390,6 +406,7 @@ const FeasibilityCriterionItem = ({
                           onClick={() => {
                             setIsPrevLocalFilter(isLocalFilter);
                             setIsLocalFilter((prev) => !prev);
+                            setIsLocalFilterEditing(true);
                             startEditing("inclusionCriteria", item.uid);
                           }}
                         />

@@ -106,7 +106,13 @@ input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
 }
 
-input[type="date"] {
+input[type="search"],
+input[type="text"] {
+  height: 40px;
+}
+
+input[type="date"],
+input[type="number"] {
   height: 35px;
   max-width: 120px;
   border: 1px solid #c0c7ce;

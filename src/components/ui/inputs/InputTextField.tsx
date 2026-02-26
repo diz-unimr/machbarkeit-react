@@ -45,7 +45,6 @@ const InputTextField = ({
           <div
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="flex h-[40px]"
           >
             <input
               onChange={(e) => onChange(e.target.value)}

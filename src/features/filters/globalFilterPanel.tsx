@@ -24,9 +24,7 @@ type GlobalFilterPanelProps = {
   onHandleWarning: (warning: globalFilterWarning) => void;
 };
 
-const GlobalFilterPanel = ({
-  onHandleWarning,
-}: GlobalFilterPanelProps) => {
+const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
   const startEditing = useGlobalFilterStore((s) => s.startEditing);
@@ -89,7 +87,9 @@ const GlobalFilterPanel = ({
           {!isExpanded && globalFilter.isEditing && (
             <div className="flex gap-2 items-center p-1">
               <img src={warningIcon} className="inline w-4 mr-1" />
-              <p className=" text-[#804909]">Bitte bestätigen Sie den Filter</p>
+              <p className="text-sm text-[#804909]">
+                Bitte bestätigen Sie den Filter
+              </p>
             </div>
           )}
         </div>
