@@ -13,7 +13,10 @@ type OntologyTreePanelProps = {
   onClick: (criteria: Criterion[] | null) => void;
 };
 
+type CodeSystem = "LOINC" | "SWISSLAB";
+
 const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
+  const [activeLabTab, setActiveLabTab] = useState<CodeSystem | null>(null);
   const [textInput, setTextInput] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const { ontologyResult, isLoading } = useOntology(
@@ -28,6 +31,11 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
     );
     return () => clearTimeout(handler);
   }, [textInput]);
+
+  useEffect(() => {
+    if (!activeModule) return;
+    setActiveLabTab("SWISSLAB");
+  }, [activeModule]);
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -45,7 +53,7 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
             setTextInput("");
           }}
         />
-        <div className="flex flex-col flex-1 min-h-0 gap-4 overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-0 gap-5 overflow-hidden">
           {ontologyResult.status !== 400 ? (
             isLoading ? (
               <p className="flex items-center justify-center h-full">
@@ -55,13 +63,19 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
               ontologyResult.criteria.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 {textInput.trim() !== "" ? (
-                  <span>
-                    Der Suchbegriff{" "}
-                    <span className="font-medium">{'"' + textInput + '"'}</span>{" "}
-                    wurde im Modul{" "}
-                    <span className="font-medium">{activeModule?.name}</span>{" "}
-                    nicht gefunden.
-                  </span>
+                  <div className="flex flex-col items-center">
+                    <p>
+                      Der Suchbegriff{" "}
+                      <span className="font-medium">
+                        {'"' + textInput + '"'}
+                      </span>
+                    </p>{" "}
+                    <p>
+                      wurde im Modul{" "}
+                      <span className="font-medium">{activeModule?.name}</span>{" "}
+                      nicht gefunden.
+                    </p>
+                  </div>
                 ) : (
                   "Keine daten"
                 )}
@@ -74,6 +88,63 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
                 >
                   {activeModule?.name}
                 </p>
+                {activeModule?.name === "Laboruntersuchung" && (
+                  <div className="w-full flex mb-5 border-b border-gray-200 ">
+                    <ul
+                      className="w-full flex gap-5 m-5 justify-center text-sm font-medium text-center"
+                      role="tablist"
+                    >
+                      {/* Tab: SWISSLAB */}
+                      <li className="flex-1" role="presentation">
+                        <div
+                          onClick={() => setActiveLabTab("SWISSLAB")}
+                          className={`inline-block w-full p-4 border-b-2 cursor-pointer ${
+                            activeLabTab === "SWISSLAB"
+                              ? "border-current"
+                              : "border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300"
+                          }`}
+                          style={
+                            activeLabTab === "SWISSLAB"
+                              ? {
+                                  color: activeModule?.color.btnColor,
+                                  borderBottomColor:
+                                    activeModule?.color.btnColor,
+                                }
+                              : {}
+                          }
+                          role="tab"
+                          aria-selected={activeLabTab === "SWISSLAB"}
+                        >
+                          Swisslab-Codes
+                        </div>
+                      </li>
+                      {/* Tab: LOINC */}
+                      <li className="flex-1" role="presentation">
+                        <div
+                          onClick={() => setActiveLabTab("LOINC")}
+                          className={`inline-block w-full p-4 border-b-2 cursor-pointer ${
+                            activeLabTab === "LOINC"
+                              ? "border-current"
+                              : "border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300"
+                          }`}
+                          style={
+                            activeLabTab === "LOINC"
+                              ? {
+                                  color: activeModule?.color.btnColor,
+                                  borderBottomColor:
+                                    activeModule?.color.btnColor,
+                                }
+                              : {}
+                          }
+                          role="tab"
+                          aria-selected={activeLabTab === "LOINC"}
+                        >
+                          LOINC-Codes
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                )}
                 <div className="flex-1 min-h-0 overflow-hidden">
                   <TreePanel>
                     {activeModule &&

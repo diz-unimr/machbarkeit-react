@@ -166,7 +166,7 @@ const FeasibilityCriterionItem = ({
   }, [globalFilter.timeRange]);
 
   useEffect(() => {
-    setIsExpanded(true);
+    setIsExpanded(!!timeRangeLabel);
   }, [timeRangeLabel]);
 
   return (
