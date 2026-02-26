@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -9,7 +10,7 @@ type ConceptOptionProps = {
   criterion: Criterion;
   onChange: (
     filterValue: ConceptType["valueFilter"] | null,
-    completeFilter?: boolean
+    completeFilter?: boolean,
   ) => void;
 };
 type Concept = ConceptType["valueFilter"]["selectedConcepts"][number];
@@ -29,7 +30,7 @@ const ConceptOption = ({ criterion, onChange }: ConceptOptionProps) => {
       type: "concept",
     };
 
-    onChange(valueFilter);
+    onChange(newSelectedValues.length > 0 ? valueFilter : null);
   };
 
   useEffect(() => {
@@ -39,6 +40,12 @@ const ConceptOption = ({ criterion, onChange }: ConceptOptionProps) => {
 
     setSelectedValue(selected);
   }, [criterion]);
+
+  useEffect(() => {
+    if (selectedValues.length === 0) {
+      onChange(null);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col gap-1">
@@ -53,6 +60,9 @@ const ConceptOption = ({ criterion, onChange }: ConceptOptionProps) => {
           <label>{option.display}</label>
         </div>
       ))}
+      {selectedValues.length === 0 && (
+        <p className="mt-1 text-red-500">Wählen Sie mindestens einen Wert.</p>
+      )}
     </div>
   );
 };

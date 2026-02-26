@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -12,31 +13,43 @@ import type { OptionCode } from "./TimeRangeOption";
 
 type QuantityOptionProps = {
   criterion: Criterion;
+  size?: "sm" | "md";
   onChange: (
     filterValue: QuantityType["valueFilter"] | null,
-    completeFilter?: boolean
+    completeFilter?: boolean,
   ) => void;
 };
 
+type SelectedValue = {
+  value: string;
+  min: string;
+  max: string;
+};
+
 const dropDownOptions: DropDownOption[] = [
-  { code: "no filter", display: "kein Filter" },
+  { code: "no filter", display: "Bitte wählen..." },
   { code: "eq", display: "gleich" },
   { code: "lt", display: "kleine" },
   { code: "gt", display: "größer" },
   { code: "between", display: "zwischen" },
 ];
 
-const QuantityOption = ({ criterion, onChange }: QuantityOptionProps) => {
+const QuantityOption = ({
+  criterion,
+  size = "md",
+  onChange,
+}: QuantityOptionProps) => {
   const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedUnit, setSelectedUnit] = useState(
-    criterion.filterOptions?.[0].display || ""
+    criterion.filterOptions?.[0].display || "",
   );
-  const [selectedValue, setSelectedValue] = useState({
+  const [selectedValue, setSelectedValue] = useState<SelectedValue>({
     value: "0",
     min: "0",
     max: "0",
   });
   const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
+  const [isFilterNull, setIsFilterNull] = useState<boolean>(true);
 
   const getInputOption = (option: string) => {
     switch (option) {
@@ -85,28 +98,32 @@ const QuantityOption = ({ criterion, onChange }: QuantityOptionProps) => {
     }
   };
 
-  useEffect(() => {
+  const handleQuantityChange = (
+    selectedOption: OptionCode,
+    selectedUnit: string,
+    selectedValue: SelectedValue,
+  ) => {
     if (criterion.filterOptions) {
+      let valueFilter: QuantityType["valueFilter"] | null = null;
       if (selectedOption === "no filter") {
-        onChange(null);
-        return;
+        setIsFilterCompleted(true);
+        setIsFilterNull(true);
+        return null;
       }
-
-      let completeFilter = true;
+      setIsFilterNull(false);
       const invalidBetween =
         selectedOption === "between" &&
-        Number(selectedValue["min"]) &&
-        Number(selectedValue["max"]) &&
+        selectedValue["min"] !== "" &&
+        selectedValue["max"] !== "" &&
         Number(selectedValue["min"]) >= Number(selectedValue["max"]);
 
       if (invalidBetween) {
-        completeFilter = false;
-        setIsFilterCompleted(completeFilter);
-        onChange(null, completeFilter);
+        setIsFilterCompleted(false);
+        return null;
       } else {
-        const valueFilter = {
+        valueFilter = {
           unit: criterion.filterOptions?.filter(
-            (option) => option.code === selectedUnit
+            (option) => option.code === selectedUnit,
           )[0],
           comparator: selectedOption === "between" ? null : selectedOption,
           value:
@@ -122,17 +139,21 @@ const QuantityOption = ({ criterion, onChange }: QuantityOptionProps) => {
               ? "quantity-range"
               : "quantity-comparator",
         };
-
-        onChange(valueFilter, completeFilter);
+        setIsFilterCompleted(true);
       }
+
+      return valueFilter;
     }
-  }, [
-    criterion.filterOptions,
-    onChange,
-    selectedOption,
-    selectedUnit,
-    selectedValue,
-  ]);
+  };
+
+  useEffect(() => {
+    const valueFilter = handleQuantityChange(
+      selectedOption,
+      selectedUnit,
+      selectedValue,
+    );
+    onChange(valueFilter || null);
+  }, [selectedOption, selectedUnit, selectedValue]);
 
   return (
     <div className="flex flex-col overflow-x-auto">
@@ -140,14 +161,18 @@ const QuantityOption = ({ criterion, onChange }: QuantityOptionProps) => {
         selectedOption={selectedOption}
         dropDownOptions={dropDownOptions}
         unitOptions={criterion.filterOptions}
+        size={size}
         onSelectOption={(option) => setSelectedOption(option)}
         onSelectUnit={(unit) => setSelectedUnit(unit)}
       >
         {getInputOption(selectedOption)}
       </DropDownContainer>
-      {!isFilterCompleted ? (
+      {!isFilterCompleted && (
         <p className="text-xs text-red-500 m-1">{invalidBetweenMessage}</p>
-      ) : null}
+      )}
+      {isFilterNull && (
+        <p className="mt-1 text-red-500">Wählen Sie mindestens einen Wert.</p>
+      )}
     </div>
   );
 };
