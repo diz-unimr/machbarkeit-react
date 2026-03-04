@@ -6,7 +6,6 @@ import Highlighter from "react-highlight-words";
 import { type Criterion } from "@app/types/ontologyType";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
-import arrowImg from "@assets/tree-arrow.png";
 import dragHandleIcon from "@assets/drag-handle-icon.svg";
 
 type TreeItemProps = {
@@ -50,7 +49,7 @@ const TreeItem = ({
     >
       <ArrowButton
         id={criterion.id}
-        image={arrowImg}
+        mode="rotate-right"
         isExpanded={isExpanded}
         hasChildren={
           (criterion.children && criterion.children.length > 0) || false
@@ -74,6 +73,7 @@ const TreeItem = ({
           </>
         ) : undefined}
         <Highlighter
+          style={{ overflowWrap: "anywhere" }}
           searchWords={searchWords}
           textToHighlight={criterion.display}
           highlightClassName="bg-yellow-200 rounded"

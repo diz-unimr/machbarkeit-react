@@ -40,7 +40,6 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
           id="sidebar-arrow"
           image={sidebarCollapse}
           width="20"
-          height="20"
           mode="flip"
           isExpanded={isExpanded}
           onClick={toggleContainer}

@@ -64,7 +64,7 @@ const Splitter = ({
           width: isExpanded
             ? (leftWidth ?? `${startLeftPercent}%`)
             : "fit-content",
-          minWidth: isExpanded ? "380px" : undefined,
+          minWidth: isExpanded ? "clamp(380px,50%,420px)" : undefined,
           maxWidth: "clamp(380px,45%,1000px)",
           transition: isResizing.current ? "none" : "width 0.3s ease",
         }}

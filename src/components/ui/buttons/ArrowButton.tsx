@@ -7,7 +7,6 @@ type ArrowButtonProp = {
   id: string;
   image?: string;
   width?: string;
-  height?: string;
   mode?: "rotate-left" | "rotate-right" | "flip";
   isExpanded: boolean;
   className?: string;
@@ -18,8 +17,7 @@ type ArrowButtonProp = {
 const ArrowButton = ({
   id,
   image = accordionArrow,
-  width = "16",
-  height = "16",
+  width = "15",
   mode = "rotate-right",
   isExpanded,
   className,
@@ -35,11 +33,14 @@ const ArrowButton = ({
     >
       <img
         key={id}
-        className={`mt-0.5 
+        style={{
+          width: `clamp(10px, 1vw + 0.5rem, ${width}px)`,
+        }}
+        className={`mt-0.5
           ${
             mode === "rotate-right"
               ? `transition-all duration-300 ${
-                  isExpanded ? "rotate-90" : "rotate-0"
+                  isExpanded ? "rotate-270" : "rotate-180"
                 }`
               : mode === "rotate-left"
                 ? `transition-all duration-300 ${
@@ -48,8 +49,8 @@ const ArrowButton = ({
                 : `${isExpanded ? "scale-x-[1]" : "scale-x-[-1]"}`
           }`}
         src={image}
-        width={width}
-        height={height}
+        //width={width}
+        height="14px"
         alt="arrow icon"
       />
     </button>
