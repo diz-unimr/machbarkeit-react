@@ -36,11 +36,6 @@ const FeasibilityContainer = () => {
     criteria: [],
     logics: [],
   });
-  /* const [isExclusionCriteriaOpen, setIsExclusionCriteriaOpen] =
-    useState<boolean>(true);
-  const [exclusionCriteria, setExclusionCriteria] = useState<
-    DroppedCriterion[]
-  >([]); */
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria,
   );
@@ -163,7 +158,22 @@ const FeasibilityContainer = () => {
       const inclusionCriteria =
         await convertToCriteriaDisplay(uploadedCriteria);
 
-      if (inclusionCriteria) setSelectedCriteria(inclusionCriteria);
+      if (inclusionCriteria) {
+        // check if any global filter
+        inclusionCriteria.criteria.some((c) => {
+          if (
+            c.criterion.timeRestrictionAllowed &&
+            c.criterion.timeRestriction &&
+            !c.criterion.isLocalFilter
+          ) {
+            updateGlobalFilter("timeRange", c.criterion.timeRestriction);
+            return true;
+          }
+          return false;
+        });
+        // set selected criteria in store
+        setSelectedCriteria(inclusionCriteria);
+      }
     } catch (error) {
       alert((error as Error).message);
     } finally {

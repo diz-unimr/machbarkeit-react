@@ -49,8 +49,6 @@ const ArrowButton = ({
                 : `${isExpanded ? "scale-x-[1]" : "scale-x-[-1]"}`
           }`}
         src={image}
-        //width={width}
-        height="14px"
         alt="arrow icon"
       />
     </button>

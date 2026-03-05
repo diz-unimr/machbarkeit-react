@@ -39,7 +39,6 @@ export const Button = ({
       break;
     case "tertiary":
       typeClass = `w-fit! min-w-0! bg-transparent! border-none! m-0! px-1! text-[var(--btn-bg)] ${isActive ? "hover:underline" : null} hover:bg-transparent hover:shadow-none!`;
-      // typeClass = `border-none bg-transparent ${isActive ? "hover:underline" : null} hover:bg-transparent`;
       break;
     case "danger":
       typeClass = "flex items-center gap-1 border-none hover:text-red-700";

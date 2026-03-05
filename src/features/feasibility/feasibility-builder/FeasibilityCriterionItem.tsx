@@ -19,12 +19,7 @@ import globalFilterIcon from "@assets/global-filter-icon.svg";
 import localFilterIcon from "@assets/local-filter-icon.svg";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import type {
-  /* ConceptType, */
-  /* QuantityType, */
-  TimeRangeType,
-} from "@features/filters/controls/type";
-// import useFilterValidationStore from "@app/store/filter-validation-store";
+import type { TimeRangeType } from "@features/filters/controls/type";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
 
 type DragProps = {
@@ -71,10 +66,10 @@ const FeasibilityCriterionItem = ({
     !!(item.isExpanded || item.criterion.filterType),
   );
   const [isLocalFilter, setIsLocalFilter] = useState<boolean>(
-    item.criterion.timeRestriction?.isLocalFilter ?? false,
+    item.criterion.isLocalFilter ?? false,
   );
   const [isPrevLocalFilter, setIsPrevLocalFilter] = useState<boolean>(
-    item.criterion.timeRestriction?.isLocalFilter ?? false,
+    item.criterion.isLocalFilter ?? false,
   );
   const [isLocalFilterEditing, setIsLocalFilterEditing] =
     useState<boolean>(false);
@@ -82,7 +77,7 @@ const FeasibilityCriterionItem = ({
   const [currentTimeRestriction, setCurrentTimeRestriction] = useState<
     TimeRangeType["timeRestriction"] | null
   >(
-    item.criterion.timeRestriction?.isLocalFilter
+    item.criterion.isLocalFilter && item.criterion.timeRestriction
       ? item.criterion.timeRestriction
       : null,
   );
@@ -116,8 +111,14 @@ const FeasibilityCriterionItem = ({
   };
 
   const handleTimeRangeFilter = (
-    timeRange: TimeRangeType["timeRestriction"] | null,
+    data: {
+      timeRange: TimeRangeType["timeRestriction"] | null;
+      isLocalFilter: boolean;
+    } | null,
   ) => {
+    if (!data) return;
+
+    const { timeRange, isLocalFilter } = data;
     const timeRangeValue = timeRange || {
       beforeDate: undefined,
       afterDate: undefined,
@@ -128,8 +129,8 @@ const FeasibilityCriterionItem = ({
       filterType: "timeRange",
       filterValue: {
         ...timeRangeValue,
-        isLocalFilter: timeRange ? timeRange.isLocalFilter : undefined,
       },
+      isLocalFilter: timeRange ? isLocalFilter : undefined,
     };
 
     updateCriterionFilter(filterInfo);
@@ -146,8 +147,7 @@ const FeasibilityCriterionItem = ({
     )
       return;
     setCurrentTimeRestriction(itemTR ?? null);
-
-    setIsLocalFilter(itemTR?.isLocalFilter ?? isLocalFilter);
+    setIsLocalFilter(item.criterion.isLocalFilter ?? isLocalFilter);
   }, [
     item.criterion.timeRestriction,
     item.criterion.timeRestriction?.afterDate,
@@ -170,6 +170,11 @@ const FeasibilityCriterionItem = ({
       setIsExpanded(true);
     }
   }, [timeRangeLabel]);
+
+  useEffect(() => {
+    if (!item.criterion.filterType) return;
+    setIsLocalFilterEditing(true);
+  }, []);
 
   return (
     <div ref={dragProps.setNodeRef} className="relative">
@@ -202,13 +207,9 @@ const FeasibilityCriterionItem = ({
                 className="flex w-fit items-start gap-3 hover:underline"
                 onClick={() => setIsExpanded((prev) => !prev)}
               >
-                {/* <div className="flex items-center justify-center pt-0.5 shrink-0">
-                  <img src={dragHandleIcon} width={14} height={16} />
-                </div> */}
                 <ArrowButton
                   id={item.uid}
                   mode="rotate-left"
-                  width="14"
                   isExpanded={isExpanded}
                   hasChildren={true}
                   className="mt-0.5!"
@@ -236,11 +237,11 @@ const FeasibilityCriterionItem = ({
               style={{ display: isExpanded ? "block" : "none" }}
               className={`p-2 pb-0 mt-3 ${isExpanded && "border-t-[1.5px] border-(--color-border)"}`}
             >
+              {String(item.isEditing)}
               {item.criterion.filterType === "concept" ? (
                 <ConceptOption
                   criterion={item.criterion}
                   onChange={(value) => {
-                    console.log("Selected concepts:", value);
                     if (value === null) {
                       startEditing("inclusionCriteria", item.uid);
                       setIsLocalFilterEditing(true);
@@ -318,12 +319,12 @@ const FeasibilityCriterionItem = ({
                       onCompleteChange={(filterValue) => {
                         setLocalFilter({
                           ...filterValue,
-                          isLocalFilter: true,
                         });
                       }}
                     />
                   )}
-                  <div className="flex gap-10 pl-0.5">
+                  <div className="flex flex-wrap pl-0.5">
+                    {/* gap-10 */}
                     {isLocalFilter ? (
                       <>
                         {globalFilter.timeRange && ( // or set globalFilter.timeRange on isActive
@@ -336,7 +337,7 @@ const FeasibilityCriterionItem = ({
                               setIsPrevLocalFilter(isLocalFilter);
                               setIsLocalFilter(false);
                               handleTimeRangeFilter({
-                                ...globalFilter.timeRange,
+                                timeRange: globalFilter.timeRange,
                                 isLocalFilter: false,
                               });
                             }}
@@ -363,7 +364,10 @@ const FeasibilityCriterionItem = ({
                               isActive={isFilterCompleted}
                               onClick={() => {
                                 setIsPrevLocalFilter(isLocalFilter);
-                                handleTimeRangeFilter(localFilter);
+                                handleTimeRangeFilter({
+                                  timeRange: localFilter,
+                                  isLocalFilter: true,
+                                });
                                 setIsLocalFilterEditing(false);
                               }}
                             />
@@ -392,7 +396,7 @@ const FeasibilityCriterionItem = ({
                               setIsPrevLocalFilter(isLocalFilter);
                               setIsLocalFilter(false);
                               handleTimeRangeFilter({
-                                ...globalFilter.timeRange,
+                                timeRange: globalFilter.timeRange,
                                 isLocalFilter: false,
                               });
                             }}

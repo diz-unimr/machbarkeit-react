@@ -22,16 +22,19 @@ export type FilterProps =
       uid: string;
       filterType: "concept";
       filterValue: ConceptType["valueFilter"] | null;
+      isLocalFilter?: boolean;
     }
   | {
       uid: string;
       filterType: "quantity";
       filterValue: QuantityType["valueFilter"] | null;
+      isLocalFilter?: boolean;
     }
   | {
       uid: string;
       filterType: "timeRange";
       filterValue: TimeRangeType["timeRestriction"] | null;
+      isLocalFilter?: boolean;
     };
 
 type SelectedCriteriaStore = {
@@ -214,6 +217,7 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
                         criterion: {
                           ...c.criterion,
                           valueFilter: filterInfo.filterValue ?? undefined,
+                          isLocalFilter: filterInfo.isLocalFilter ?? false,
                         },
                       }
                     : c,
@@ -234,6 +238,7 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
                           filterInfo.filterValue?.afterDate
                             ? filterInfo.filterValue
                             : undefined,
+                        isLocalFilter: filterInfo.isLocalFilter ?? false,
                       },
                     }
                   : c,
@@ -260,16 +265,15 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
             ...current,
             criteria: current.criteria.map((c) => {
               if (!c.criterion.timeRestrictionAllowed) return c;
-              const tr = c.criterion.timeRestriction;
-              const isLocal = tr?.isLocalFilter === true;
+
+              const isLocal = c.criterion.isLocalFilter === true;
               if (!includeLocal && isLocal) return c; // skips local
               return {
                 ...c,
                 criterion: {
                   ...c.criterion,
-                  timeRestriction: next
-                    ? { ...next, isLocalFilter: false }
-                    : undefined,
+                  timeRestriction: next ? next : undefined,
+                  isLocalFilter: false,
                 },
               };
             }),
