@@ -28,7 +28,6 @@ const TreeNode = ({ criterion, searchTerm }: TreeNodeProps) => {
               criterion={criterion}
               isExpanded={isExpanded}
               onArrowClick={toggleExpansion}
-              // onCheckbox={onCheckbox}
               searchTerm={searchTerm}
             />
           </div>
@@ -38,7 +37,6 @@ const TreeNode = ({ criterion, searchTerm }: TreeNodeProps) => {
                 <TreeNode
                   key={child.id}
                   criterion={child}
-                  // onCheckbox={onCheckbox}
                   searchTerm={searchTerm}
                 />
               ))}

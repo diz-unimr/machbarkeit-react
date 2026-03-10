@@ -101,7 +101,6 @@ const FeasibilityCriterionItem = ({
   ) => {
     stopEditing("inclusionCriteria", item.uid);
 
-    // if (!data) return;
     const timeRange = data?.timeRange ?? null;
     const isLocalFilter = data?.isLocalFilter ?? false;
 
