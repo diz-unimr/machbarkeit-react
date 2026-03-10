@@ -15,7 +15,7 @@ const SwisslabLoincTab = ({
   return (
     <div className="mb-5 px-8 border-b border-gray-200 ">
       <ul
-        className="w-full flex gap-5 m-8 justify-center text-sm font-medium text-center"
+        className="w-full flex gap-5 p-8 pt-0 justify-center text-sm font-medium text-center"
         role="tablist"
       >
         {/* Tab: SWISSLAB */}
