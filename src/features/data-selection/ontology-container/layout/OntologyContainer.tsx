@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import { useState } from "react";
 import ModulesPanel from "../modules/ModulesPanel";
 import type { Module } from "@app/types/ontologyType";
-import OntologyTreePanel from "../ontology/OntologyTreePanel";
+import OntologyTreePanel from "../ontologies/OntologyTreePanel";
 
 type OntologyContainerProps = {
   onSetPanelStatus: () => void;

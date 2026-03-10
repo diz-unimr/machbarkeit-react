@@ -5,7 +5,7 @@ import Papa from "papaparse";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import { type Attribute } from "@features/data-selection/attribute-list/type";
 import { useEffect, useState, type DragEvent } from "react";
-import TreePanel from "@features/data-selection/ontology-container/ontology/TreePanel";
+import TreePanel from "@features/data-selection/ontology-container/ontologies/TreePanel";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 
@@ -38,11 +38,11 @@ const AttributeList = () => {
 
   const handleAttributeDragStart = (
     event: DragEvent<HTMLDivElement>,
-    attribute: Attribute
+    attribute: Attribute,
   ) => {
     event.dataTransfer.setData(
       DRAG_DATA_FORMATS.ATTRIBUTE,
-      JSON.stringify(attribute)
+      JSON.stringify(attribute),
     );
     event.dataTransfer.effectAllowed = "copy";
   };
@@ -59,7 +59,7 @@ const AttributeList = () => {
         const parsedData =
           data?.filter(
             (attribute) =>
-              attribute.kdsModule && attribute.attributeName?.trim().length
+              attribute.kdsModule && attribute.attributeName?.trim().length,
           ) ?? [];
         setMetadata(parsedData);
       },
