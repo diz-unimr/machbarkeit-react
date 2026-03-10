@@ -49,7 +49,8 @@ const WarningModal = ({
     <Button
       type="primary"
       id="replace-all-filter-btn"
-      label="Auf alle Filter ersetzen/aktualisieren"
+      label="Alle Filter ersetzen"
+      className="normal-case"
       onClick={() => onClick("replace all")}
     />
   );
@@ -57,7 +58,8 @@ const WarningModal = ({
     <Button
       type="primary"
       id="replace-global-filter-btn"
-      label="Nur auf bestehende globalen Filter ersetzen/aktualisieren"
+      label="Nur globale Filter aktualisieren"
+      className="normal-case"
       onClick={() => onClick("replace global")}
     />
   );
@@ -67,9 +69,9 @@ const WarningModal = ({
   let btnGroup;
 
   if (isDeleteAction) {
-    warningTitle = "Globalen Filter löschen/entfernen";
+    warningTitle = "Globalen Filter löschen";
     warningText =
-      "Sind Sie sicher, dass Sie den globalen Filter löschen/entfernen möchten?";
+      "Sind Sie sicher, dass Sie den globalen Filter löschen möchten?";
     btnGroup = (
       <>
         {cancelBtn}
@@ -80,10 +82,8 @@ const WarningModal = ({
     warningTitle = "Globalen Filter anwenden";
     warningText = (
       <>
-        Einige oder alle Kriterien verwenden derzeit lokale Filter.
-        <br />
-        Soll der globale Filter nur bestehende globale Einstellungen
-        aktualisieren oder alle lokalen Filter ersetzen?
+        Einige Kriterien verwenden derzeit lokale Filter. Möchten Sie nur
+        bestehende globale Filter aktualisieren oder alle Filter ersetzen?
       </>
     );
     btnGroup = (

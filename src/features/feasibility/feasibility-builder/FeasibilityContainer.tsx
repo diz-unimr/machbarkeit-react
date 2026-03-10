@@ -88,25 +88,26 @@ const FeasibilityContainer = () => {
     setHasAnyLocalFilter(warning.hasLocalFilter);
     setIsDeleteAction(warning.isDeleteAction);
     const choice = await requestWarningConfirmation();
+    const includeLocal = true;
 
     switch (choice) {
       case "cancel":
         return;
       case "confirm":
-        applyGlobalTimeRange(warning.value, false);
         updateGlobalFilter(warning.filterName, warning.value);
+        applyGlobalTimeRange(!includeLocal);
         break;
       case "delete":
-        applyGlobalTimeRange(null, false);
         updateGlobalFilter(warning.filterName, null);
+        applyGlobalTimeRange(!includeLocal);
         break;
       case "replace global":
-        applyGlobalTimeRange(warning.value, false);
         updateGlobalFilter(warning.filterName, warning.value);
+        applyGlobalTimeRange(!includeLocal);
         break;
       case "replace all":
-        applyGlobalTimeRange(warning.value, true);
         updateGlobalFilter(warning.filterName, warning.value);
+        applyGlobalTimeRange(includeLocal);
         break;
       default:
         return;

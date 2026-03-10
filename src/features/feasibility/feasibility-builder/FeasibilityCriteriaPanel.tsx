@@ -79,7 +79,7 @@ const FeasibilityCriteriaPanel = ({
               <div className="flex flex-col">
                 <FeasibilityCriteriaSortableList
                   selectedCriteria={selectedCriteria}
-                  onRemove={(uid) => removeCriterion(uid)} // removeCriterion("inclusionCriteria", uid)
+                  onRemove={(uid) => removeCriterion(uid)}
                 />
               </div>
             )}
