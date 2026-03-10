@@ -42,7 +42,9 @@ const createQueryData = (): FeasibilityQueryData | null => {
     timeRestriction: criteriaWithContext[0].criterion.timeRestrictionAllowed
       ? criteriaWithContext[0].criterion.timeRestriction
       : undefined,
+    isLocalFilter: criteriaWithContext[0].criterion.isLocalFilter ?? false,
   };
+
   const logics = selectedInclusionCriteria.logics;
   let group = [criteria] as QueryCriterion[];
 
@@ -63,6 +65,8 @@ const createQueryData = (): FeasibilityQueryData | null => {
         .timeRestrictionAllowed
         ? criteriaWithContext[i + 1].criterion.timeRestriction
         : undefined,
+      isLocalFilter:
+        criteriaWithContext[i + 1].criterion.isLocalFilter ?? false,
     };
     const logic = logics[i];
 

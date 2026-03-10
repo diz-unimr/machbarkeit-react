@@ -45,10 +45,7 @@ type SelectedCriteriaStore = {
   stopEditing: (zone: DropZone, uid: string) => void;
   removeCriterion: (idex: number, uid: string, zone: DropZone) => void;
   updateCriterionFilter: (filterInfo: FilterProps | null) => void;
-  applyGlobalTimeRange: (
-    next: TimeRangeType["timeRestriction"] | null,
-    includeLocal: boolean,
-  ) => void;
+  applyGlobalTimeRange: (includeLocal: boolean) => void;
   toggleLogic: (logicIndex: number) => void;
   reOrderCriteria: (active: Active, over: Over, zone: DropZone) => void;
   setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
@@ -257,8 +254,9 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
       });
     },
 
-    applyGlobalTimeRange: (next, includeLocal) => {
+    applyGlobalTimeRange: (includeLocal) => {
       set((state) => {
+        const { globalFilter } = useGlobalFilterStore.getState();
         const current = state.selectedInclusionCriteria;
         return {
           selectedInclusionCriteria: {
@@ -267,12 +265,15 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
               if (!c.criterion.timeRestrictionAllowed) return c;
 
               const isLocal = c.criterion.isLocalFilter === true;
-              if (!includeLocal && isLocal) return c; // skips local
+              if (!includeLocal && (isLocal || c.isEditing)) return c; // skips local
               return {
                 ...c,
+                isEditing: false,
                 criterion: {
                   ...c.criterion,
-                  timeRestriction: next ? next : undefined,
+                  timeRestriction: globalFilter.timeRange
+                    ? globalFilter.timeRange
+                    : undefined,
                   isLocalFilter: false,
                 },
               };

@@ -7,7 +7,6 @@ import ArrowButton from "@components/ui/buttons/ArrowButton";
 import warningIcon from "@assets/warning-icon.svg";
 import { useState } from "react";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
-// import useFilterValidationStore from "@app/store/filter-validation-store";
 import type { TimeRangeType } from "./controls/type";
 import { Button } from "@components/ui/buttons/Button";
 import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
@@ -48,8 +47,9 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
     const criteria = selectedInclusionCriteria.criteria;
     const hasAnyLocal = criteria.some(
       (c) =>
-        c.criterion.timeRestrictionAllowed &&
-        c.criterion.timeRestriction?.isLocalFilter === true,
+        (c.criterion.timeRestrictionAllowed &&
+          c.criterion.isLocalFilter === true) ||
+        c.isEditing === true,
     );
     return hasAnyLocal;
   };
@@ -65,6 +65,7 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
     }
 
     const hasLocalFilter = checkTimeRangeConflicts();
+
     onHandleWarning({
       filterName,
       value,
@@ -118,7 +119,6 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
                     onCompleteChange={(timeRange) =>
                       setGlobalFilterTemp({
                         ...timeRange,
-                        isLocalFilter: false,
                       })
                     }
                   />

@@ -6,7 +6,6 @@ export type ConceptType = {
   valueFilter: {
     selectedConcepts: NonNullable<Criterion["filterOptions"]> | [];
     type: string;
-    isLocalFilter?: boolean;
   };
 };
 
@@ -19,7 +18,6 @@ export type QuantityType = {
     minValue: number | null;
     maxValue: number | null;
     type: string;
-    isLocalFilter?: boolean;
   };
 };
 
@@ -27,7 +25,6 @@ export type TimeRangeType = {
   timeRestriction: {
     beforeDate?: string;
     afterDate?: string;
-    isLocalFilter?: boolean;
   };
 };
 

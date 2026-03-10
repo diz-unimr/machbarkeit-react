@@ -44,6 +44,7 @@ export type QueryCriterion = {
   context: Criterion["context"];
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
   timeRestriction?: TimeRangeType["timeRestriction"];
+  isLocalFilter?: boolean;
 };
 
 export type FeasibilityQueryData = {

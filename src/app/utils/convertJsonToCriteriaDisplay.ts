@@ -35,15 +35,18 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
       if ("timeRestriction" in c && concept.timeRestrictionAllowed) {
         next.timeRestriction = c.timeRestriction;
       }
+      if ("isLocalFilter" in c) {
+        next.isLocalFilter = c.isLocalFilter;
+      }
 
       return {
         uid: generateUID(),
         criterion: next,
         isExpanded: !!next.valueFilter || !!next.timeRestriction,
       };
-    })
+    }),
   );
-
+  // Filter out any undefined items (in case some concepts couldn't be fetched)
   inclusionCriteria.criteria = items.filter((item) => !!item);
 
   uploadedCriteria.forEach((group, g) => {

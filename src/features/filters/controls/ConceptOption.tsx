@@ -16,7 +16,11 @@ type ConceptOptionProps = {
 type Concept = ConceptType["valueFilter"]["selectedConcepts"][number];
 
 const ConceptOption = ({ criterion, onChange }: ConceptOptionProps) => {
-  const [selectedValues, setSelectedValue] = useState<Concept[] | []>([]);
+  const [selectedValues, setSelectedValue] = useState<Concept[] | []>(
+    criterion.valueFilter
+      ? (criterion.valueFilter as ConceptType["valueFilter"]).selectedConcepts
+      : [],
+  );
 
   const handleChange = (concept: Concept, checked: boolean) => {
     const newSelectedValues = checked

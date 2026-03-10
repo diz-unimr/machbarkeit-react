@@ -58,4 +58,5 @@ export type Criterion = {
   timeRestriction?: TimeRangeType["timeRestriction"];
   color?: ModuleColorProps;
   version: string | null;
+  isLocalFilter?: boolean;
 };
