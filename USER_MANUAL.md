@@ -18,6 +18,11 @@ Machbarkeitsapp provides an interactive query builder with the following capabil
 
 * Apply global or local time ranges and other restrictions to filter query results.
 * Display warnings for invalid or incomplete filter criteria.
+* Global Filter Conflict Dialog: 
+	* When applying a global filter, the system checks whether some criteria currently use local filters.
+	* If this is the case, a dialog will appear asking how the new global filter should be applied.
+  	* The user can choose between the following options:
+  	  
 
 #### Visual Representation
 * Each criterion element is visually highlighted using the color of its corresponding module, allowing users to easily distinguish criteria belonging to different clinical modules.
