@@ -22,7 +22,17 @@ Machbarkeitsapp provides an interactive query builder with the following capabil
 	* When applying a global filter, the system checks whether some criteria currently use local filters.
 	* If this is the case, a dialog will appear asking how the new global filter should be applied.
   	* The user can choose between the following options:
-  	  
+		* **ABBRECHEN:** Cancels the operation. No filters will be changed.
+  		* **Nur globale Filter aktualisiren:** The new global filter will only update criteria that currently use the global filter. Criteria with local filters will remain unchanged.
+		* **Alle Filter ersetzen:** The new global filter will replace all existing filters, including local filters. All criteria will then use the same global filter.
+
+**Update Global Filters Only**  
+The new global filter will only update criteria that currently use the global filter.  
+Criteria with local filters will remain unchanged.
+
+**Replace All Filters**  
+The new global filter will replace all existing filters, including local filters.  
+All criteria will then use the same global filter.
 
 #### Visual Representation
 * Each criterion element is visually highlighted using the color of its corresponding module, allowing users to easily distinguish criteria belonging to different clinical modules.
