@@ -96,7 +96,7 @@ const FeasibilityQueryControl = ({
     selectedInclusionCriteria.criteria.length > 0 ||
     !!globalFilter.timeRange ||
     globalFilter.isEditing ||
-    globalFilter.caseType !== "no filter";
+    globalFilter.caseType !== null;
 
   useEffect(() => {
     clearRunningQuery();

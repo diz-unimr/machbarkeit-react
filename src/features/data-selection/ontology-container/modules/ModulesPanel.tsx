@@ -12,6 +12,7 @@ type ModulesPanelProps = {
 const ModulesPanel = ({ onHandleModules }: ModulesPanelProps) => {
   const [currentModule, setCurrentModule] = useState<Module | null>(null);
   const modules = useModules();
+  console.log("modules: ", modules);
 
   const changeTab = (moduleId: string) => {
     const current = modules.find((m) => m.id === moduleId);
@@ -30,21 +31,25 @@ const ModulesPanel = ({ onHandleModules }: ModulesPanelProps) => {
     <div className="flex-none w-full h-fit overflow-x-auto overflow-y-hidden">
       <menu className="flex w-full p-3  border-b-2 border-b-(--color-border)">
         <li className="flex gap-7 m-auto">
-          {modules?.map((module, index) => (
-            <div
-              key={index}
-              className={`${module === currentModule ? "border-b-2" : undefined}`}
-              style={{
-                color:
-                  module === currentModule ? module.color.btnColor : "#333333",
-                fontWeight: module === currentModule ? "600" : undefined,
-                cursor: "pointer",
-              }}
-              onClick={() => changeTab(module.id)}
-            >
-              {module.name}
-            </div>
-          ))}
+          {modules
+            ?.filter((module) => !(module.name === "Fall"))
+            .map((module, index) => (
+              <div
+                key={index}
+                className={`${module === currentModule ? "border-b-2" : undefined}`}
+                style={{
+                  color:
+                    module === currentModule
+                      ? module.color.btnColor
+                      : "#333333",
+                  fontWeight: module === currentModule ? "600" : undefined,
+                  cursor: "pointer",
+                }}
+                onClick={() => changeTab(module.id)}
+              >
+                {module.name}
+              </div>
+            ))}
         </li>
       </menu>
     </div>

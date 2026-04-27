@@ -30,7 +30,7 @@ const Card = ({
   return (
     <div
       ref={ref}
-      className={twMerge(`flex flex-col w-full
+      className={twMerge(`flex flex-col w-full p-5
         relative 
         border-2 border-(--color-border)
         rounded-md
@@ -43,7 +43,7 @@ const Card = ({
       {/* header */}
       {header && (
         <div
-          className={`flex item-center p-2 px-4
+          className={`flex item-center py-2
         h-[clamp(40px,10%,60px)]
         rounded-t-sm
         font-medium text-[#5e5e5e]
@@ -53,12 +53,7 @@ const Card = ({
         </div>
       )}
       {/* children */}
-      <div
-        className={twMerge(
-          "flex flex-col w-full h-full py-4 px-5",
-          bodyClassName
-        )}
-      >
+      <div className={twMerge("flex flex-col w-full h-full", bodyClassName)}>
         {extra}
         {children}
       </div>
