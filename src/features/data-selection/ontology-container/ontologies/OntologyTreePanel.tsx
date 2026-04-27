@@ -5,7 +5,7 @@ import TreePanel from "./TreePanel";
 import TreeNode from "./TreeNode";
 import { type Criterion, type Module } from "@app/types/ontologyType";
 import { useEffect, useState } from "react";
-import useOntologies from "@/app/hooks/ontology/useOntologies";
+import useOntologies from "@/app/hooks/ontologies/useOntologies";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import LaboratoryTab, { type CodeSystem } from "./LaboratoryTab";
 
@@ -21,7 +21,6 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
   const { ontologyResult, isLoading } = useOntologies(
     activeModule?.id ?? null,
     debouncedSearch,
-    activeModule?.name === "Laboruntersuchung" ? activeLabTab : undefined,
   );
 
   useEffect(() => {
