@@ -28,4 +28,4 @@ export type TimeRangeType = {
   };
 };
 
-export type CaseType = "no filter" | "imp" | "amb";
+export type CaseType = "no filter" | "IMP" | "AMB";

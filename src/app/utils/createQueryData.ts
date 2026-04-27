@@ -6,17 +6,30 @@ import type {
   QueryCriterion,
 } from "@/features/feasibility/feasibility-builder/type";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
+import useGlobalFilterStore from "@app/store/global-filter-store";
 import setCriterionContext from "./setCriterionContext";
 import type {
   ConceptType,
   QuantityType,
 } from "@/features/filters/controls/type";
+import generateUID from "./generateUID";
 
 const createQueryData = (): FeasibilityQueryData | null => {
   const selectedInclusionCriteria =
-    useSelectedCriteriaStore.getState().selectedInclusionCriteria;
+    useSelectedCriteriaStore.getState().selectedInclusionCriteria.criteria;
+  if (selectedInclusionCriteria.length === 0) return null;
 
-  if (selectedInclusionCriteria.criteria.length === 0) return null;
+  const logics =
+    useSelectedCriteriaStore.getState().selectedInclusionCriteria.logics;
+  const globalFilter = useGlobalFilterStore.getState().globalFilter;
+  if (globalFilter.caseType) {
+    selectedInclusionCriteria.push({
+      uid: generateUID(),
+      criterion: globalFilter.caseType,
+    });
+    logics.push("AND"); // still has problem
+  }
+
   const queryData: FeasibilityQueryData = {
     version: "1.0.0",
     display: "Feasibility Query",
@@ -24,7 +37,7 @@ const createQueryData = (): FeasibilityQueryData | null => {
     exclusionCriteria: [] as QueryCriterion[][],
   };
 
-  const criteriaWithContext = selectedInclusionCriteria.criteria
+  const criteriaWithContext = selectedInclusionCriteria
     .map((c) => {
       if (c.criterion.context) return c;
       else return { ...c, criterion: setCriterionContext(c.criterion) };
@@ -45,7 +58,6 @@ const createQueryData = (): FeasibilityQueryData | null => {
     isLocalFilter: criteriaWithContext[0].criterion.isLocalFilter ?? false,
   };
 
-  const logics = selectedInclusionCriteria.logics;
   let group = [criteria] as QueryCriterion[];
 
   for (let i = 0; i < logics.length; i++) {

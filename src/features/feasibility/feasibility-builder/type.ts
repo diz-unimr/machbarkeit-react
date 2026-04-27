@@ -19,7 +19,7 @@ export type SelectedAttribute = {
 export type CriterionNode = {
   uid: string;
   criterion: Criterion;
-  isExpanded: boolean;
+  isExpanded?: boolean;
   isEditing?: boolean;
 };
 
