@@ -23,8 +23,8 @@ const PopupModal = ({
     <div className="flex fixed inset-0 bg-black/50 items-center justify-center z-9999">
       <Card
         header={title}
-        headerClassName="text-2xl border-b-1 border-gray-300 "
-        className={`flex w-fit max-w-150`}
+        headerClassName="text-2xl"
+        className={`flex w-fit max-w-132`}
       >
         <p className="mb-5 leading-relaxed">{message}</p>
         <div className="flex gap-3 justify-center">{children}</div>

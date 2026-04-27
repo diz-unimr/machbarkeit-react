@@ -27,7 +27,6 @@ export const getConcept = async (id: string): Promise<Criterion | null> => {
 export const getOntology = async (
   moduleId: string,
   signal?: AbortSignal,
-  // activeLabTab?: string,
 ): Promise<[Criterion[] | null, number]> => {
   let apiResponse: AxiosResponse;
   try {

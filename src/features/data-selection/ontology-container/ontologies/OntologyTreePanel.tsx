@@ -3,14 +3,15 @@
 
 import TreePanel from "./TreePanel";
 import TreeNode from "./TreeNode";
-import { type Module } from "@app/types/ontologyType";
+import { type Criterion, type Module } from "@app/types/ontologyType";
 import { useEffect, useState } from "react";
-import useOntologies from "@/app/hooks/ontologies/useOntologies";
+import useOntologies from "@/app/hooks/ontology/useOntologies";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import LaboratoryTab, { type CodeSystem } from "./LaboratoryTab";
 
 type OntologyTreePanelProps = {
   activeModule: Module | null;
+  onClick: (criteria: Criterion[] | null) => void;
 };
 
 const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {

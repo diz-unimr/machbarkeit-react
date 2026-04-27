@@ -8,6 +8,8 @@ import Card from "@components/ui/Card";
 import type {
   /* DropZone,
   SelectedAttribute, */
+  CriterionNode,
+  SelectedCriteria,
   FeasibilityQueryData,
   SelectedChoice,
 } from "./type";
@@ -29,6 +31,11 @@ import warningIcon from "@assets/warning-icon.svg";
 const FeasibilityContainer = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
     useState<boolean>(true);
+  const [inclusionCriteria, setInclusionCriteria] = useState<SelectedCriteria>({
+    criteriaType: "inclusionCriteria",
+    criteria: [],
+    logics: [],
+  });
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria,
   );
@@ -66,6 +73,17 @@ const FeasibilityContainer = () => {
       setWarningModal({ open: true, resolver: resolve });
     });
 
+  const toggleCriterionItem = (criterion: CriterionNode) => {
+    setInclusionCriteria((prev) => {
+      return {
+        ...prev,
+        criteria: prev.criteria.map((c) =>
+          c.uid === criterion.uid ? { ...c, isExpanded: !c.isExpanded } : c,
+        ),
+      };
+    });
+  };
+
   const handleWarning = async (warning: globalFilterWarning) => {
     setHasAnyLocalFilter(warning.hasLocalFilter);
     setIsDeleteAction(warning.isDeleteAction);
@@ -95,6 +113,21 @@ const FeasibilityContainer = () => {
         return;
     }
     stopEditing();
+  };
+
+  const removeCriterion = (uid: string) => {
+    setInclusionCriteria((prev) => {
+      const index = prev.criteria.findIndex((c) => c.uid === uid);
+      return {
+        ...prev,
+        criteria: prev.criteria.filter((item) => item.uid !== uid),
+        logics: prev.logics.filter((_, i) => {
+          if (index === prev.criteria.length - 1) return i;
+          else if (prev.logics[index - 1] === "OR") return i != index - 1;
+          else return i != index;
+        }),
+      };
+    });
   };
 
   const parseAndValidateFile = async (
@@ -163,7 +196,7 @@ const FeasibilityContainer = () => {
   const resetAllData = () => {
     clearSelectedCriteria();
     updateGlobalFilter("timeRange", null);
-    updateGlobalFilter("caseType", null);
+    updateGlobalFilter("caseType", "no filter");
     stopEditing();
   };
 
@@ -207,7 +240,7 @@ const FeasibilityContainer = () => {
             className="flex flex-col flex-1 min-h-0"
             bodyClassName="p-0 flex flex-col flex-1 min-h-0 gap-1"
           >
-            <div className="flex justify-between items-center p-3 pt-0 border-b-[1.5px] border-(--color-border)">
+            <div className="flex justify-between items-center px-5 py-3 border-b-[1.5px] border-(--color-border)">
               <div className="flex gap-2">
                 {numberOfEditing > 0 && (
                   <>
@@ -250,6 +283,12 @@ const FeasibilityContainer = () => {
             <div className="flex flex-col h-full min-h-0 gap-4 p-4">
               <GlobalFilterPanel onHandleWarning={handleWarning} />
               <div className="flex-1 min-h-0">
+                {inclusionCriteria.criteria.map((c, i) => (
+                  <div key={i}>
+                    {c.criterion.timeRestriction?.afterDate} |{" "}
+                    {c.criterion.timeRestriction?.beforeDate}
+                  </div>
+                ))}
                 <FeasibilityCriteriaPanel
                   key="inclusionCriteria"
                   label="Einschlusskriterien"
@@ -258,6 +297,8 @@ const FeasibilityContainer = () => {
                   onToggleCriteriaPanel={() =>
                     setIsInclusionCriteriaOpen((prev) => !prev)
                   }
+                  onToggleCriterionItem={toggleCriterionItem}
+                  onRemoveCriterion={removeCriterion}
                 />
               </div>
             </div>

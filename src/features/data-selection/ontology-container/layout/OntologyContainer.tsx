@@ -30,7 +30,7 @@ const OntologyContainer = ({
         <ModulesPanel
           onHandleModules={(currentModule) => setActiveModule(currentModule)}
         />
-        <OntologyTreePanel activeModule={activeModule} />
+        <OntologyTreePanel activeModule={activeModule} onClick={() => {}} />
       </div>
     </div>
   );

@@ -6,13 +6,15 @@ import accordionArrow from "@assets/accordion-arrow.svg";
 import Card from "@components/ui/Card";
 import useCriteriaDnD from "./hooks/useCriteriaDnD";
 import FeasibilityCriteriaSortableList from "./FeasibilityCriteriaSortableList";
-import type { SelectedCriteria } from "./type";
+import type { CriterionNode, SelectedCriteria } from "./type";
 
 type FeasibilityCriteriaPanelProps = {
   label: string;
   selectedCriteria: SelectedCriteria;
   isPanelExpanded: boolean;
   onToggleCriteriaPanel: () => void;
+  onToggleCriterionItem: (item: CriterionNode) => void;
+  onRemoveCriterion: (uid: string) => void;
 };
 
 const FeasibilityCriteriaPanel = ({
@@ -20,6 +22,7 @@ const FeasibilityCriteriaPanel = ({
   selectedCriteria,
   isPanelExpanded,
   onToggleCriteriaPanel,
+  onRemoveCriterion,
 }: FeasibilityCriteriaPanelProps) => {
   const {
     dropZoneClasses,
@@ -27,6 +30,13 @@ const FeasibilityCriteriaPanel = ({
     handleDragLeave,
     handleCriteriaDrop,
   } = useCriteriaDnD();
+
+  const removeCriterion = (
+    // zone: Exclude<DropZone, "attribute">,
+    uid: string,
+  ) => {
+    onRemoveCriterion(uid);
+  };
 
   return (
     <div
@@ -69,6 +79,7 @@ const FeasibilityCriteriaPanel = ({
               <div className="flex flex-col">
                 <FeasibilityCriteriaSortableList
                   selectedCriteria={selectedCriteria}
+                  onRemove={(uid) => removeCriterion(uid)}
                 />
               </div>
             )}

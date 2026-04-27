@@ -8,7 +8,6 @@ import type {
 import generateUID from "./generateUID";
 import { getConcept } from "../services/ontologyService";
 import { getModuleColor } from "./moduleUtils";
-// import useGlobalFilterStore from "../store/global-filter-store";
 
 const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
   if (!uploadedData.inclusionCriteria) return null;
@@ -25,13 +24,6 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
     uploadedCriteria.flat().map(async (c) => {
       const concept = await getConcept(c.id);
       if (!concept) return;
-
-      /* if (c.context?.code === "Fall") {
-        const updateGlobalFilter =
-          useGlobalFilterStore.getState().updateGlobalFilter;
-        updateGlobalFilter("caseType", concept);
-        return;
-      } */
 
       const next = { ...concept };
       next.context = c.context;

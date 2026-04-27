@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
@@ -6,14 +5,12 @@ import Card from "@components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
 import warningIcon from "@assets/warning-icon.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
-import type { CaseType, TimeRangeType } from "./controls/type";
+import type { TimeRangeType } from "./controls/type";
 import { Button } from "@components/ui/buttons/Button";
 import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
-import useOntologies from "@/app/hooks/ontologies/useOntologies";
-import useModulesStore from "@/app/store/modules-store";
 
 export type GlobalFilterName = "timeRange" | "caseType";
 export type globalFilterWarning = {
@@ -29,8 +26,6 @@ type GlobalFilterPanelProps = {
 const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
-  const globalCaseType =
-    (globalFilter.caseType?.termCodes[0].code as CaseType) || null;
   const startEditing = useGlobalFilterStore((s) => s.startEditing);
   const stopEditing = useGlobalFilterStore((s) => s.stopEditing);
   const updateGlobalFilter = useGlobalFilterStore((s) => s.updateGlobalFilter);
@@ -38,16 +33,10 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
     TimeRangeType["timeRestriction"] | null
   >(null);
   const [isFilterComplete, setIsFilterCompleted] = useState<boolean>(true);
-  const [caseType, setCaseType] = useState<CaseType>(
-    globalCaseType ?? "no filter",
-  );
+
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria,
   );
-  const modules = useModulesStore((s) => s.modules);
-  const caseTypeModule = modules.filter((module) => module.name === "Fall")[0];
-  const ontologyResult = useOntologies(caseTypeModule?.id ?? null);
-  const caseTypeValues = ontologyResult.ontologyResult.criteria;
 
   const cancelFilterChanges = () => {
     updateGlobalFilter("timeRange", globalFilter.timeRange ?? null);
@@ -65,7 +54,7 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
     return hasAnyLocal;
   };
 
-  const handleGlobalTimeRangeChange = (
+  const handleGlobalFilterChange = (
     filterName: GlobalFilterName,
     value: TimeRangeType["timeRestriction"] | null,
   ) => {
@@ -85,14 +74,8 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
     });
   };
 
-  useEffect(() => {
-    if (globalCaseType === null || globalCaseType === caseType) return;
-    setCaseType(globalCaseType as CaseType);
-  }, [globalCaseType]);
-
   return (
     <div
-      className="flex flex-col gap-2"
       style={{
         borderBottom: !isExpanded
           ? "1.5px solid var(--color-border)"
@@ -175,7 +158,7 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
                         type="tertiary"
                         isActive={isFilterComplete}
                         onClick={() => {
-                          handleGlobalTimeRangeChange(
+                          handleGlobalFilterChange(
                             "timeRange",
                             globalFilterTemp,
                           );
@@ -204,11 +187,8 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
                   type="radio"
                   name="no filter"
                   value="no filter"
-                  checked={caseType === "no filter"}
-                  onChange={() => {
-                    setCaseType("no filter");
-                    updateGlobalFilter("caseType", null);
-                  }}
+                  checked={globalFilter.caseType === "no filter"}
+                  onChange={() => updateGlobalFilter("caseType", "no filter")}
                 />
                 Kein Filter
               </label>
@@ -217,16 +197,8 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
                   type="radio"
                   name="inpatient"
                   value="inpatient"
-                  checked={caseType === "IMP"}
-                  onChange={() => {
-                    setCaseType("IMP");
-                    updateGlobalFilter(
-                      "caseType",
-                      caseTypeValues?.filter(
-                        (c) => c.termCodes[0].code === "IMP",
-                      )[0] ?? null,
-                    );
-                  }}
+                  checked={globalFilter.caseType === "imp"}
+                  onChange={() => updateGlobalFilter("caseType", "imp")}
                 />
                 Stationär
               </label>
@@ -235,16 +207,8 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
                   type="radio"
                   name="outpatient"
                   value="outpatient"
-                  checked={caseType === "AMB"}
-                  onChange={() => {
-                    setCaseType("AMB");
-                    updateGlobalFilter(
-                      "caseType",
-                      caseTypeValues?.filter(
-                        (c) => c.termCodes[0].code === "AMB",
-                      )[0] ?? null,
-                    );
-                  }}
+                  checked={globalFilter.caseType === "amb"}
+                  onChange={() => updateGlobalFilter("caseType", "amb")}
                 />
                 Ambulant
               </label>

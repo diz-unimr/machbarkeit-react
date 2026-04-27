@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useSelectedCriteriaStore,
   type FilterProps,
@@ -66,6 +66,33 @@ const FeasibilityCriterionItem = ({
   );
   const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
 
+  const formatTimeRangeLabel = (
+    filterValue: TimeRangeType["timeRestriction"] | null,
+  ) => {
+    if (!filterValue) return null;
+
+    const after = filterValue.afterDate
+      ? new Date(filterValue.afterDate)
+      : null;
+    const before = filterValue.beforeDate
+      ? new Date(filterValue.beforeDate)
+      : null;
+    // set date string
+    const afterDate = after?.toLocaleDateString("de-DE");
+    const beforeDate = before?.toLocaleDateString("de-DE");
+
+    if (after && before) {
+      if (after.getTime() === before.getTime()) return "Am " + afterDate;
+      if (after.getTime() < before.getTime())
+        return "Von " + afterDate + " bis " + beforeDate;
+    }
+
+    if (after && !before) return "Nach " + afterDate;
+    if (before && !after) return "Vor " + beforeDate;
+
+    return null;
+  };
+
   const handleTimeRangeFilter = (
     data: {
       timeRange: TimeRangeType["timeRestriction"] | null;
@@ -94,32 +121,7 @@ const FeasibilityCriterionItem = ({
     item.criterion.timeRestriction
       ? item.criterion.timeRestriction
       : null;
-
-  const timeRangeLabel = useMemo(() => {
-    const filterValue = currentTimeRestriction;
-    if (!filterValue) return null;
-
-    const after = filterValue.afterDate
-      ? new Date(filterValue.afterDate)
-      : null;
-    const before = filterValue.beforeDate
-      ? new Date(filterValue.beforeDate)
-      : null;
-    // set date string
-    const afterDate = after?.toLocaleDateString("de-DE");
-    const beforeDate = before?.toLocaleDateString("de-DE");
-
-    if (after && before) {
-      if (after.getTime() === before.getTime()) return "Am " + afterDate;
-      if (after.getTime() < before.getTime())
-        return "Von " + afterDate + " bis " + beforeDate;
-    }
-
-    if (after && !before) return "Nach " + afterDate;
-    if (before && !after) return "Vor " + beforeDate;
-
-    return null;
-  }, [currentTimeRestriction]);
+  const timeRangeLabel = formatTimeRangeLabel(currentTimeRestriction);
 
   useEffect(() => {
     if (item.criterion.timeRestriction) {

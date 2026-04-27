@@ -2,13 +2,12 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { TimeRangeType } from "@features/filters/controls/type";
+import type { CaseType, TimeRangeType } from "@features/filters/controls/type";
 import type { GlobalFilterName } from "@features/filters/globalFilterPanel";
-import type { Criterion } from "../types/ontologyType";
 
 export type GlobalFilter = {
   timeRange: TimeRangeType["timeRestriction"] | null;
-  caseType: Criterion | null;
+  caseType: CaseType | null;
   isEditing: boolean;
 };
 
@@ -16,7 +15,7 @@ type GlobalFilterStore = {
   globalFilter: GlobalFilter;
   updateGlobalFilter: (
     filterName: GlobalFilterName,
-    value: Criterion | TimeRangeType["timeRestriction"] | null,
+    value: CaseType | (TimeRangeType["timeRestriction"] | null),
   ) => void;
   startEditing: () => void;
   stopEditing: () => void;
@@ -25,7 +24,7 @@ type GlobalFilterStore = {
 const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
   globalFilter: {
     timeRange: null,
-    caseType: null,
+    caseType: "no filter",
     isEditing: false,
   },
 
@@ -37,7 +36,7 @@ const useGlobalFilterStore = create<GlobalFilterStore>((set) => ({
           filterName === "timeRange"
             ? (value as TimeRangeType["timeRestriction"])
             : filterName === "caseType"
-              ? (value as Criterion)
+              ? (value as string)
               : null,
       };
       return {

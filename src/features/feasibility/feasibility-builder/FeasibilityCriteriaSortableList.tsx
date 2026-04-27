@@ -30,6 +30,7 @@ const SortableCriterion = ({
   item: CriterionNode;
   index: number;
   logic?: string;
+  onRemove: (uid: string) => void;
 }) => {
   const {
     attributes,
@@ -58,8 +59,10 @@ const SortableCriterion = ({
 
 const FeasibilityCriteriaSortableList = ({
   selectedCriteria,
+  onRemove,
 }: {
   selectedCriteria: SelectedCriteria;
+  onRemove: (uid: string) => void;
 }) => {
   const reOrderCriteria = useSelectedCriteriaStore((s) => s.reOrderCriteria);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -104,6 +107,7 @@ const FeasibilityCriteriaSortableList = ({
                   : undefined
               }
               index={idx}
+              onRemove={onRemove}
             />
           ))}
         </ul>
