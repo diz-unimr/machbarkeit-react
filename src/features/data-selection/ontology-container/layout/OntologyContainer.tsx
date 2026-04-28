@@ -18,7 +18,7 @@ const OntologyContainer = ({
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      <div className="flex justify-between px-4 py-3">
+      <div className="flex px-4 py-3">
         <p className="font-medium">Merkmale</p>
       </div>
       <div

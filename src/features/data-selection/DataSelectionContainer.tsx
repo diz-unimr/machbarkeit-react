@@ -31,7 +31,7 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
 
   return (
     <div className="flex flex-col h-full border-(--color-border)">
-      <div className="flex h-[60px] justify-between px-2 py-3 border-b-[1.5px] border-(--color-border)">
+      <div className="flex h-15 justify-between px-2 py-3 border-b-[1.5px] border-(--color-border)">
         <div className="flex gap-3 items-start">
           <img src={appIcon} width={20} height={20} className="text-black" />
         </div>
@@ -51,8 +51,8 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
           isOntologyContainerOpen={isOntologyContainerOpen}
         />
       ) : (
-        <div className="px-3">
-          <div className="font-medium">Merkmalen</div>
+        <div className="flex px-4 py-3">
+          <p className="font-medium">Merkmale</p>
           {/* <div>Attributliste</div> */}
         </div>
       )}

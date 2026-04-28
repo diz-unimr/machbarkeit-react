@@ -234,13 +234,13 @@ const FeasibilityContainer = () => {
         />
         <div
           id="feasibility-container"
-          className="flex flex-col flex-1 min-h-0 max-w-240 w-full px-5 py-8 mx-auto overflow-hidden"
+          className="flex flex-col flex-1 min-h-0 max-w-240 w-full px-5 py-5 mx-auto overflow-hidden"
         >
           <Card
-            className="flex flex-col flex-1 min-h-0"
+            className="flex flex-col flex-1 min-h-0 py-0"
             bodyClassName="p-0 flex flex-col flex-1 min-h-0 gap-1"
           >
-            <div className="flex justify-between items-center px-5 py-3 border-b-[1.5px] border-(--color-border)">
+            <div className="flex justify-between items-center py-3 border-b-[1.5px] border-(--color-border)">
               <div className="flex gap-2">
                 {numberOfEditing > 0 && (
                   <>
@@ -280,7 +280,7 @@ const FeasibilityContainer = () => {
                 </li>
               </menu>
             </div>
-            <div className="flex flex-col h-full min-h-0 gap-4 p-4">
+            <div className="flex flex-col h-full min-h-0 gap-4 py-4">
               <GlobalFilterPanel onHandleWarning={handleWarning} />
               <div className="flex-1 min-h-0">
                 {inclusionCriteria.criteria.map((c, i) => (
