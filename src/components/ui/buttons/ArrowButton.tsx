@@ -34,7 +34,7 @@ const ArrowButton = ({
       <img
         key={id}
         style={{
-          width: `clamp(10px, 1vw + 0.5rem, ${width}px)`,
+          width: `clamp(10px, 1vw + 0.3rem, ${width}px)`,
         }}
         className={`
           ${
