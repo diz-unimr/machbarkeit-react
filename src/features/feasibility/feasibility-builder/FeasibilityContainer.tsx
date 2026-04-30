@@ -2,7 +2,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import download from "downloadjs";
 import Card from "@components/ui/Card";
 import type {
@@ -196,9 +196,24 @@ const FeasibilityContainer = () => {
   const resetAllData = () => {
     clearSelectedCriteria();
     updateGlobalFilter("timeRange", null);
-    updateGlobalFilter("caseType", "no filter");
+    // updateGlobalFilter("caseType", "no filter");
     stopEditing();
   };
+
+  const hasNoTimeRestriction = useMemo(() => {
+    const criteria = selectedInclusionCriteria.criteria;
+    return (
+      criteria.length > 0 &&
+      criteria.every((c) => !c.criterion.timeRestrictionAllowed)
+    );
+  }, [selectedInclusionCriteria]);
+
+  useEffect(() => {
+    if (!hasNoTimeRestriction) return;
+
+    updateGlobalFilter("timeRange", null);
+    stopEditing();
+  }, [hasNoTimeRestriction]);
 
   useEffect(() => {
     const hasEditing =
@@ -281,7 +296,10 @@ const FeasibilityContainer = () => {
               </menu>
             </div>
             <div className="flex flex-col h-full min-h-0 gap-4 py-4">
-              <GlobalFilterPanel onHandleWarning={handleWarning} />
+              <GlobalFilterPanel
+                hasNoTimeRestriction={hasNoTimeRestriction}
+                onHandleWarning={handleWarning}
+              />
               <div className="flex-1 min-h-0">
                 {inclusionCriteria.criteria.map((c, i) => (
                   <div key={i}>

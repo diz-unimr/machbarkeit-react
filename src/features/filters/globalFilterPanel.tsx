@@ -20,10 +20,14 @@ export type globalFilterWarning = {
   isDeleteAction: boolean;
 };
 type GlobalFilterPanelProps = {
+  hasNoTimeRestriction?: boolean;
   onHandleWarning: (warning: globalFilterWarning) => void;
 };
 
-const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
+const GlobalFilterPanel = ({
+  hasNoTimeRestriction = false,
+  onHandleWarning,
+}: GlobalFilterPanelProps) => {
   // const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
   const startEditing = useGlobalFilterStore((s) => s.startEditing);
@@ -75,76 +79,88 @@ const GlobalFilterPanel = ({ onHandleWarning }: GlobalFilterPanelProps) => {
   };
 
   return (
-    <Card className="py-3">
-      <div className="flex gap-3">
-        <p className="mr-2 text-end font-medium whitespace-nowrap">
-          Globaler Zeitraum :
-        </p>
-        <div className="flex flex-col min-w-0 flex-1">
-          {globalFilter.isEditing ? (
-            <TimeRangeOption
-              timeRestrictionData={globalFilter.timeRange} //data from file just on first time
-              onValidityChange={(isValid) => {
-                setIsFilterCompleted(isValid);
-              }}
-              onCompleteChange={(timeRange) =>
-                setGlobalFilterTemp({
-                  ...timeRange,
-                })
-              }
-            />
-          ) : (
-            <div className="pl-1">
-              {formatTimeRangeLabel(globalFilter.timeRange ?? null)}
-            </div>
-          )}
-
-          <div className="flex gap-10 pl-0.5">
-            {(globalFilter.isEditing || globalFilter.timeRange) && (
-              <Button
-                id={"clear-filter-btn"}
-                label="Löschen"
-                type="tertiary"
-                onClick={() => {
-                  onHandleWarning({
-                    filterName: "timeRange",
-                    value: null,
-                    hasLocalFilter: false,
-                    isDeleteAction: true,
-                  });
-                }}
-              />
-            )}
+    <Card
+      className={`py-3 ${hasNoTimeRestriction ? "opacity-50 pointer-events-none select-none" : ""}`}
+    >
+      <div className="flex flex-col">
+        <div className="flex gap-3">
+          <p className="mr-2 text-end font-medium whitespace-nowrap">
+            Globaler Zeitraum :
+          </p>
+          <div className="flex flex-col min-w-0 flex-1">
             {globalFilter.isEditing ? (
-              <div className="flex gap-2">
+              <TimeRangeOption
+                timeRestrictionData={globalFilter.timeRange} //data from file just on first time
+                onValidityChange={(isValid) => {
+                  setIsFilterCompleted(isValid);
+                }}
+                onCompleteChange={(timeRange) =>
+                  setGlobalFilterTemp({
+                    ...timeRange,
+                  })
+                }
+              />
+            ) : (
+              <div className="pl-1">
+                {formatTimeRangeLabel(globalFilter.timeRange ?? null)}
+              </div>
+            )}
+
+            <div className="flex gap-10 pl-0.5">
+              {(globalFilter.isEditing || globalFilter.timeRange) && (
                 <Button
-                  id={"global-btn"}
-                  label="Abbrechen"
+                  id={"clear-filter-btn"}
+                  label="Löschen"
                   type="tertiary"
-                  onClick={cancelFilterChanges}
-                />
-                <Button
-                  id={"global-btn"}
-                  label="Bestätigen"
-                  type="tertiary"
-                  isActive={isFilterComplete}
                   onClick={() => {
-                    handleGlobalFilterChange("timeRange", globalFilterTemp);
+                    onHandleWarning({
+                      filterName: "timeRange",
+                      value: null,
+                      hasLocalFilter: false,
+                      isDeleteAction: true,
+                    });
                   }}
                 />
-              </div>
-            ) : (
-              <Button
-                id={"global-btn"}
-                label={globalFilter.timeRange ? "Bearbeiten" : "Filter setzen"}
-                type="tertiary"
-                onClick={() => {
-                  startEditing();
-                }}
-              />
-            )}
+              )}
+              {!hasNoTimeRestriction &&
+                (globalFilter.isEditing ? (
+                  <div className="flex gap-2">
+                    <Button
+                      id={"global-btn"}
+                      label="Abbrechen"
+                      type="tertiary"
+                      onClick={cancelFilterChanges}
+                    />
+                    <Button
+                      id={"global-btn"}
+                      label="Bestätigen"
+                      type="tertiary"
+                      isActive={isFilterComplete}
+                      onClick={() => {
+                        handleGlobalFilterChange("timeRange", globalFilterTemp);
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <Button
+                    id={"global-btn"}
+                    label={
+                      globalFilter.timeRange ? "Bearbeiten" : "Filter setzen"
+                    }
+                    type="tertiary"
+                    onClick={() => {
+                      startEditing();
+                    }}
+                  />
+                ))}
+            </div>
           </div>
         </div>
+        {hasNoTimeRestriction && (
+          <span className="pt-2 text-xs text-red-600">
+            Für die ausgewählten Kriterien ist kein Zeitbezug verfügbar.
+          </span>
+        )}
       </div>
     </Card>
   );
