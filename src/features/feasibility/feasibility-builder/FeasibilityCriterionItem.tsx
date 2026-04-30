@@ -355,7 +355,10 @@ const FeasibilityCriterionItem = ({
                 removeCriterion(index, item.uid, "inclusionCriteria");
               }}
             >
-              <img src={closeIcon} width="18px" />
+              <img
+                src={closeIcon}
+                style={{ width: "clamp(14px, 0.5rem + 1vw, 18px)" }}
+              />
             </button>
           </div>
         </div>

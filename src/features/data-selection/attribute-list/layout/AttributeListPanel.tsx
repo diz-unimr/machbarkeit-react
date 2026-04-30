@@ -16,7 +16,7 @@ const AttributeListPanel = ({
 }: AttributeListPanelProps) => {
   return (
     <div className="flex flex-col border-b-[1.5px] border-[var(--color-border)]">
-      <div className="flex justify-between px-4 py-3">
+      <div className="flex px-4 py-3">
         <p className="font-medium">Attributliste</p>
         <ArrowButton
           id="characteristic-btn"

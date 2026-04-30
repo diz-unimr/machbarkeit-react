@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import axios, { type AxiosResponse, AxiosError } from "axios";
+import axios, { type AxiosResponse } from "axios";
 import type { Module } from "@app/types/ontologyType";
 import { getModuleColor } from "@app/utils/moduleUtils";
 import lodash from "lodash";

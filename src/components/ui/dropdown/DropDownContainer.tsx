@@ -28,7 +28,8 @@ const DropDownContainer = ({
   onSelectUnit,
 }: DropDownContainerProps) => {
   return (
-    <div className="flex items-center gap-3 pt-1.5 overflow-x-auto">
+    <div className="flex items-center gap-3 pt-1.5">
+      {/* overflow-x-auto */}
       <DropDown
         id={id}
         size={size}

@@ -40,7 +40,7 @@ const FeasibilityCriteriaPanel = ({
 
   return (
     <div
-      className="flex flex-col gap-4 overflow-hidden"
+      className="flex flex-col overflow-hidden"
       style={{
         height: isPanelExpanded ? "100%" : "fit-content",
         borderBottom: !isPanelExpanded
@@ -48,8 +48,8 @@ const FeasibilityCriteriaPanel = ({
           : undefined,
       }}
     >
-      <div className="flex justify-between">
-        <p className="text-lg font-medium p-2">{label}</p>
+      <div className="flex justify-between p-2">
+        <p className="text-lg font-medium">{label}</p>
         <ArrowButton
           id="characteristic-btn"
           image={accordionArrow}

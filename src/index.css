@@ -42,7 +42,7 @@ body,
 }
 
 html {
-  font-size: clamp(10px, 1vw + 0.3rem, 16px);
+  font-size: clamp(10px, 1vw + 0.2rem, 16px);
 }
 
 body {
@@ -86,7 +86,7 @@ select {
   height: 35px;
   /* max-width: 120px; */
   padding: clamp(4px, 1vw, 6px) clamp(7px, 1vw, 12px);
-  font-size: clamp(10px, 1vw + 0.3rem, 14px);
+  font-size: clamp(10px, 1vw + 0.2rem, 14px);
   margin: 3px;
   border: 1px solid #c0c7ce;
   border-radius: 5px;
@@ -116,7 +116,7 @@ input[type="number"] {
   height: 35px;
   max-width: 120px;
   border: 1px solid #c0c7ce;
-  font-size: clamp(10px, 1vw + 0.3rem, 14px);
+  font-size: clamp(10px, 1vw + 0.2rem, 14px);
 }
 
 * {
