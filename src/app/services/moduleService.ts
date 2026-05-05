@@ -19,7 +19,7 @@ const getModules = async (): Promise<Module[] | null> => {
       return module;
     });
     return modules;
-  } catch (error) {
+  } catch (_error) {
     // todo: error handling
     await login();
     return null;

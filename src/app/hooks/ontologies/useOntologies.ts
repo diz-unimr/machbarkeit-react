@@ -86,7 +86,7 @@ const useOntologies = (
 
     const fetchOntology = async () => {
       try {
-        const [data, status] = await getOntology(
+        const [data, _status] = await getOntology(
           moduleId,
           controller.signal,
           //activeLabTab,
