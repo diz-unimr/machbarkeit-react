@@ -17,7 +17,7 @@ const ButtonContainer = ({
   return (
     <div
       className={twMerge(
-        `flex w-full h-fit items-center justify-end gap-2 p-[clamp(6px,1vw,14px)] ${className}`
+        `flex w-full h-fit items-center justify-end gap-2 p-[clamp(6px,1vw,14px)] ${className}`,
       )}
       style={{ backgroundColor: bgContainer }}
     >

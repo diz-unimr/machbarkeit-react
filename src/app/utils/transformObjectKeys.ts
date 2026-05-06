@@ -6,11 +6,11 @@ import lodash from "lodash";
 const transformObjectKeys = <T extends { children?: T[] }>(data: T[]): T[] => {
   const response: T[] = data.map((obj: T) => {
     const transformedObj = lodash.mapKeys(obj, (_, key) =>
-      lodash.camelCase(key)
+      lodash.camelCase(key),
     ) as unknown as T;
     if ("children" in transformedObj && transformedObj.children!.length > 0) {
       transformedObj.children = transformObjectKeys(
-        transformedObj.children!
+        transformedObj.children!,
       ) as T[];
     }
     return transformedObj;
