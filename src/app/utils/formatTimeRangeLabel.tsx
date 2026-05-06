@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import type { TimeRangeType } from "@features/filters/controls/type";
 
 const formatTimeRangeLabel = (
-  filterValue: TimeRangeType["timeRestriction"] | null
+  filterValue: TimeRangeType["timeRestriction"] | null,
 ): React.ReactNode => {
   if (!filterValue) return "Kein Filter";
   const after = filterValue.afterDate ? new Date(filterValue.afterDate) : null;

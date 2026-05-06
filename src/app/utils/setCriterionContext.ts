@@ -8,7 +8,7 @@ const setCriterionContext = (criterion: Criterion) => {
   const modules = useModulesStore.getState().modules;
   if (modules) {
     const module = modules.find(
-      (module: Module) => module.id === criterion.moduleId
+      (module: Module) => module.id === criterion.moduleId,
     );
     criterion.context = {
       code: module!.fdpgCdsCode || "",
