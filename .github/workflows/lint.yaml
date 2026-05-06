@@ -8,10 +8,12 @@ name: lint
       - "**"
   pull_request:
 
-permissions: read-all
+permissions:
+  checks: write
+  contents: write
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
