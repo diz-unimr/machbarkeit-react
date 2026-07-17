@@ -20,6 +20,8 @@ import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type { TimeRangeType } from "@features/filters/controls/type";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
+import { getModuleName } from "@app/utils/moduleUtils";
+import LocalFilterPanel from "@/features/filters/localFilterPanel";
 
 type DragProps = {
   setNodeRef: (el: HTMLElement | null) => void;
@@ -65,6 +67,7 @@ const FeasibilityCriterionItem = ({
     !!(item.isExpanded || item.criterion.filterType),
   );
   const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
+  const moduleName = getModuleName(item.criterion.moduleId);
 
   const formatTimeRangeLabel = (
     filterValue: TimeRangeType["timeRestriction"] | null,
@@ -129,6 +132,11 @@ const FeasibilityCriterionItem = ({
     }
   }, [item.criterion.timeRestriction]);
 
+  useEffect(() => {
+    console.log("isEditing: ", item.isEditing);
+    console.log("item: ", item);
+  }, [item.isEditing, item]);
+
   return (
     <div ref={dragProps.setNodeRef} className="relative">
       <li
@@ -190,156 +198,173 @@ const FeasibilityCriterionItem = ({
               style={{ display: isExpanded ? "block" : "none" }}
               className={`p-2 pb-0 mt-3 ${isExpanded && "border-t-[1.5px] border-(--color-border)"}`}
             >
-              {item.criterion.filterType === "concept" ? (
-                <ConceptOption
-                  criterion={item.criterion}
-                  onChange={(value) => {
-                    if (value === null) {
-                      startEditing("inclusionCriteria", item.uid);
-                    } else {
-                      stopEditing("inclusionCriteria", item.uid);
-                    }
-                    updateCriterionFilter({
-                      uid: item.uid,
-                      filterType: "concept",
-                      filterValue: value,
-                    });
-                  }}
-                />
-              ) : item.criterion.filterType === "quantity" ? (
-                <QuantityOption
-                  criterion={item.criterion}
-                  size="sm"
-                  onChange={() => {}}
-                />
-              ) : item.criterion.timeRestrictionAllowed ? (
-                <div className="flex flex-col gap-3">
-                  {item.criterion.timeRestriction && (
-                    <div className="flex gap-3 bg-[#ccddff]">
-                      <div
-                        className={`flex w-full gap-2 items-center justify-between px-2 py-1 text-xs rounded`}
-                      >
-                        <span className="flex gap-2">
-                          {item.criterion.isLocalFilter || item.isEditing ? (
-                            <>
-                              <img src={localFilterIcon} /> Lokaler Zeitraum:
-                              {!item.isEditing ? (
-                                <span className="font-medium">
-                                  {timeRangeLabel}
-                                </span>
-                              ) : null}
-                            </>
-                          ) : (
-                            <>
-                              <img src={globalFilterIcon} /> Globaler Zeitraum:
-                              <span className="font-medium">
-                                {timeRangeLabel}
-                              </span>
-                            </>
-                          )}
-                        </span>
-                        <TertiaryButton
-                          id={"delete-" + item.uid}
-                          label="Löschen"
-                          className="text-xs font-normal text-red-600 hover:text-red-500"
-                          onClick={() => {
-                            handleTimeRangeFilter(null);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {item.isEditing && (
-                    <TimeRangeOption
-                      id={item.uid}
-                      size="sm"
-                      timeRestrictionData={currentTimeRestriction ?? null}
-                      onValidityChange={(isValid) => {
-                        setIsFilterCompleted(isValid);
-                      }}
-                      onCompleteChange={(filterValue) => {
-                        setLocalFilter({
-                          ...filterValue,
+              {/* Filter Options */}
+              <LocalFilterPanel item={item} />
+              <div className="flex flex-col gap-5">
+                {/* Concept Filter */}
+                {item.criterion.filterType === "concept" && (
+                  <div className="flex flex-col gap-3 border-b-[1.5px] border-(--color-border) pb-3">
+                    {moduleName === "Diagnose" ? (
+                      <p className="text-sm font-medium">Diagnosepriorität:</p>
+                    ) : null}
+                    <ConceptOption
+                      criterion={item.criterion}
+                      onChange={(value) => {
+                        if (value === null) {
+                          startEditing("inclusionCriteria", item.uid);
+                        } else {
+                          stopEditing("inclusionCriteria", item.uid);
+                        }
+                        updateCriterionFilter({
+                          uid: item.uid,
+                          filterType: "concept",
+                          filterValue: value,
                         });
                       }}
                     />
-                  )}
-                  <div className="flex flex-wrap pl-0.5 gap-4">
-                    {/* gap-10 */}
-                    {globalFilter.timeRange ? (
-                      item.criterion.isLocalFilter ? (
-                        <Button
-                          id={item.criterion.id + "-btn"}
-                          label="Auf globalen Filter zurücksetzen"
-                          type="tertiary"
-                          onClick={() => {
-                            handleTimeRangeFilter({
-                              timeRange: globalFilter.timeRange,
-                              isLocalFilter: false,
-                            });
-                          }}
-                        />
-                      ) : !item.criterion.timeRestriction ? (
-                        <Button
-                          id={item.criterion.id + "-global-btn"}
-                          label="Globaler Filter setzen"
-                          type="tertiary"
-                          onClick={() => {
-                            handleTimeRangeFilter({
-                              timeRange: globalFilter.timeRange,
-                              isLocalFilter: false,
-                            });
-                          }}
-                        />
-                      ) : null
-                    ) : null}
-                    {item.isEditing ? (
-                      /* Abbrechen and Bestätigen */
-                      <div className="flex gap-2">
-                        <Button
-                          id={"clear-filter-btn"}
-                          label="Abbrechen"
-                          type="tertiary"
-                          onClick={() => {
-                            stopEditing("inclusionCriteria", item.uid);
-                          }}
-                        />
-                        <Button
-                          id={item.criterion.id + "-btn"}
-                          label="Bestätigen"
-                          type="tertiary"
-                          isActive={isFilterCompleted}
-                          onClick={() => {
-                            handleTimeRangeFilter({
-                              timeRange: localFilter,
-                              isLocalFilter: true,
-                            });
-                          }}
-                        />
+                  </div>
+                )}
+
+                {/* Quantity Filter */}
+                {item.criterion.filterType === "quantity" && (
+                  <QuantityOption
+                    criterion={item.criterion}
+                    size="sm"
+                    onChange={() => {}}
+                  />
+                )}
+                {/* Time Range Filter */}
+                {item.criterion.timeRestrictionAllowed ? (
+                  <div className="flex flex-col gap-3 border-b-[1.5px] border-(--color-border) pb-3">
+                    <p className="text-sm font-medium">Zeitraum:</p>
+                    {item.criterion.timeRestriction && (
+                      <div className="flex gap-3 bg-[#ccddff]">
+                        <div
+                          className={`flex w-full gap-2 items-center justify-between px-2 py-1 text-xs rounded`}
+                        >
+                          <span className="flex gap-2">
+                            {item.criterion.isLocalFilter || item.isEditing ? (
+                              <>
+                                <img src={localFilterIcon} /> Lokaler Zeitraum:
+                                {!item.isEditing ? (
+                                  <span className="font-medium">
+                                    {timeRangeLabel}
+                                  </span>
+                                ) : null}
+                              </>
+                            ) : (
+                              <>
+                                <img src={globalFilterIcon} /> Globaler
+                                Zeitraum:
+                                <span className="font-medium">
+                                  {timeRangeLabel}
+                                </span>
+                              </>
+                            )}
+                          </span>
+                          <TertiaryButton
+                            id={"delete-" + item.uid}
+                            label="Löschen"
+                            className="text-xs font-normal text-red-600 hover:text-red-500"
+                            onClick={() => {
+                              handleTimeRangeFilter(null);
+                            }}
+                          />
+                        </div>
                       </div>
-                    ) : item.criterion.isLocalFilter ? (
-                      <Button
-                        id={item.criterion.id + "-btn"}
-                        label="Lokaler Filter bearbeiten"
-                        type="tertiary"
-                        onClick={() => {
-                          startEditing("inclusionCriteria", item.uid);
+                    )}
+
+                    {item.isEditing && (
+                      <TimeRangeOption
+                        id={item.uid}
+                        size="sm"
+                        timeRestrictionData={currentTimeRestriction ?? null}
+                        onValidityChange={(isValid) => {
+                          setIsFilterCompleted(isValid);
                         }}
-                      />
-                    ) : (
-                      <Button
-                        id={item.criterion.id + "-btn"}
-                        label="Lokaler Filter setzen"
-                        type="tertiary"
-                        onClick={() => {
-                          startEditing("inclusionCriteria", item.uid);
+                        onCompleteChange={(filterValue) => {
+                          setLocalFilter({
+                            ...filterValue,
+                          });
                         }}
                       />
                     )}
+                    <div className="flex flex-wrap pl-0.5 gap-4">
+                      {/* gap-10 */}
+                      {globalFilter.timeRange ? (
+                        item.criterion.isLocalFilter ? (
+                          <Button
+                            id={item.criterion.id + "-btn"}
+                            label="Auf globalen Filter zurücksetzen"
+                            type="tertiary"
+                            onClick={() => {
+                              handleTimeRangeFilter({
+                                timeRange: globalFilter.timeRange,
+                                isLocalFilter: false,
+                              });
+                            }}
+                          />
+                        ) : !item.criterion.timeRestriction ? (
+                          <Button
+                            id={item.criterion.id + "-global-btn"}
+                            label="Globaler Filter setzen"
+                            type="tertiary"
+                            onClick={() => {
+                              handleTimeRangeFilter({
+                                timeRange: globalFilter.timeRange,
+                                isLocalFilter: false,
+                              });
+                            }}
+                          />
+                        ) : null
+                      ) : null}
+                      {item.isEditing ? (
+                        /* Abbrechen and Bestätigen */
+                        <div className="flex gap-2">
+                          <Button
+                            id={"clear-filter-btn"}
+                            label="Abbrechen"
+                            type="tertiary"
+                            onClick={() => {
+                              stopEditing("inclusionCriteria", item.uid);
+                            }}
+                          />
+                          <Button
+                            id={item.criterion.id + "-btn"}
+                            label="Bestätigen"
+                            type="tertiary"
+                            isActive={isFilterCompleted}
+                            onClick={() => {
+                              handleTimeRangeFilter({
+                                timeRange: localFilter,
+                                isLocalFilter: true,
+                              });
+                            }}
+                          />
+                        </div>
+                      ) : item.criterion.isLocalFilter ? (
+                        <Button
+                          id={item.criterion.id + "-btn"}
+                          label="Lokaler Filter bearbeiten"
+                          type="tertiary"
+                          onClick={() => {
+                            startEditing("inclusionCriteria", item.uid);
+                          }}
+                        />
+                      ) : (
+                        <Button
+                          id={item.criterion.id + "-btn"}
+                          label="Lokaler Filter setzen"
+                          type="tertiary"
+                          onClick={() => {
+                            startEditing("inclusionCriteria", item.uid);
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : null}
+                ) : null}
+              </div>
             </div>
           </div>
           <div

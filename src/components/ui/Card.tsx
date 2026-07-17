@@ -43,11 +43,12 @@ const Card = ({
       {/* header */}
       {header && (
         <div
-          className={`flex item-center py-2
+          className={twMerge(`flex item-center py-2
         h-[clamp(40px,10%,60px)]
         rounded-t-sm
-        font-medium text-[#5e5e5e]
-        ${headerClassName}`}
+        font-medium 
+        text-[#5e5e5e]
+        ${headerClassName}`)}
         >
           {header}
         </div>

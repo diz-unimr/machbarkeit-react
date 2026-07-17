@@ -3,6 +3,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import download from "downloadjs";
 import Card from "@components/ui/Card";
 import type {
@@ -61,6 +62,8 @@ const FeasibilityContainer = () => {
   const [isDeleteAction, setIsDeleteAction] = useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
   const [numberOfEditing, setNumberOfEditing] = useState<number>(0);
+
+  const navigate = useNavigate();
 
   const handleWarningChoice = (selectedChoice: SelectedChoice) => {
     warningModal.resolver?.(selectedChoice);
@@ -296,6 +299,14 @@ const FeasibilityContainer = () => {
               </menu>
             </div>
             <div className="flex flex-col h-full min-h-0 gap-4 py-4">
+              <Button
+                id={""}
+                label="Abfrage Management"
+                type="tertiary"
+                className="m-0! font-medium!"
+                isActive={true}
+                onClick={() => navigate("/queries-management")}
+              />
               <GlobalFilterPanel
                 hasNoTimeRestriction={hasNoTimeRestriction}
                 onHandleWarning={handleWarning}
