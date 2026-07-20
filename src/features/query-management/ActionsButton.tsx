@@ -1,16 +1,21 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import deleteIcon from "@assets/trash-icon.svg";
 import downloadIcon from "@assets/download-file-icon.svg";
+import { DeleteButton } from "@/components/ui/buttons/Button";
+import useQueryManagementStore from "@/app/store/query-management-store";
 
 const ActionsButton = ({ queryId }: { queryId: string }) => {
+  const removeQueryJobs = useQueryManagementStore((s) => s.removeQueryJob);
+
   return (
     <div className="flex w-full justify-center gap-6">
       <div className="relative flex group">
-        <button className="w-full py-0! px-0!">
-          <img src={deleteIcon} alt="Delete" />
-        </button>
+        <DeleteButton
+          id={queryId}
+          className="w-fit! py-0! px-0!"
+          onClick={() => removeQueryJobs(queryId)}
+        />
         <div
           className="pointer-events-none
         absolute

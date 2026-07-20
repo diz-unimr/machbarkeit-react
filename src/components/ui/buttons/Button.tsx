@@ -2,11 +2,12 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { twMerge } from "tailwind-merge";
+import deleteIcon from "@assets/trash-icon.svg";
 
 export type ButtonProp = {
   id: string;
   type?: "primary" | "secondary" | "tertiary" | "danger";
-  label: string;
+  label?: string;
   color?: string;
   isActive?: boolean;
   className?: string;
@@ -24,7 +25,7 @@ export const Button = ({
   onClick,
 }: ButtonProp) => {
   const baseClass =
-    "!min-w-[80px] font-bold border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
+    "min-w-[80px] font-bold border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
 
   const isActiveClass =
     isActive && "hover:shadow-md transition-all duration-150";
@@ -45,7 +46,7 @@ export const Button = ({
       break;
   }
 
-  const buttonClass = twMerge(baseClass, typeClass, isActiveClass, className);
+  const buttonClass = twMerge(baseClass, isActiveClass, typeClass, className);
 
   return (
     <button
@@ -60,9 +61,7 @@ export const Button = ({
       onClick={() => onClick?.(id)}
     >
       {label}
-      {type === "danger" && (
-        <img src="/delete.png" className="!w-[22px] !h-[16px]" />
-      )}
+      {type === "danger" && <img src={deleteIcon} className="!w-fit" />}
     </button>
   );
 };

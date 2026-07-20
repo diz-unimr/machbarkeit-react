@@ -13,6 +13,8 @@ type QueryManagementStore = {
   addSavedQuery: (savedQuery: SavedQuery) => void;
   updateQueryJob: (updatedQuery: QueryJob) => void;
   updateSavedQuery: (updatedQuery: SavedQuery) => void;
+  removeQueryJob: (queryId: string) => void;
+  removeSavedQuery: (queryId: string) => void;
 };
 
 const useQueryManagementStore = create<QueryManagementStore>((set) => ({
@@ -26,6 +28,15 @@ const useQueryManagementStore = create<QueryManagementStore>((set) => ({
     set((state) => ({ queryJobs: [...state.queryJobs, queryJob] })),
   addSavedQuery: (savedQuery) =>
     set((state) => ({ savedQueries: [...state.savedQueries, savedQuery] })),
+
+  removeQueryJob: (id) =>
+    set((state) => ({
+      queryJobs: state.queryJobs.filter((c) => c.id !== id),
+    })),
+  removeSavedQuery: (id) =>
+    set((state) => ({
+      queryJobs: state.queryJobs.filter((c) => c.id !== id),
+    })),
 
   updateQueryJob: (updatedQuery) =>
     set((state) => ({
