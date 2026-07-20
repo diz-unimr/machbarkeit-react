@@ -5,11 +5,11 @@ import type {
   FeasibilityQueryData,
   SelectedCriteria,
 } from "@/features/feasibility/feasibility-builder/type";
-import generateUID from "./generateUID";
-import { getConcept } from "../services/ontologyService";
-import { getModuleColor } from "./moduleUtils";
+import generateUID from "./generate-uuid";
+import { getConcept } from "../services/ontology-service";
+import { getModuleColor } from "./module-utils";
 
-const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
+const structureQueryToUI = async (uploadedData: FeasibilityQueryData) => {
   if (!uploadedData.inclusionCriteria) return null;
 
   const inclusionCriteria: SelectedCriteria = {
@@ -63,4 +63,4 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
   return inclusionCriteria;
 };
 
-export default convertToCriteriaDisplay;
+export default structureQueryToUI;

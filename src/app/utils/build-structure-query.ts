@@ -6,13 +6,13 @@ import type {
   QueryCriterion,
 } from "@/features/feasibility/feasibility-builder/type";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
-import setCriterionContext from "./setCriterionContext";
+import setCriterionContext from "./set-criterion-context";
 import type {
   ConceptType,
   QuantityType,
 } from "@/features/filters/controls/type";
 
-const createQueryData = (): FeasibilityQueryData | null => {
+const buildStructureQuery = (): FeasibilityQueryData | null => {
   const selectedInclusionCriteria =
     useSelectedCriteriaStore.getState().selectedInclusionCriteria;
 
@@ -82,4 +82,4 @@ const createQueryData = (): FeasibilityQueryData | null => {
   return queryData;
 };
 
-export default createQueryData;
+export default buildStructureQuery;

@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { Criterion } from "@app/types/ontologyType";
-import { getModuleName } from "@app/utils/moduleUtils";
+import { getModuleName } from "@/app/utils/module-utils";
 
 const sortLaboruntersuchung = (
   selectable: Criterion[],

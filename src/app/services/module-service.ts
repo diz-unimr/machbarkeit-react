@@ -3,9 +3,9 @@
 
 import axios, { type AxiosResponse } from "axios";
 import type { Module } from "@app/types/ontologyType";
-import { getModuleColor } from "@app/utils/moduleUtils";
+import { getModuleColor } from "@/app/utils/module-utils";
 import lodash from "lodash";
-import login from "@app/services/loginService.ts";
+import login from "@/app/services/login-service";
 
 const getModules = async (): Promise<Module[] | null> => {
   try {
