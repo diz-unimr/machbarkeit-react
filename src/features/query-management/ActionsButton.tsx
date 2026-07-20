@@ -7,7 +7,7 @@ import downloadIcon from "@assets/download-file-icon.svg";
 const ActionsButton = ({ queryId }: { queryId: string }) => {
   return (
     <div className="flex w-full justify-center gap-6">
-      <div className="relative flex">
+      <div className="relative flex group">
         <button className="w-full py-0! px-0!">
           <img src={deleteIcon} alt="Delete" />
         </button>
@@ -28,10 +28,10 @@ const ActionsButton = ({ queryId }: { queryId: string }) => {
         group-hover:opacity-100
       "
         >
-          Delete
+          Löschen
         </div>
       </div>
-      <div className="relative flex">
+      <div className="relative flex group">
         <button className="w-full py-0! px-0!">
           <img src={downloadIcon} alt="Download" />
         </button>
@@ -52,7 +52,7 @@ const ActionsButton = ({ queryId }: { queryId: string }) => {
         group-hover:opacity-100
       "
         >
-          Download
+          Herunterladen
         </div>
       </div>
     </div>
