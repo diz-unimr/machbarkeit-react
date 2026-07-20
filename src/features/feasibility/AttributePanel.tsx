@@ -8,7 +8,7 @@ import type { Attribute } from "../data-selection/attribute-list/type";
 import type {
   /* DropZone, */ SelectedAttribute,
 } from "./feasibility-builder/type";
-import generateId from "@/app/utils/generateUID";
+import generateUUID from "@/app/utils/generate-uuid";
 import useCriteriaDnD from "./feasibility-builder/hooks/useCriteriaDnD";
 
 type DroppedAttribute = {
@@ -33,7 +33,7 @@ const AttributePanel = () => {
     event.dataTransfer.clearData(DRAG_DATA_FORMATS.ATTRIBUTE);
     if (!data) return;
     const attribute = JSON.parse(data) as Attribute;
-    const newEntry: DroppedAttribute = { uid: generateId(), attribute };
+    const newEntry: DroppedAttribute = { uid: generateUUID(), attribute };
     setAttributeList((prev) => [...prev, newEntry]);
   };
 

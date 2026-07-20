@@ -10,7 +10,7 @@ type OntologyButtonProps = {
 const OntologyButton = ({ onClick }: OntologyButtonProps) => {
   return (
     <button
-      className="!w-10 !h-10 !min-w-auto !bg-[#5e6c78] hover:brightness-110 active:brightness-100 !rounded-sm"
+      className="w-10! h-10! min-w-auto! bg-[#5e6c78]! hover:brightness-110 active:brightness-100 rounded-sm!"
       onClick={onClick}
     >
       <img src={folderIcon} />

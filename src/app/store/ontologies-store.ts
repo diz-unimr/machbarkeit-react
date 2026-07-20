@@ -3,7 +3,7 @@
 
 import { create } from "zustand";
 import type { Criterion } from "@app/types/ontologyType";
-import sortOntologyTree from "../utils/sortOntologyTree";
+import sortOntologyTree from "../utils/sort-ontology-tree";
 
 type OntologyStore = {
   ontology: Record<string, Criterion[]>;

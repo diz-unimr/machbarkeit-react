@@ -15,11 +15,11 @@ import { AxiosError } from "axios";
 
 const FeasibilityQueryControl = ({
   completedFilter,
-  createQueryData,
+  buildStructureQuery,
   onResetAllData,
 }: {
   completedFilter: boolean;
-  createQueryData: () => FeasibilityQueryData | null;
+  buildStructureQuery: () => FeasibilityQueryData | null;
   onResetAllData: () => void;
 }) => {
   const abortController = useRef<AbortController | null>(null);
@@ -55,7 +55,7 @@ const FeasibilityQueryControl = ({
       return;
     }
     // Start Query
-    const queryData = createQueryData();
+    const queryData = buildStructureQuery();
     if (!queryData) return;
     startQueryRunning();
 

@@ -6,13 +6,13 @@ import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 import type { Criterion } from "@app/types/ontologyType";
 import type { DropZone, CriterionNode } from "../type";
-import generateId from "@/app/utils/generateUID";
+import generateUUID from "@/app/utils/generate-uuid";
 
 const useCriteriaDnD = () => {
   const addNewCriterion = useSelectedCriteriaStore((s) => s.addNewCriterion);
   const [activeZone, setActiveZone] = useState<DropZone | null>(null);
 
-  const uid = generateId();
+  const uid = generateUUID();
 
   const dropZoneClasses = useCallback(
     (zone: DropZone) =>

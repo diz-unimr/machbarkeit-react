@@ -25,8 +25,8 @@ import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
 import { Button } from "@/components/ui/buttons/Button";
 import WarningModal from "../WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
-import createQueryData from "@/app/utils/createQueryData";
-import convertToCriteriaDisplay from "@/app/utils/convertJsonToCriteriaDisplay";
+import buildStructureQuery from "@/app/utils/build-structure-query";
+import structureQueryToUI from "@/app/utils/structure-query-to-ui";
 import warningIcon from "@assets/warning-icon.svg";
 
 const FeasibilityContainer = () => {
@@ -160,7 +160,7 @@ const FeasibilityContainer = () => {
       const uploadedCriteria: FeasibilityQueryData =
         await parseAndValidateFile(file);
       const inclusionCriteria =
-        await convertToCriteriaDisplay(uploadedCriteria);
+        await structureQueryToUI(uploadedCriteria);
 
       if (inclusionCriteria) {
         // check if any global filter
@@ -186,7 +186,7 @@ const FeasibilityContainer = () => {
   };
 
   const saveQuery = (fileName: string) => {
-    const queryData = createQueryData();
+    const queryData = buildStructureQuery();
 
     if (!queryData) return;
     // utf-8 encoder
@@ -219,6 +219,7 @@ const FeasibilityContainer = () => {
   }, [hasNoTimeRestriction]);
 
   useEffect(() => {
+    console.log("selectedInclusionCriteria", selectedInclusionCriteria);
     const hasEditing =
       selectedInclusionCriteria.criteria.some((c) => c.isEditing) ||
       globalFilter.isEditing;
@@ -247,7 +248,7 @@ const FeasibilityContainer = () => {
       <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
         <FeasibilityQueryControl
           completedFilter={completedFilter}
-          createQueryData={createQueryData}
+          buildStructureQuery={buildStructureQuery}
           onResetAllData={resetAllData}
         />
         <div

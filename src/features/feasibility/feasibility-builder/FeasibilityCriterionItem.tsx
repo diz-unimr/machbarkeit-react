@@ -20,7 +20,7 @@ import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type { TimeRangeType } from "@features/filters/controls/type";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
-import { getModuleName } from "@app/utils/moduleUtils";
+import { getModuleName } from "@/app/utils/module-utils";
 import LocalFilterPanel from "@/features/filters/localFilterPanel";
 
 type DragProps = {

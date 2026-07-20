@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import Splitter from "@components/ui/Splitter";
 import DataSelectionContainer from "@features/data-selection/DataSelectionContainer";
 import FeasibilityContainer from "@features/feasibility/feasibility-builder/FeasibilityContainer";
-import login from "./services/loginService";
+import login from "./services/login-service";
 import { useEffect } from "react";
 import QueryManagementContainer from "@/features/query-management/QueryManagementContainer";
 
@@ -31,7 +31,10 @@ function App() {
         }
       />
 
-      <Route path="/queries-management" element={<QueryManagementContainer />} />
+      <Route
+        path="/queries-management"
+        element={<QueryManagementContainer />}
+      />
     </Routes>
   );
 }

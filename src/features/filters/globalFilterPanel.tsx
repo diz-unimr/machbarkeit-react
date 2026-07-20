@@ -9,7 +9,7 @@ import { useState } from "react";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import type { TimeRangeType } from "./controls/type";
 import { Button } from "@components/ui/buttons/Button";
-import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
+import formatTimeRangeLabel from "@/app/utils/formatTimeRangeLabel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 
 export type GlobalFilterName = "timeRange" | "caseType";

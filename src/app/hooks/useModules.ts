@@ -4,7 +4,7 @@
 
 import { useEffect } from "react";
 import useModulesStore from "@app/store/modules-store";
-import getModules from "@app/services/moduleService";
+import getModules from "@/app/services/module-service";
 
 const useModules = () => {
   const modules = useModulesStore((s) => s.modules);
