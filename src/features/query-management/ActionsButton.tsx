@@ -6,7 +6,7 @@ import { DeleteButton } from "@/components/ui/buttons/Button";
 import useQueryManagementStore from "@/app/store/query-management-store";
 
 const ActionsButton = ({ queryId }: { queryId: string }) => {
-  const removeQueryJobs = useQueryManagementStore((s) => s.removeQueryJob);
+  const removeSavedQuery = useQueryManagementStore((s) => s.removeSavedQuery);
 
   return (
     <div className="flex w-full justify-center gap-6">

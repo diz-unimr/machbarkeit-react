@@ -14,13 +14,13 @@ const QueryManagementContainer = () => {
     <div className="flex max-w-320 h-screen p-6 mx-auto overflow-hidden">
       <Card
         header="Abfrageverwaltung"
+        className="h-full"
         headerClassName="text-2xl font-bold text-black border-b-1 border-gray-300"
+        bodyClassName="pt-5"
       >
-        <div className="flex flex-col p-5 overflow-hidden">
-          <div className="flex flex-col gap-6">
-            <QueryJobs />
-            <SavedQueries />
-          </div>
+        <div className="h-full flex flex-col gap-6">
+          <QueryJobs />
+          <SavedQueries />
         </div>
       </Card>
     </div>

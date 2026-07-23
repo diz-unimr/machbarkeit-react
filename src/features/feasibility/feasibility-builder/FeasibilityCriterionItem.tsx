@@ -132,11 +132,6 @@ const FeasibilityCriterionItem = ({
     }
   }, [item.criterion.timeRestriction]);
 
-  useEffect(() => {
-    console.log("isEditing: ", item.isEditing);
-    console.log("item: ", item);
-  }, [item.isEditing, item]);
-
   return (
     <div ref={dragProps.setNodeRef} className="relative">
       <li

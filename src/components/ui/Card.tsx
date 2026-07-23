@@ -54,11 +54,17 @@ const Card = ({
         </div>
       )}
       {/* children */}
-      <div className={twMerge("flex flex-col w-full h-full", bodyClassName)}>
+      <div
+        className={twMerge(
+          "flex-1 min-h-0 flex flex-col w-full",
+          bodyClassName,
+        )}
+      >
         {extra}
         {children}
       </div>
     </div>
   );
 };
+
 export default Card;

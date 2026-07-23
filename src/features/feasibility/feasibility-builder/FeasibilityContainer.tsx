@@ -159,8 +159,7 @@ const FeasibilityContainer = () => {
     try {
       const uploadedCriteria: FeasibilityQueryData =
         await parseAndValidateFile(file);
-      const inclusionCriteria =
-        await structureQueryToUI(uploadedCriteria);
+      const inclusionCriteria = await structureQueryToUI(uploadedCriteria);
 
       if (inclusionCriteria) {
         // check if any global filter
@@ -219,7 +218,6 @@ const FeasibilityContainer = () => {
   }, [hasNoTimeRestriction]);
 
   useEffect(() => {
-    console.log("selectedInclusionCriteria", selectedInclusionCriteria);
     const hasEditing =
       selectedInclusionCriteria.criteria.some((c) => c.isEditing) ||
       globalFilter.isEditing;
