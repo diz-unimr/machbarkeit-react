@@ -12,7 +12,7 @@ services:
       - AUTH__OIDC__CLIENT_SECRET
       - CORS__ALLOW_ORIGIN=http://localhost:5173
       - SESSION__CROSS_DOMAIN=false
-      - MDR__ENDPOINT=https://mdr.diz.uni-marburg.de/api
+      - MDR__ENDPOINT=http://mdr:3000
       - DATABASE__URL=sqlite://db.sqlite?mode=rwc
     ports:
       - "3000:3000"
@@ -28,3 +28,33 @@ services:
       BROKER__AUTH__CLIENT_CREDENTIALS__TOKEN_URL: ${AUTH__OIDC__TOKEN_ENDPOINT}
     depends_on:
       - backend
+
+  db:
+    image: postgres:17.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: mdr
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - mdr-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 5
+
+  mdr:
+    image: ghcr.io/diz-unimr/mdr-service:1.4.0
+    restart: unless-stopped
+    environment:
+      database.url: postgres://postgres:postgres@db/mdr
+    ports:
+      - "3001:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mdr-data:
