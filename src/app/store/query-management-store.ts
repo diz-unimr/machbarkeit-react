@@ -25,6 +25,7 @@ const useQueryManagementStore = create<QueryManagementStore>((set) => ({
 
   addQueryJob: (queryJob) =>
     set((state) => ({ queryJobs: [...state.queryJobs, queryJob] })),
+
   addSavedQuery: (savedQuery) =>
     set((state) => ({ savedQueries: [...state.savedQueries, savedQuery] })),
 
@@ -39,6 +40,7 @@ const useQueryManagementStore = create<QueryManagementStore>((set) => ({
         q.id === updatedQuery.id ? updatedQuery : q,
       ),
     })),
+
   updateSavedQuery: (updatedQuery) =>
     set((state) => ({
       savedQueries: state.savedQueries.map((q) =>

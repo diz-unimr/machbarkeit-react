@@ -34,11 +34,11 @@ const QueryManagementPanel = ({
         </div>
         <div
           className={`
-                    transition-all
-                    duration-1000
-                    ease-in-out
-                    ${expandedPanel ? "flex-1 flex min-h-0 opacity-100" : "h-0 opacity-0"}
-                `}
+              transition-all
+              duration-1000
+              ease-in-out
+              ${expandedPanel ? "flex-1 flex min-h-0 opacity-100" : "h-0 opacity-0"}
+          `}
         >
           {children}
         </div>
