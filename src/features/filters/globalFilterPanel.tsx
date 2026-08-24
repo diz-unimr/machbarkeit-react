@@ -107,7 +107,7 @@ const GlobalFilterPanel = ({
             )}
 
             <div className="flex gap-10 pl-0.5">
-              {(globalFilter.isEditing || globalFilter.timeRange) && (
+              {globalFilter.isEditing && globalFilter.timeRange && (
                 <Button
                   id={"clear-filter-btn"}
                   label="Löschen"
