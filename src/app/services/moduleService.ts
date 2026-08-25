@@ -7,6 +7,8 @@ import { getModuleColor } from "@app/utils/moduleUtils";
 import lodash from "lodash";
 import login from "@app/services/loginService.ts";
 
+const moduleOrder = ["Person", "Diagnose", "Prozedur", "Laboruntersuchung"];
+
 const getModules = async (): Promise<Module[] | null> => {
   try {
     const url = `${import.meta.env.VITE_BACKEND_API_BASE}/mdr/ontology/modules`;
@@ -18,7 +20,12 @@ const getModules = async (): Promise<Module[] | null> => {
       module.color = getModuleColor(module["fdpgCdsCode"] as string);
       return module;
     });
-    return modules;
+
+    // sort modules
+    const sortedModules = [...modules].sort(
+      (a, b) => moduleOrder.indexOf(a.name) - moduleOrder.indexOf(b.name),
+    );
+    return sortedModules;
   } catch (_error) {
     // todo: error handling
     await login();

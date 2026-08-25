@@ -26,6 +26,11 @@ const sortLaboruntersuchung = (
   swisslab.sort((a, b) =>
     (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
   ); */
+  nonSelectable.sort((a, b) => {
+    if (a.display === "Sonstiges") return 1;
+    if (b.display === "Sonstiges") return -1;
+    return a.display.localeCompare(b.display);
+  });
 
   const code = selectable.sort((a, b) =>
     (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
