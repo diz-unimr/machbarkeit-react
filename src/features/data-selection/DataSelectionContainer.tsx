@@ -5,7 +5,8 @@ import { useState } from "react";
 import sidebarCollapse from "@assets/sidebar-arrow.svg";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
 import appIcon from "@assets/app-icon.svg";
-import OntologyContainer from "./ontology-container/layout/OntologyContainer";
+import OntologyContainer from "./ontology-characteristics/layout/OntologyContainer";
+import AttributeListPanel from "./attribute-list/layout/AttributeListPanel";
 
 type DataSelectionProps = {
   onToggle: (expandedState: boolean) => void;
@@ -20,7 +21,10 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
 
   const toggleOntologyContainer = () => {
     setIsOntologyContainerOpen((prev) => !prev);
-    if (isAttributeListPanelOpen) setIsAttributeListPanelOpen(false);
+  };
+
+  const toggleAttributeListPanel = () => {
+    setIsAttributeListPanelOpen((prev) => !prev);
   };
 
   const toggleContainer = () => {
@@ -35,7 +39,6 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
         <div className="flex gap-3 items-start">
           <img src={appIcon} width={20} height={20} className="text-black" />
         </div>
-
         <ArrowButton
           id="sidebar-arrow"
           image={sidebarCollapse}
@@ -46,17 +49,24 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
         />
       </div>
       {isExpanded ? (
-        <OntologyContainer
-          onSetPanelStatus={toggleOntologyContainer}
-          isOntologyContainerOpen={isOntologyContainerOpen}
-        />
+        <div className="flex flex-1 flex-col min-h-0 mx-4 my-3">
+          <OntologyContainer
+            onSetPanelStatus={toggleOntologyContainer}
+            isOntologyContainerOpen={isOntologyContainerOpen}
+          />
+          <AttributeListPanel
+            onSetPanelStatus={toggleAttributeListPanel}
+            isAttributeListPanelOpen={isAttributeListPanelOpen}
+          />
+        </div>
       ) : (
         <div className="flex px-4 py-3">
-          <p className="font-medium">Merkmale</p>
-          {/* <div>Attributliste</div> */}
+          {/* <p className="font-medium">Merkmale</p>
+          <div className="font-medium">Attributliste</div> */}
         </div>
       )}
     </div>
   );
 };
+
 export default DataSelectionContainer;

@@ -31,7 +31,7 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <div className="flex flex-col flex-1 min-h-0 w-full h-full p-3 gap-4 overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 w-full h-full pt-4 p-1 gap-4 overflow-hidden">
         <InputTextField
           id="search-text"
           label="Code oder Suchbegriff eingeben"
