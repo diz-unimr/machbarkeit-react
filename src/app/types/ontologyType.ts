@@ -57,6 +57,7 @@ export type Criterion = {
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
   timeRestriction?: TimeRangeType["timeRestriction"];
   color?: ModuleColorProps;
+  unit?: string;
   version: string | null;
   isLocalFilter?: boolean;
 };

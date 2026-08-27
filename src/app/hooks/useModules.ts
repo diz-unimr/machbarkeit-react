@@ -1,6 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect } from "react";
 import useModulesStore from "@app/store/modules-store";

@@ -24,7 +24,7 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
     uploadedCriteria.flat().map(async (c) => {
       const concept = await getConcept(c.id);
       if (!concept) return;
-
+      
       const next = { ...concept };
       next.context = c.context;
       next.color = getModuleColor(next.context?.code || "Default");
