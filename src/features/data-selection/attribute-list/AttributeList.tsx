@@ -1,23 +1,20 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import Papa from "papaparse";
-/* import InputTextField from "@components/ui/inputs/InputTextField"; */
-import { type Attribute } from "@features/data-selection/attribute-list/type";
-import { useEffect, useState, type DragEvent } from "react";
+import useMetadata from "@/app/hooks/useMetadata";
+import { type Metadata } from "@features/data-selection/attribute-list/type";
+import { useState } from "react";
 import TreePanel from "@features/data-selection/ontology-characteristics/ontologies/TreePanel";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
-import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 import Card from "@/components/ui/Card";
+import infoIcon from "@assets/info-svgrepo-com.svg";
 
 const AttributeList = () => {
-  const [metadata, setMetadata] = useState<Attribute[]>([]);
+  const metadata = useMetadata();
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
-  const [mouseOverIndex, setMouseOverIndex] = useState<number | null>(null);
+  const [mouseOverIndex, setMouseOverIndex] = useState<string | null>(null);
 
-  const moduleName = ["Diagnose", "Fall", "Labor", "Person"];
-
-  /* const [textInput, setTextInput] = useState<string>(""); */
+  const moduleName = ["Person", "Fall", "Diagnose", "Prozedur", "Labor"];
 
   const toggleExpansion = (index: number) => {
     setExpandedIndex((prev) => {
@@ -29,43 +26,55 @@ const AttributeList = () => {
     });
   };
 
-  /* const handleTextChange = (text: string) => {
-    setTextInput(text);
-  }; */
+  const renderAttributeList = (items: Metadata[]) => {
+    const defaultItems = items.filter((item) => item.defaultAttribute);
+    const nonDefaultItems = items.filter((item) => !item.defaultAttribute);
 
-  const getTooltipPosition = (index: number) => {
-    setMouseOverIndex(index);
-  };
+    const renderItem = (attribute: Metadata, idx: number) => {
+      const itemId = `${attribute.kdsModule} - ${attribute.additionalInformation} - ${idx}`;
+      return (
+        <div
+          key={itemId}
+          className="flex flex-col pl-5 pb-2"
+          onMouseEnter={() => setMouseOverIndex(itemId)}
+          onMouseLeave={() => setMouseOverIndex(null)}
+        >
+          <div className="flex gap-2.5 items-center">
+            <input type="checkbox" onChange={() => {}} />
+            <p
+              className={`cursor-pointer ${attribute.defaultAttribute ? "font-semibold text-gray-900" : "text-gray-600"}`}
+            >
+              {attribute.attributeName}
+            </p>
+          </div>
 
-  const handleAttributeDragStart = (
-    event: DragEvent<HTMLDivElement>,
-    attribute: Attribute,
-  ) => {
-    event.dataTransfer.setData(
-      DRAG_DATA_FORMATS.ATTRIBUTE,
-      JSON.stringify(attribute),
+          {mouseOverIndex === itemId && (
+            <div className="flex visible ml-6 pl-2 bg-amber-100 items-start mt-1 rounded p-1 text-sm text-gray-700">
+              <img src={infoIcon} className="inline w-4 mr-2 pt-0.5" />
+              {attribute.attributeDescription}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    return (
+      <div className="flex flex-col">
+        {/* Default Concepts */}
+        {defaultItems.map((item, idx) => renderItem(item, idx))}
+
+        {/* underline */}
+        {defaultItems.length > 0 && nonDefaultItems.length > 0 && (
+          <hr className="my-2 border-t border-gray-300 ml-5" />
+        )}
+
+        {/* Non-Default Concepts */}
+        {nonDefaultItems.map((item, idx) =>
+          renderItem(item, idx + defaultItems.length),
+        )}
+      </div>
     );
-    event.dataTransfer.effectAllowed = "copy";
   };
-
-  const handleAttributeDragEnd = (event: DragEvent<HTMLDivElement>) => {
-    event.dataTransfer.clearData();
-  };
-
-  useEffect(() => {
-    Papa.parse<Attribute>("/diz_metadaten.csv", {
-      download: true,
-      header: true,
-      complete: ({ data }) => {
-        const parsedData =
-          data?.filter(
-            (attribute) =>
-              attribute.kdsModule && attribute.attributeName?.trim().length,
-          ) ?? [];
-        setMetadata(parsedData);
-      },
-    });
-  }, []);
 
   return (
     <Card className="h-full">
@@ -73,93 +82,59 @@ const AttributeList = () => {
         id="attribute-list"
         className="flex flex-col h-full w-full gap-7 p-1"
       >
-        {/* <InputTextField
-          id="search-attribute"
-          label="Attribut suchen"
-          value={textInput}
-          onChange={handleTextChange}
-        /> */}
-
         <TreePanel>
-          {moduleName.map((module, index) => (
-            <div key={index}>
-              <a
-                onClick={() => toggleExpansion(index)}
-                className="flex items-center gap-2 w-fit cursor-pointer mb-2.5"
-              >
-                <ArrowButton
-                  id={String(index)}
-                  width="12"
-                  isExpanded={expandedIndexes.has(index)}
-                />
-                {module}
-              </a>
-              <div className={expandedIndexes.has(index) ? "block" : "hidden"}>
-                {metadata
-                  .filter((attribute) => attribute.kdsModule === module)
-                  .map((attribute, attribute_index) => (
-                    <div
-                      key={`${module}-${attribute_index}`}
-                      className="flex gap-2.5 pl-5 pb-2 items-start cursor-grab"
-                      draggable
-                      onDragStart={(event) =>
-                        handleAttributeDragStart(event, attribute)
-                      }
-                      onDragEnd={handleAttributeDragEnd}
-                    >
-                      <input
-                        id={"id-" + attribute_index}
-                        type="checkbox"
-                        onChange={() => {}} //toggleCheckbox() in store
-                      />
-                      <div className="flex flex-col">
-                        <p
-                          onMouseOver={() =>
-                            getTooltipPosition(attribute_index)
-                          }
-                          onMouseOut={() => setMouseOverIndex(null)}
-                        >
-                          {attribute.attributeName}
-                        </p>
-                        <span
-                          className={
-                            "w-[350px] absolute z-1000 left-[105%] bg-white rounded-[5px] p-[10px] shadow-[0_2px_4px_-1px_#0003,0_4px_5px_#00000024,0_1px_10px_#0000001f] " +
-                            (mouseOverIndex === attribute_index
-                              ? "flex visible"
-                              : "hidden")
-                          }
-                        >
-                          {attribute.attributeDescription}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          ))}
-        </TreePanel>
-        {/* </div> */}
+          {moduleName.map((module, index) => {
+            const moduleAttributes = metadata.filter(
+              (attr) => attr.kdsModule === module,
+            );
+            return (
+              <div key={index}>
+                <a
+                  onClick={() => toggleExpansion(index)}
+                  className="flex items-center gap-2 w-fit cursor-pointer mb-2.5"
+                >
+                  <ArrowButton
+                    id={String(index)}
+                    width="12"
+                    isExpanded={expandedIndexes.has(index)}
+                  />
+                  {module}
+                </a>
+                <div
+                  className={expandedIndexes.has(index) ? "block" : "hidden"}
+                >
+                  {module === "Fall"
+                    ? (() => {
+                        // get all group from Fall
+                        const groups = Array.from(
+                          new Set(
+                            moduleAttributes
+                              .map((attr) => attr.additionalInformation)
+                              .filter(Boolean),
+                          ),
+                        );
 
-        {/* <Card header="ausgewählte Attributliste" className="min-h-[48%]">
-        {moduleName
-          .filter((module) =>
-            [...checkboxItems.values()].some(
-              (item) => item.kdsModule === module
-            )
-          )
-          .map((module, module_index) => (
-            <div key={module_index} className="flex flex-col">
-              <div className="inline-block font-bold mb-2.5">{module}</div>
-              {[...checkboxItems.values()]
-                .filter((items) => items.kdsModule === module)
-                .map((item, item_index) => (
-                  <div key={item_index} className="flex gap-2.5 pl-5 pb-2">
-                    {item.attributeName}
-                  </div>
-                ))}
-            </div>
-          ))}
-      </Card> */}
+                        return groups.map((groupName, gIdx) => {
+                          const groupAttributes = moduleAttributes.filter(
+                            (attr) => attr.additionalInformation === groupName,
+                          );
+
+                          return (
+                            <div key={gIdx} className="pl-4 mb-3">
+                              <h4 className="font-semibold text-gray-700 mb-1">
+                                {groupName}
+                              </h4>
+                              {renderAttributeList(groupAttributes)}
+                            </div>
+                          );
+                        });
+                      })()
+                    : renderAttributeList(moduleAttributes)}
+                </div>
+              </div>
+            );
+          })}
+        </TreePanel>
       </div>
     </Card>
   );

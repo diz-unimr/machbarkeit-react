@@ -30,9 +30,16 @@ const getMetadata = async (): Promise<Metadata[] | null> => {
       return metadataEntry as Metadata;
     });
 
-    const sortedMetadata = [...metadata].sort((a, b) =>
-      a.attributeName.localeCompare(b.attributeName),
-    );
+    const sortedMetadata = [...metadata].sort((a, b) => {
+      const groupCompare = (a.additionalInformation ?? "").localeCompare(
+        b.additionalInformation ?? "",
+      );
+
+      if (groupCompare !== 0) {
+        return groupCompare;
+      }
+      return a.attributeName.localeCompare(b.attributeName);
+    });
 
     return sortedMetadata;
   } catch (_error) {
