@@ -10,12 +10,7 @@ import login from "@app/services/loginService.ts";
 
 const getMetadata = async (): Promise<Metadata[] | null> => {
   try {
-    /* const url = `${import.meta.env.VITE_BACKEND_API_BASE}/mdr/ontology/metadata`;
-    const apiResponse: AxiosResponse = await axios.get(url, {
-      withCredentials: true,
-    }); */
     const response = await fetch("src/assets/xwiki_kds_modules.csv");
-    console.log("response: ", response);
     const csvText = await response.text();
     const result = Papa.parse<Metadata>(csvText, {
       header: true,

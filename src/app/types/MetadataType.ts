@@ -9,6 +9,7 @@ type KDSModuleName =
   | "Laboruntersuchung";
 
 export type Metadata = {
+  id: string;
   kdsModule: KDSModuleName;
   attributeName: string;
   attributeDescription: string;

@@ -1,20 +1,32 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import useMetadata from "@/app/hooks/useMetadata";
-import { type Metadata } from "@features/data-selection/attribute-list/type";
-import { useState } from "react";
+import useMetadataStore from "@/app/store/metadata-store";
+import type { Metadata } from "@app/types/MetadataType";
+import { useEffect, useState } from "react";
 import TreePanel from "@features/data-selection/ontology-characteristics/ontologies/TreePanel";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
 import Card from "@/components/ui/Card";
 import infoIcon from "@assets/info-svgrepo-com.svg";
+import useMetadata from "@/app/hooks/useMetadata";
 
 const AttributeList = () => {
-  const metadata = useMetadata();
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
   const [mouseOverIndex, setMouseOverIndex] = useState<string | null>(null);
+  const metadata = useMetadata();
+  const selectedMetadata = useMetadataStore((state) => state.selectedMetadata);
+  const toggleSelectedMetadata = useMetadataStore(
+    (state) => state.toggleSelectedMetadata,
+  );
 
-  const moduleName = ["Person", "Fall", "Diagnose", "Prozedur", "Labor"];
+  const moduleName = [
+    "Person",
+    "Fall",
+    "Diagnose",
+    "Prozedur",
+    "Labor",
+    "Lungenfunktion",
+  ];
 
   const toggleExpansion = (index: number) => {
     setExpandedIndex((prev) => {
@@ -24,6 +36,10 @@ const AttributeList = () => {
       } else next.add(index);
       return next;
     });
+  };
+
+  const toggleAttributeSelection = (attribute: Metadata) => {
+    toggleSelectedMetadata(attribute);
   };
 
   const renderAttributeList = (items: Metadata[]) => {
@@ -39,15 +55,22 @@ const AttributeList = () => {
           onMouseEnter={() => setMouseOverIndex(itemId)}
           onMouseLeave={() => setMouseOverIndex(null)}
         >
-          <div className="flex gap-2.5 items-center">
-            <input type="checkbox" onChange={() => {}} />
+          <label className="flex gap-2.5 items-center cursor-pointer">
+            <input
+              className="cursor-pointer"
+              type="checkbox"
+              onChange={() => toggleAttributeSelection(attribute)}
+            />
             <p
-              className={`cursor-pointer ${attribute.defaultAttribute ? "font-semibold text-gray-900" : "text-gray-600"}`}
+              className={
+                attribute.defaultAttribute
+                  ? "font-semibold text-gray-900"
+                  : "text-gray-600"
+              }
             >
               {attribute.attributeName}
             </p>
-          </div>
-
+          </label>
           {mouseOverIndex === itemId && (
             <div className="flex visible ml-6 pl-2 bg-amber-100 items-start mt-1 rounded p-1 text-sm text-gray-700">
               <img src={infoIcon} className="inline w-4 mr-2 pt-0.5" />
@@ -89,7 +112,7 @@ const AttributeList = () => {
             );
             return (
               <div key={index}>
-                <a
+                <div
                   onClick={() => toggleExpansion(index)}
                   className="flex items-center gap-2 w-fit cursor-pointer mb-2.5"
                 >
@@ -98,8 +121,16 @@ const AttributeList = () => {
                     width="12"
                     isExpanded={expandedIndexes.has(index)}
                   />
-                  {module}
-                </a>
+
+                  <input
+                    className="cursor-pointer"
+                    type="checkbox"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  />
+                  <span>{module}</span>
+                </div>
                 <div
                   className={expandedIndexes.has(index) ? "block" : "hidden"}
                 >

@@ -48,7 +48,9 @@ type SelectedCriteriaStore = {
   applyGlobalTimeRange: (includeLocal: boolean) => void;
   toggleLogic: (logicIndex: number) => void;
   reOrderCriteria: (active: Active, over: Over, zone: DropZone) => void;
-  setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
+  setSelectedCriteria: (
+    selectedCriteria: SelectedCriteria,
+  ) => void; /* from uploaded file */
   clearSelectedCriteria: () => void;
 };
 
