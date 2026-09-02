@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/buttons/Button";
 import PopupModal from "@/components/ui/PopupModal";
-import InputTextField from "@components/ui/inputs/InputTextField";
+import InputTextField from "@/components/ui/inputs/InputTextField";
 import { useState } from "react";
 
 type SaveQueryModalProps = {

@@ -1,10 +1,10 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "@app/types/ontologyType";
-import DropDown from "@components/ui/dropdown/DropDown";
-import type { DropDownOption } from "@components/ui/dropdown/type";
-import type { OptionCode } from "@features/filters/controls/TimeRangeOption";
+import type { Criterion } from "@/app/types/ontologyType";
+import DropDown from "@/components/ui/dropdown/DropDown";
+import type { DropDownOption } from "@/components/ui/dropdown/type";
+import type { OptionCode } from "@/features/filters/controls/TimeRangeOption";
 
 type DropDownContainerProps = {
   id?: string;

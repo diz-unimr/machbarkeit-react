@@ -5,15 +5,15 @@ import type {
   ConceptType,
   QuantityType,
   TimeRangeType,
-} from "@features/filters/controls/type";
-import type { Attribute } from "@features/data-selection/attribute-list/type";
-import type { Criterion } from "@app/types/ontologyType";
+} from "@/features/filters/controls/type";
+import type { Metadata } from "@/app/types/MetadataType";
+import type { Criterion } from "@/app/types/ontologyType";
 
 export type DropZone = "inclusionCriteria" | "exclusionCriteria" | "attribute";
 
 export type SelectedAttribute = {
   uid: string;
-  attribute: Attribute;
+  attribute: Metadata;
 };
 
 export type CriterionNode = {

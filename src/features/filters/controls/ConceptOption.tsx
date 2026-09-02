@@ -3,8 +3,8 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
-import type { Criterion } from "@app/types/ontologyType";
-import type { ConceptType } from "@features/filters/controls/type";
+import type { Criterion } from "@/app/types/ontologyType";
+import type { ConceptType } from "@/features/filters/controls/type";
 
 type ConceptOptionProps = {
   criterion: Criterion;

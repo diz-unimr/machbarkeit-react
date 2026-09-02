@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/buttons/Button";
 import PopupModal from "@/components/ui/PopupModal";
-import type { SelectedChoice } from "./feasibility-builder/type";
+import type { SelectedChoice } from "../feasibility/feasibility-builder/type";
 
 type WarningModalProps = {
   open: boolean;

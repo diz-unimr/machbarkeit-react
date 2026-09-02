@@ -3,9 +3,9 @@
 
 import axios, { type AxiosResponse } from "axios";
 import Papa from "papaparse";
-import type { Metadata } from "@app/types/MetadataType";
+import type { Metadata } from "@/app/types/MetadataType";
 import lodash from "lodash";
-import login from "@app/services/loginService.ts";
+import login from "@/app/services/loginService.ts";
 /* import kdsModule from "assets/xwiki_kds_modules.csv"; */
 
 const getMetadata = async (): Promise<Metadata[] | null> => {

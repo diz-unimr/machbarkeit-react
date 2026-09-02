@@ -1,9 +1,9 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import ArrowButton from "@components/ui/buttons/ArrowButton";
-import accordionArrow from "@assets/accordion-arrow.svg";
-import Card from "@components/ui/Card";
+import ArrowButton from "@/components/ui/buttons/ArrowButton";
+import accordionArrow from "@/assets/accordion-arrow.svg";
+import Card from "@/components/ui/Card";
 import useCriteriaDnD from "./hooks/useCriteriaDnD";
 import FeasibilityCriteriaSortableList from "./FeasibilityCriteriaSortableList";
 import type { CriterionNode, SelectedCriteria } from "./type";
@@ -42,7 +42,7 @@ const FeasibilityCriteriaPanel = ({
     <div
       className="flex flex-col overflow-hidden"
       style={{
-        height: isPanelExpanded ? "100%" : "fit-content",
+        height: isPanelExpanded ? "80%" : "fit-content",
         borderBottom: !isPanelExpanded
           ? "1.5px solid var(--color-border)"
           : undefined,

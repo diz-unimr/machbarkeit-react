@@ -8,17 +8,17 @@ import {
 } from "@/app/store/selected-criteria-store";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import type { CriterionNode } from "./type";
-import ConceptOption from "@features/filters/controls/ConceptOption";
-import QuantityOption from "@features/filters/controls/QuantityOption";
-import TimeRangeOption from "@features/filters/controls/TimeRangeOption";
-import { Button, TertiaryButton } from "@components/ui/buttons/Button";
-import closeIcon from "@assets/close-icon.svg";
-import warningIcon from "@assets/warning-icon.svg";
-import globalFilterIcon from "@assets/global-filter-icon.svg";
-import localFilterIcon from "@assets/local-filter-icon.svg";
+import ConceptOption from "@/features/filters/controls/ConceptOption";
+import QuantityOption from "@/features/filters/controls/QuantityOption";
+import TimeRangeOption from "@/features/filters/controls/TimeRangeOption";
+import { Button, TertiaryButton } from "@/components/ui/buttons/Button";
+import closeIcon from "@/assets/close-icon.svg";
+import warningIcon from "@/assets/warning-icon.svg";
+import globalFilterIcon from "@/assets/global-filter-icon.svg";
+import localFilterIcon from "@/assets/local-filter-icon.svg";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import type { TimeRangeType } from "@features/filters/controls/type";
+import type { TimeRangeType } from "@/features/filters/controls/type";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
 
 type DragProps = {

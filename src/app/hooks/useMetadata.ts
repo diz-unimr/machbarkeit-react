@@ -3,8 +3,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect } from "react";
-import useMetadataStore from "@app/store/metadata-store";
-import getMetadata from "@app/services/metadataService";
+import useMetadataStore from "@/app/store/metadata-store";
+import getMetadata from "@/app/services/metadataService";
 
 const useMetadata = () => {
   const metadata = useMetadataStore((s) => s.metadata);

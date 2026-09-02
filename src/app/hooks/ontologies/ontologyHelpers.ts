@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion, ModuleColorProps } from "@app/types/ontologyType";
+import type { Criterion, ModuleColorProps } from "@/app/types/ontologyType";
 
 const matchesSearchTerm = (node: Criterion, term: string) => {
   if (!node.selectable) return false;

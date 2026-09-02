@@ -2,13 +2,13 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "@app/types/ontologyType";
-import type { DropDownOption } from "@components/ui/dropdown/type";
+import type { Criterion } from "@/app/types/ontologyType";
+import type { DropDownOption } from "@/components/ui/dropdown/type";
 import { useEffect, useState } from "react";
-import InputTextField from "@components/ui/inputs/InputTextField";
-import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
-import type { QuantityType } from "@features/filters/controls/type";
-import { invalidBetweenMessage } from "@app/constants/constantText";
+import InputTextField from "@/components/ui/inputs/InputTextField";
+import DropDownContainer from "@/components/ui/dropdown/DropDownContainer";
+import type { QuantityType } from "@/features/filters/controls/type";
+import { invalidBetweenMessage } from "@/app/constants/constantText";
 import type { OptionCode } from "./TimeRangeOption";
 
 type QuantityOptionProps = {

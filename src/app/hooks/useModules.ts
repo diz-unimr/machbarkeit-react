@@ -3,8 +3,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect } from "react";
-import useModulesStore from "@app/store/modules-store";
-import getModules from "@app/services/moduleService";
+import useModulesStore from "@/app/store/modules-store";
+import getModules from "@/app/services/moduleService";
 
 const useModules = () => {
   const modules = useModulesStore((s) => s.modules);

@@ -2,10 +2,10 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import axios, { type AxiosResponse } from "axios";
-import type { Module } from "@app/types/ontologyType";
-import { getModuleColor } from "@app/utils/moduleUtils";
+import type { Module } from "@/app/types/ontologyType";
+import { getModuleColor } from "@/app/utils/moduleUtils";
 import lodash from "lodash";
-import login from "@app/services/loginService.ts";
+import login from "@/app/services/loginService.ts";
 
 const moduleOrder = ["Person", "Diagnose", "Prozedur", "Laboruntersuchung"];
 

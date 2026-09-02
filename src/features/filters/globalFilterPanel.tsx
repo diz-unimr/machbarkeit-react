@@ -1,15 +1,15 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import Card from "@components/ui/Card";
+import Card from "@/components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
-// import ArrowButton from "@components/ui/buttons/ArrowButton";
-// import warningIcon from "@assets/warning-icon.svg";
+// import ArrowButton from "@/components/ui/buttons/ArrowButton";
+// import warningIcon from "@/assets/warning-icon.svg";
 import { useState } from "react";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import type { TimeRangeType } from "./controls/type";
-import { Button } from "@components/ui/buttons/Button";
-import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
+import { Button } from "@/components/ui/buttons/Button";
+import formatTimeRangeLabel from "@/app/utils/formatTimeRangeLabel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 
 export type GlobalFilterName = "timeRange" | "caseType";

@@ -7,14 +7,14 @@ import type {
   DropZone,
   LogicOperator,
   SelectedCriteria,
-} from "@features/feasibility/feasibility-builder/type";
+} from "@/features/feasibility/feasibility-builder/type";
 import type { Active, Over } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import type {
   ConceptType,
   QuantityType,
   TimeRangeType,
-} from "@features/filters/controls/type";
+} from "@/features/filters/controls/type";
 import useGlobalFilterStore from "./global-filter-store";
 
 export type FilterProps =

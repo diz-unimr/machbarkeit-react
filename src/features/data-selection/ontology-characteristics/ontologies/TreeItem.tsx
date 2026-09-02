@@ -3,10 +3,10 @@
 
 import { type DragEvent } from "react";
 import Highlighter from "react-highlight-words";
-import { type Criterion } from "@app/types/ontologyType";
-import ArrowButton from "@components/ui/buttons/ArrowButton";
-import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
-import dragHandleIcon from "@assets/drag-handle-icon.svg";
+import { type Criterion } from "@/app/types/ontologyType";
+import ArrowButton from "@/components/ui/buttons/ArrowButton";
+import { DRAG_DATA_FORMATS } from "@/app/constants/dragTypes";
+import dragHandleIcon from "@/assets/drag-handle-icon.svg";
 
 type TreeItemProps = {
   criterion: Criterion;

@@ -2,8 +2,8 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { CaseType, TimeRangeType } from "@features/filters/controls/type";
-import type { GlobalFilterName } from "@features/filters/globalFilterPanel";
+import type { CaseType, TimeRangeType } from "@/features/filters/controls/type";
+import type { GlobalFilterName } from "@/features/filters/globalFilterPanel";
 
 export type GlobalFilter = {
   timeRange: TimeRangeType["timeRestriction"] | null;

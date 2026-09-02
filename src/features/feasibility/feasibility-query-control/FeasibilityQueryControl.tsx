@@ -3,13 +3,13 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@components/ui/buttons/Button";
-import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
-import type { FeasibilityQueryData } from "@features/feasibility/feasibility-builder/type";
+import { Button } from "@/components/ui/buttons/Button";
+import ButtonContainer from "@/components/ui/buttons/ฺButtonContainer";
+import type { FeasibilityQueryData } from "@/features/feasibility/feasibility-builder/type";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
-import feasibilityQuery from "@app/services/feasibility-service";
-import loadingSpinnerIcon from "@assets/loading_spinner.svg";
+import feasibilityQuery from "@/app/services/feasibility-service";
+import loadingSpinnerIcon from "@/assets/loading_spinner.svg";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import { AxiosError } from "axios";
 

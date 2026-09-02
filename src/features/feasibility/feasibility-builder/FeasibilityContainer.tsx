@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useMemo, useState } from "react";
 import download from "downloadjs";
-import Card from "@components/ui/Card";
+import Card from "@/components/ui/Card";
 import type {
   /* DropZone,
   SelectedAttribute, */
@@ -17,20 +17,22 @@ import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQue
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
 import GlobalFilterPanel, {
   type globalFilterWarning,
-} from "@features/filters/globalFilterPanel";
+} from "@/features/filters/globalFilterPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
 import { Button } from "@/components/ui/buttons/Button";
-import WarningModal from "../WarningModal";
+import WarningModal from "../../filters/WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
 import createQueryData from "@/app/utils/createQueryData";
 import convertToCriteriaDisplay from "@/app/utils/convertJsonToCriteriaDisplay";
-import warningIcon from "@assets/warning-icon.svg";
+import warningIcon from "@/assets/warning-icon.svg";
+import AttributePanel from "../AttributePanel";
 
 const FeasibilityContainer = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
     useState<boolean>(true);
+  const [isAttributeListOpen, setIsAttributeListOpen] = useState<boolean>(true);
   const [inclusionCriteria, setInclusionCriteria] = useState<SelectedCriteria>({
     criteriaType: "inclusionCriteria",
     criteria: [],
@@ -317,6 +319,12 @@ const FeasibilityContainer = () => {
                   }
                   onToggleCriterionItem={toggleCriterionItem}
                   onRemoveCriterion={removeCriterion}
+                />
+                <AttributePanel
+                  isPanelExpanded={isAttributeListOpen}
+                  onToggleAttributePanel={() =>
+                    setIsAttributeListOpen((prev) => !prev)
+                  }
                 />
               </div>
             </div>

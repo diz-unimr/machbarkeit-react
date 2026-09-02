@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { Criterion } from "@app/types/ontologyType";
+import type { Criterion } from "@/app/types/ontologyType";
 import sortOntologyTree from "../utils/sortOntologyTree";
 
 type OntologyStore = {

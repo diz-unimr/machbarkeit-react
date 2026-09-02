@@ -7,17 +7,17 @@ type handlePanelProps = {
   toggleLeftPanel: (isToggle: boolean) => void;
 };
 
-type SplitterProps = {
+type SplitViewProps = {
   leftChild: (handleLeftPanel: handlePanelProps) => ReactNode;
   rightChild: ReactNode;
   startLeftPercent?: number;
 };
 
-const Splitter = ({
+const SplitView = ({
   leftChild,
   rightChild,
   startLeftPercent = 50,
-}: SplitterProps) => {
+}: SplitViewProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isResizing = useRef<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
@@ -71,7 +71,7 @@ const Splitter = ({
       >
         {leftChild({ toggleLeftPanel })}
       </div>
-      {/* Splitter */}
+      {/* SplitView */}
       <div
         className={
           isExpanded
@@ -87,4 +87,4 @@ const Splitter = ({
     </div>
   );
 };
-export default Splitter;
+export default SplitView;

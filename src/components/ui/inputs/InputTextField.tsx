@@ -2,10 +2,10 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
-import closeIcon from "@assets/close-icon.svg";
-import searchIcon from "@assets/search-icon.svg";
+import closeIcon from "@/assets/close-icon.svg";
+import searchIcon from "@/assets/search-icon.svg";
 import { twMerge } from "tailwind-merge";
-import { httpStatusMessages } from "@app/constants/httpStatusMessage";
+import { httpStatusMessages } from "@/app/constants/httpStatusMessage";
 
 type InputTextFieldProp = {
   id: string;

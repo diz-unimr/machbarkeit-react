@@ -2,9 +2,9 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import axios, { type AxiosResponse, AxiosError } from "axios";
-import type { Criterion } from "@app/types/ontologyType";
-import transformObjectKeys from "@app/utils/transformObjectKeys";
-import login from "@app/services/loginService.ts";
+import type { Criterion } from "@/app/types/ontologyType";
+import transformObjectKeys from "@/app/utils/transformObjectKeys";
+import login from "@/app/services/loginService.ts";
 
 export const getConcept = async (id: string): Promise<Criterion | null> => {
   let response: AxiosResponse;

@@ -2,19 +2,18 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import useMetadataStore from "@/app/store/metadata-store";
-import type { Metadata } from "@app/types/MetadataType";
-import { useEffect, useState } from "react";
-import TreePanel from "@features/data-selection/ontology-characteristics/ontologies/TreePanel";
-import ArrowButton from "@components/ui/buttons/ArrowButton";
+import type { Metadata } from "@/app/types/MetadataType";
+import { useState } from "react";
+import TreePanel from "@/features/data-selection/ontology-characteristics/ontologies/TreePanel";
+import ArrowButton from "@/components/ui/buttons/ArrowButton";
 import Card from "@/components/ui/Card";
-import infoIcon from "@assets/info-svgrepo-com.svg";
+import infoIcon from "@/assets/info-icon.svg";
 import useMetadata from "@/app/hooks/useMetadata";
 
 const AttributeList = () => {
   const [expandedIndexes, setExpandedIndex] = useState<Set<number>>(new Set());
   const [mouseOverIndex, setMouseOverIndex] = useState<string | null>(null);
   const metadata = useMetadata();
-  const selectedMetadata = useMetadataStore((state) => state.selectedMetadata);
   const toggleSelectedMetadata = useMetadataStore(
     (state) => state.toggleSelectedMetadata,
   );

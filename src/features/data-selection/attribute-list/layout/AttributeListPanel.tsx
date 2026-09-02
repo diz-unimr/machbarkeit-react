@@ -2,7 +2,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import AttributeList from "../AttributeList";
-import DataSelectionPanel from "../../DataSelectionPanel";
+import CollapsiblePanel from "../../../../components/ui/CollapsiblePanel";
 
 type AttributeListPanelProps = {
   onSetPanelStatus: () => void;
@@ -14,13 +14,13 @@ const AttributeListPanel = ({
   isAttributeListPanelOpen,
 }: AttributeListPanelProps) => {
   return (
-    <DataSelectionPanel
+    <CollapsiblePanel
       label="Attributliste"
       onToggle={onSetPanelStatus}
       isExpanded={isAttributeListPanelOpen}
     >
       <AttributeList />
-    </DataSelectionPanel>
+    </CollapsiblePanel>
   );
 };
 

@@ -2,7 +2,7 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { Metadata } from "@app/types/MetadataType";
+import type { Metadata } from "@/app/types/MetadataType";
 
 type MetadataStore = {
   metadata: Metadata[];

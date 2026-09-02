@@ -2,22 +2,22 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
-import accordionArrow from "@assets/accordion-arrow.svg";
+import accordionArrow from "@/assets/accordion-arrow.svg";
 import type { ReactNode } from "react";
 
-type DataSelectionPanelProps = {
+type CollapsiblePanelProps = {
   label: string;
   onToggle: () => void;
   isExpanded: boolean;
   children: ReactNode;
 };
 
-const DataSelectionPanel = ({
+const CollapsiblePanel = ({
   label,
   onToggle,
   isExpanded,
   children,
-}: DataSelectionPanelProps) => {
+}: CollapsiblePanelProps) => {
   return (
     <div
       className={`flex flex-col flex-1 min-h-0 ${isExpanded ? "max-h-[85%]" : "max-h-15"}`}
@@ -50,4 +50,4 @@ const DataSelectionPanel = ({
   );
 };
 
-export default DataSelectionPanel;
+export default CollapsiblePanel;

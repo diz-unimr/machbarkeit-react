@@ -2,7 +2,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import axios, { AxiosError, type AxiosResponse } from "axios";
-import type { FeasibilityQueryData } from "@features/feasibility/feasibility-builder/type";
+import type { FeasibilityQueryData } from "@/features/feasibility/feasibility-builder/type";
 
 const feasibilityQuery = async (
   data: FeasibilityQueryData,

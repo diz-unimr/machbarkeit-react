@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import useModulesStore from "@app/store/modules-store";
+import useModulesStore from "@/app/store/modules-store";
 import type { Criterion, Module } from "../types/ontologyType";
 
 const setCriterionContext = (criterion: Criterion) => {
