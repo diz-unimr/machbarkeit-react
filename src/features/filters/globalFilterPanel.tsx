@@ -3,8 +3,6 @@
 
 import Card from "@/components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
-// import ArrowButton from "@/components/ui/buttons/ArrowButton";
-// import warningIcon from "@/assets/warning-icon.svg";
 import { useState } from "react";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import type { TimeRangeType } from "./controls/type";

@@ -55,7 +55,7 @@ const AttributePanel = ({
   return (
     <div className="flex flex-col p-4 pt-2">
       <div className="flex justify-between p-2">
-        <p className="text-lg font-medium">AttributeListe</p>
+        <p className="text-lg font-medium">Ausgewählte Attribute</p>
         <ArrowButton
           id="characteristic-btn"
           image={accordionArrow}

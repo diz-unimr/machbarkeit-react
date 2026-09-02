@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import TreePanel from "./TreePanel";
+import TreeContainer from "./TreeContainer";
 import TreeNode from "./TreeNode";
 import { type Criterion, type Module } from "@/app/types/ontologyType";
 import { useEffect, useState } from "react";
@@ -81,7 +81,7 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
                   {activeModule?.name}
                 </p>
                 <div className="flex-1 min-h-0 min-w-0 overflow-hidden">
-                  <TreePanel>
+                  <TreeContainer>
                     {activeModule &&
                       ontologyResult.criteria &&
                       ontologyResult.criteria.map((criterion) => (
@@ -91,7 +91,7 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
                           searchTerm={debouncedSearch}
                         />
                       ))}
-                  </TreePanel>
+                  </TreeContainer>
                 </div>
               </>
             )
