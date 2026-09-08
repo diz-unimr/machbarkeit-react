@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import TreeContainer from "./TreeContainer";
+import TreeContainer from "../../layout/TreeContainer";
 import TreeNode from "./TreeNode";
 import { type Criterion, type Module } from "@/app/types/ontologyType";
 import { useEffect, useState } from "react";

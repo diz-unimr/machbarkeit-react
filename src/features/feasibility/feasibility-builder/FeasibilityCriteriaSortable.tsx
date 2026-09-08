@@ -57,7 +57,7 @@ const SortableCriterion = ({
   );
 };
 
-const FeasibilityCriteriaSortableList = ({
+const FeasibilityCriteriaSortable = ({
   selectedCriteria,
   onRemove,
 }: {
@@ -127,4 +127,4 @@ const FeasibilityCriteriaSortableList = ({
   );
 };
 
-export default FeasibilityCriteriaSortableList;
+export default FeasibilityCriteriaSortable;

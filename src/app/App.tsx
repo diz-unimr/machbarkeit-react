@@ -3,8 +3,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import "@/app/App.css";
 import SplitView from "@/components/layout/SplitView";
-import DataSelectionContainer from "@/features/data-selection/DataSelectionContainer";
-import FeasibilityContainer from "@/features/feasibility/feasibility-builder/FeasibilityContainer";
+import DataSelectionPanel from "@/features/data-selection/DataSelectionPanel";
+import FeasibilityPanel from "@/features/feasibility/feasibility-builder/FeasibilityPanel";
 import login from "./services/loginService";
 import { useEffect } from "react";
 
@@ -18,9 +18,9 @@ function App() {
       <main>
         <SplitView
           leftChild={({ toggleLeftPanel }) => (
-            <DataSelectionContainer onToggle={toggleLeftPanel} />
+            <DataSelectionPanel onToggle={toggleLeftPanel} />
           )}
-          rightChild={<FeasibilityContainer />}
+          rightChild={<FeasibilityPanel />}
         />
       </main>
     </>

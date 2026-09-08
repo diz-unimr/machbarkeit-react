@@ -23,13 +23,13 @@ import useGlobalFilterStore from "@/app/store/global-filter-store";
 import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
 import { Button } from "@/components/ui/buttons/Button";
 import WarningModal from "../../filters/WarningModal";
-import SaveQueryModal from "../SaveQueryModal";
+import SaveQueryModal from "./modals/SaveQueryModal";
 import createQueryData from "@/app/utils/createQueryData";
 import convertToCriteriaDisplay from "@/app/utils/convertJsonToCriteriaDisplay";
 import warningIcon from "@/assets/warning-icon.svg";
-import AttributePanel from "../AttributePanel";
+import SelectedAttributePanel from "../selected-attribute/SelectedAttributePanel";
 
-const FeasibilityContainer = () => {
+const FeasibilityPanel = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
     useState<boolean>(true);
   const [isAttributeListOpen, setIsAttributeListOpen] = useState<boolean>(true);
@@ -320,7 +320,7 @@ const FeasibilityContainer = () => {
                   onToggleCriterionItem={toggleCriterionItem}
                   onRemoveCriterion={removeCriterion}
                 />
-                <AttributePanel
+                <SelectedAttributePanel
                   isPanelExpanded={isAttributeListOpen}
                   onToggleAttributePanel={() =>
                     setIsAttributeListOpen((prev) => !prev)
@@ -349,4 +349,4 @@ const FeasibilityContainer = () => {
   );
 };
 
-export default FeasibilityContainer;
+export default FeasibilityPanel;

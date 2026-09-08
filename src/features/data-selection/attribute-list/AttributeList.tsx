@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import useMetadataStore from "@/app/store/metadata-store";
 import type { Metadata } from "@/app/types/MetadataType";
 import { useState } from "react";
-import TreeContainer from "@/features/data-selection/ontology-characteristics/ontologies/TreeContainer";
+import TreeContainer from "@/features/data-selection/layout/TreeContainer";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
 import Card from "@/components/ui/Card";
 import infoIcon from "@/assets/info-icon.svg";

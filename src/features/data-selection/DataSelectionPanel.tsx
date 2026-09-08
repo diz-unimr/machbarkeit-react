@@ -5,14 +5,14 @@ import { useState } from "react";
 import sidebarCollapse from "@/assets/sidebar-arrow.svg";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
 import appIcon from "@/assets/app-icon.svg";
-import OntologyContainer from "./ontology-characteristics/layout/OntologyContainer";
-import AttributeListPanel from "./attribute-list/layout/AttributeListPanel";
+import OntologyContainer from "./ontology-characteristics/OntologyPanel";
+import AttributeListPanel from "./attribute-list/AttributeListPanel";
 
 type DataSelectionProps = {
   onToggle: (expandedState: boolean) => void;
 };
 
-const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
+const DataSelectionPanel = ({ onToggle }: DataSelectionProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isAttributeListPanelOpen, setIsAttributeListPanelOpen] =
     useState<boolean>(false);
@@ -69,4 +69,4 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
   );
 };
 
-export default DataSelectionContainer;
+export default DataSelectionPanel;

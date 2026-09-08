@@ -7,9 +7,9 @@ import Card from "@/components/ui/Card";
 import type { Metadata } from "@/app/types/MetadataType";
 import type {
   /* DropZone, */ SelectedAttribute,
-} from "./feasibility-builder/type";
+} from "../feasibility-builder/type";
 import generateId from "@/app/utils/generateUID";
-import useCriteriaDnD from "./feasibility-builder/hooks/useCriteriaDnD";
+import useCriteriaDnD from "../feasibility-builder/hooks/useCriteriaDnD";
 import useMetadataStore from "@/app/store/metadata-store";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
 import accordionArrow from "@/assets/accordion-arrow.svg";
@@ -19,15 +19,15 @@ type DroppedAttribute = {
   attribute: Metadata;
 };
 
-type AttributePanelProps = {
+type SelectedAttributeProps = {
   isPanelExpanded: boolean;
   onToggleAttributePanel: () => void;
 };
 
-const AttributePanel = ({
+const SelectedAttributePanel = ({
   isPanelExpanded,
   onToggleAttributePanel,
-}: AttributePanelProps) => {
+}: SelectedAttributeProps) => {
   const selectedMetadata = useMetadataStore((state) => state.selectedMetadata);
   // const [activeZone, setActiveZone] = useState<DropZone | null>(null);
   const [attributeList, setAttributeList] = useState<SelectedAttribute[]>([]);
@@ -112,4 +112,4 @@ const AttributePanel = ({
   );
 };
 
-export default AttributePanel;
+export default SelectedAttributePanel;
