@@ -3,7 +3,7 @@
 
 import useModules from "@app/hooks/useModules";
 import type { Module } from "@app/types/ontologyType";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type ModulesPanelProps = {
   onHandleModules: (activeModule: Module | null) => void;
@@ -13,26 +13,31 @@ const ModulesPanel = ({ onHandleModules }: ModulesPanelProps) => {
   const [currentModule, setCurrentModule] = useState<Module | null>(null);
   const modules = useModules();
 
+  const selectableModules = useMemo(
+    () => modules.filter((module) => module.name !== "Fall"),
+    [modules],
+  );
+
   const changeTab = (moduleId: string) => {
-    const current = modules.find((m) => m.id === moduleId);
+    const current = selectableModules.find((m) => m.id === moduleId);
     setCurrentModule(current ?? null);
     onHandleModules(current ?? null);
   };
 
   useEffect(() => {
-    if (!modules || modules.length === 0) return;
-    const current = modules[0];
+    if (!selectableModules || selectableModules.length === 0) return;
+    const current = selectableModules[0];
     setCurrentModule(current ?? null);
     onHandleModules(current);
-  }, [modules]);
+  }, [selectableModules]);
 
   return (
     <div className="flex-none w-full h-fit overflow-x-auto overflow-y-hidden">
       <menu className="flex w-full p-3  border-b-2 border-b-(--color-border)">
         <li className="flex gap-7 m-auto">
-          {modules?.map((module, index) => (
+          {selectableModules.map((module) => (
             <div
-              key={index}
+              key={module.id}
               className={`${module === currentModule ? "border-b-2" : undefined}`}
               style={{
                 color:

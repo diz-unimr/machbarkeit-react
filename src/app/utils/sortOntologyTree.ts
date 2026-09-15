@@ -5,35 +5,22 @@ import type { Criterion } from "@app/types/ontologyType";
 import { getModuleName } from "@app/utils/moduleUtils";
 
 const sortLaboruntersuchung = (
-  selectable: Criterion[],
-  nonSelectable: Criterion[],
+  selectableCodes: Criterion[],
+  nonSelectableCodes: Criterion[],
 ) => {
-  let merged: Criterion[] = [];
+  let mergedLabCodes: Criterion[] = [];
 
-  /* const loinc = selectable.filter((i) =>
-    i.termCodes?.some((c) => c.system === "http://loinc.org"),
-  );
-  const swisslab = selectable.filter((i) =>
-    i.termCodes?.some(
-      (c) =>
-        c.system === "https://fhir.diz.uni-marburg.de/CodeSystem/swisslab-code",
-    ),
-  );
+  nonSelectableCodes.sort((a, b) => {
+    if (a.display === "Sonstiges") return 1;
+    if (b.display === "Sonstiges") return -1;
+    return a.display.localeCompare(b.display);
+  });
 
-  loinc.sort((a, b) =>
+  selectableCodes.sort((a, b) =>
     (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
   );
-  swisslab.sort((a, b) =>
-    (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
-  ); */
-
-  const code = selectable.sort((a, b) =>
-    (a.termCodes?.[0]?.code ?? "").localeCompare(b.termCodes?.[0]?.code ?? ""),
-  );
-  merged = [...nonSelectable, ...code];
-  // merged = [...nonSelectable, ...loinc, ...swisslab];
-  // merged = [...nonSelectable, ...swisslab];
-  return merged;
+  mergedLabCodes = [...nonSelectableCodes, ...selectableCodes];
+  return mergedLabCodes;
 };
 
 const sortOntologyTree = (
@@ -46,10 +33,10 @@ const sortOntologyTree = (
   const nonSelectable = items.filter((i) => !i.selectable);
   const selectable = items.filter((i) => i.selectable);
 
-  let merged: Criterion[] = [];
+  let mergedLabCodes: Criterion[] = [];
 
   if (moduleName === "Laboruntersuchung") {
-    merged = sortLaboruntersuchung(selectable, nonSelectable);
+    mergedLabCodes = sortLaboruntersuchung(selectable, nonSelectable);
   } else {
     nonSelectable.sort((a, b) => a.display.localeCompare(b.display));
     selectable.sort((a, b) =>
@@ -57,11 +44,11 @@ const sortOntologyTree = (
         b.termCodes?.[0]?.code ?? "",
       ),
     );
-    merged = [...nonSelectable, ...selectable];
+    mergedLabCodes = [...nonSelectable, ...selectable];
   }
 
   // Recursively sort
-  return merged.map((node) => ({
+  return mergedLabCodes.map((node) => ({
     ...node,
     children: node.children?.length
       ? sortOntologyTree(node.children)
