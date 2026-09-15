@@ -3,6 +3,7 @@
 
 import { create } from "zustand";
 import type { Module } from "@app/types/ontologyType";
+import sortModules from "../utils/sortModule";
 
 type ModulesStore = {
   modules: Module[];
@@ -11,7 +12,10 @@ type ModulesStore = {
 
 const useModulesStore = create<ModulesStore>((set) => ({
   modules: [],
-  setModules: (item) => set({ modules: item }),
+  setModules: (item) => {
+    const sortedModules = sortModules(item);
+    set({ modules: sortedModules });
+  },
 }));
 
 export default useModulesStore;
