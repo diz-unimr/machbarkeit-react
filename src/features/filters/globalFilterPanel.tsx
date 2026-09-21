@@ -102,7 +102,8 @@ const GlobalFilterPanel = ({
               />
             ) : (
               <div className="pl-1">
-                {formatTimeRangeLabel(globalFilter.timeRange ?? null)}
+                {formatTimeRangeLabel(globalFilter.timeRange ?? null) ||
+                  "Kein Filter"}
               </div>
             )}
 
