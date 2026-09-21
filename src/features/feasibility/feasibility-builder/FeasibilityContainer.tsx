@@ -17,7 +17,7 @@ import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQue
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
 import GlobalFilterPanel, {
   type globalFilterWarning,
-} from "@features/filters/globalFilterPanel";
+} from "@/features/filters/GlobalFilterPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
