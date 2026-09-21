@@ -5,8 +5,9 @@ import type { TimeRangeType } from "@features/filters/controls/type";
 
 const formatTimeRangeLabel = (
   filterValue: TimeRangeType["timeRestriction"] | null,
-): React.ReactNode => {
-  if (!filterValue) return "Kein Filter";
+) => {
+  if (!filterValue) return null;
+
   const after = filterValue.afterDate ? new Date(filterValue.afterDate) : null;
   const before = filterValue.beforeDate
     ? new Date(filterValue.beforeDate)
@@ -16,19 +17,15 @@ const formatTimeRangeLabel = (
   const beforeDate = before?.toLocaleDateString("de-DE");
 
   if (after && before) {
-    if (after.getTime() === before.getTime()) return <p>Am {afterDate}</p>;
+    if (after.getTime() === before.getTime()) return "Am " + afterDate;
     if (after.getTime() < before.getTime())
-      return (
-        <div className="flex gap-3">
-          <p>Von {afterDate} </p>
-          <p>bis {beforeDate}</p>
-        </div>
-      );
+      return "Von " + afterDate + " bis " + beforeDate;
   }
 
-  if (after && !before) return <p>Nach {afterDate}</p>;
-  if (before && !after) return <p>Vor {beforeDate}</p>;
-  return <p>Kein Filter</p>;
+  if (after && !before) return "Nach " + afterDate;
+  if (before && !after) return "Vor " + beforeDate;
+
+  return null;
 };
 
 export default formatTimeRangeLabel;
