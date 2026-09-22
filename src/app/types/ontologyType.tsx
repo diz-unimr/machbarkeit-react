@@ -30,39 +30,30 @@ export type Coding = {
   version?: string | null;
 };
 
+export type Context = Coding & {
+  system: string;
+  version: string;
+};
+
 export type Criterion = {
   children?: Criterion[];
   id: string;
   moduleId: string;
   parentId: string | null;
   display: string;
-  termCodes: Coding[];
-  context?: {
+  termCodes: {
     code: string;
     system: string;
-    version: string;
     display: string;
-  };
+    version: string | null;
+  }[];
+  context?: Context;
   selectable: boolean;
   leaf: boolean;
   timeRestrictionAllowed?: boolean | null;
   filterName?: string;
   filterType: FilterType | null;
-  attributeDefinitions:
-    | {
-        type: FilterType;
-        optional: boolean;
-        allowedUnits: Coding[];
-        attributeCode: Coding;
-        selectableConcepts: Coding[];
-      }[]
-    | null;
-  valueDefinition:
-    | {
-        type: FilterType;
-        value: Coding[];
-      }[]
-    | null;
+  filterOptions: Coding[] | null;
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
   timeRestriction?: TimeRangeType["timeRestriction"];
   color?: ModuleColorProps;
