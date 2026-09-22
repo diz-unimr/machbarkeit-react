@@ -21,7 +21,14 @@ export type Module = {
   color: ModuleColorProps;
 };
 
-export type FilterType = "concept" | "quantity";
+export type FilterType = "concept" | "quantity" | "reference";
+
+export type Coding = {
+  code: string;
+  display: string;
+  system?: string;
+  version?: string | null;
+};
 
 export type Criterion = {
   children?: Criterion[];
@@ -29,12 +36,7 @@ export type Criterion = {
   moduleId: string;
   parentId: string | null;
   display: string;
-  termCodes: {
-    code: string;
-    system: string;
-    display: string;
-    version: string | null;
-  }[];
+  termCodes: Coding[];
   context?: {
     code: string;
     system: string;
@@ -46,12 +48,19 @@ export type Criterion = {
   timeRestrictionAllowed?: boolean | null;
   filterName?: string;
   filterType: FilterType | null;
-  filterOptions:
+  attributeDefinitions:
     | {
-        code: string;
-        display: string;
-        system?: string;
-        version?: string | null;
+        type: FilterType;
+        optional: boolean;
+        allowedUnits: Coding[];
+        attributeCode: Coding;
+        selectableConcepts: Coding[];
+      }[]
+    | null;
+  valueDefinition:
+    | {
+        type: FilterType;
+        value: Coding[];
       }[]
     | null;
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
