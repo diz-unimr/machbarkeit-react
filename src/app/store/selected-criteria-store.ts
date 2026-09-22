@@ -17,23 +17,23 @@ import type {
 } from "@features/filters/controls/type";
 import useGlobalFilterStore from "./global-filter-store";
 
-export type FilterProps =
+export type SelectedFilterProps =
   | {
       uid: string;
       filterType: "concept";
-      filterValue: ConceptType["valueFilter"] | null;
+      selectedFilter: ConceptType["valueFilter"] | null;
       isLocalFilter?: boolean;
     }
   | {
       uid: string;
       filterType: "quantity";
-      filterValue: QuantityType["valueFilter"] | null;
+      selectedFilter: QuantityType["valueFilter"] | null;
       isLocalFilter?: boolean;
     }
   | {
       uid: string;
       filterType: "timeRange";
-      filterValue: TimeRangeType["timeRestriction"] | null;
+      selectedFilter: TimeRangeType["timeRestriction"] | null;
       isLocalFilter?: boolean;
     };
 
@@ -44,7 +44,7 @@ type SelectedCriteriaStore = {
   startEditing: (zone: DropZone, uid: string) => void;
   stopEditing: (zone: DropZone, uid: string) => void;
   removeCriterion: (idex: number, uid: string, zone: DropZone) => void;
-  updateCriterionFilter: (filterInfo: FilterProps | null) => void;
+  updateCriterionFilter: (selectedFilterInfo: SelectedFilterProps | null) => void;
   applyGlobalTimeRange: (includeLocal: boolean) => void;
   toggleLogic: (logicIndex: number) => void;
   reOrderCriteria: (active: Active, over: Over, zone: DropZone) => void;
@@ -198,23 +198,23 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
       });
     },
     // update local filter
-    updateCriterionFilter: (filterInfo) => {
+    updateCriterionFilter: (selectedFilterInfo) => {
       set((state) => {
         const selectedCriteria = state.selectedInclusionCriteria;
-        switch (filterInfo?.filterType) {
+        switch (selectedFilterInfo?.filterType) {
           case "concept":
           case "quantity":
             return {
               selectedInclusionCriteria: {
                 ...selectedCriteria,
                 criteria: selectedCriteria.criteria.map((c) =>
-                  c.uid === filterInfo.uid
+                  c.uid === selectedFilterInfo.uid
                     ? {
                         ...c,
                         criterion: {
                           ...c.criterion,
-                          valueFilter: filterInfo.filterValue ?? undefined,
-                          isLocalFilter: filterInfo.isLocalFilter ?? false,
+                          valueFilter: selectedFilterInfo.selectedFilter ?? undefined,
+                          isLocalFilter: selectedFilterInfo.isLocalFilter ?? false,
                         },
                       }
                     : c,
@@ -225,17 +225,17 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
             const updatedCriteria: SelectedCriteria = {
               ...selectedCriteria,
               criteria: selectedCriteria.criteria.map((c) =>
-                c.uid === filterInfo.uid
+                c.uid === selectedFilterInfo.uid
                   ? {
                       ...c,
                       criterion: {
                         ...c.criterion,
                         timeRestriction:
-                          filterInfo.filterValue?.beforeDate ||
-                          filterInfo.filterValue?.afterDate
-                            ? filterInfo.filterValue
+                          selectedFilterInfo.selectedFilter?.beforeDate ||
+                          selectedFilterInfo.selectedFilter?.afterDate
+                            ? selectedFilterInfo.selectedFilter
                             : undefined,
-                        isLocalFilter: filterInfo.isLocalFilter ?? false,
+                        isLocalFilter: selectedFilterInfo.isLocalFilter ?? false,
                       },
                     }
                   : c,
