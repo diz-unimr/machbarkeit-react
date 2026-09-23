@@ -6,6 +6,7 @@ import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import type { CriterionNode } from "./type";
 import closeIcon from "@assets/close-icon.svg";
 import warningIcon from "@assets/warning-icon.svg";
+import { warningMessages } from "@/app/constants/uiTexts";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
@@ -109,7 +110,7 @@ const FeasibilityCriterionItem = ({
                 <div className="flex gap-2 p-1 bg-[#FEF5E2]">
                   <img src={warningIcon} className="inline w-4 mr-1" />
                   <p className=" text-[#804909]">
-                    Bitte bestätigen Sie den Filter
+                    {warningMessages.unconfirmedFilterAction}
                   </p>
                 </div>
               )}

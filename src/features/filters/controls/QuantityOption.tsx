@@ -3,12 +3,11 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { Criterion } from "@app/types/ontologyType";
-import type { DropDownOption } from "@components/ui/dropdown/type";
 import { useEffect, useState } from "react";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
 import type { QuantityType } from "@features/filters/controls/type";
-import { invalidBetweenMessage } from "@app/constants/constantText";
+import { validationMessages, commonTexts } from "@/app/constants/uiTexts";
 import type { OptionCode } from "./TimeRangeOption";
 
 type QuantityOptionProps = {
@@ -61,7 +60,7 @@ const QuantityOption = ({
         return (
           <InputTextField
             id={option}
-            label="wert"
+            label={commonTexts.value}
             type="number"
             value={selectedValue["value"]}
             onChange={(value) =>
@@ -75,7 +74,7 @@ const QuantityOption = ({
           <>
             <InputTextField
               id={option}
-              label="min"
+              label={commonTexts.min}
               type="number"
               value={selectedValue["min"]}
               onChange={(min) =>
@@ -85,7 +84,7 @@ const QuantityOption = ({
             />
             <InputTextField
               id={option}
-              label="max"
+              label={commonTexts.max}
               type="number"
               value={selectedValue["max"]}
               onChange={(max) =>
@@ -168,10 +167,12 @@ const QuantityOption = ({
         {getInputOption(selectedOption)}
       </DropDownContainer>
       {!isFilterCompleted && (
-        <p className="text-xs text-red-500 m-1">{invalidBetweenMessage}</p>
+        <p className="text-xs text-red-500 m-1">
+          {validationMessages.minGreaterThanMax}
+        </p>
       )}
       {isFilterNull && (
-        <p className="mt-1 text-red-500">Wählen Sie mindestens einen Wert.</p>
+        <p className="mt-1 text-red-500">{validationMessages.minSelection}</p>
       )}
     </div>
   );

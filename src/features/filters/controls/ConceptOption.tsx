@@ -5,13 +5,11 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import { useEffect, useState } from "react";
 import type { Criterion } from "@app/types/ontologyType";
 import type { ConceptType } from "@features/filters/controls/type";
+import { validationMessages } from "@/app/constants/uiTexts";
 
 type ConceptOptionProps = {
   criterion: Criterion;
-  onChange: (
-    filterValue: ConceptType["valueFilter"] | null,
-    completeFilter?: boolean,
-  ) => void;
+  onChange: (filterValue: ConceptType["valueFilter"] | null) => void;
 };
 type Concept = ConceptType["valueFilter"]["selectedConcepts"][number];
 
@@ -65,7 +63,9 @@ const ConceptOption = ({ criterion, onChange }: ConceptOptionProps) => {
         </div>
       ))}
       {selectedValues.length === 0 && (
-        <p className="mt-1 text-red-500">Wählen Sie mindestens einen Wert.</p>
+        <p className="mt-1 text-red-500">
+          {validationMessages.minSelection}
+        </p>
       )}
     </div>
   );

@@ -27,6 +27,11 @@ import SaveQueryModal from "../SaveQueryModal";
 import createQueryData from "@/app/utils/createQueryData";
 import convertToCriteriaDisplay from "@/app/utils/convertJsonToCriteriaDisplay";
 import warningIcon from "@assets/warning-icon.svg";
+import {
+  buttonLabels,
+  warningMessages,
+  commonTexts,
+} from "@/app/constants/uiTexts";
 
 const FeasibilityContainer = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
@@ -261,7 +266,7 @@ const FeasibilityContainer = () => {
                   <>
                     <img src={warningIcon} className="inline w-4 mr-1" />
                     <p className="text-sm">
-                      Nicht bestätigte Filter: {numberOfEditing}
+                      {warningMessages.unconfirmedFilterCount + numberOfEditing}
                     </p>
                   </>
                 )}
@@ -285,8 +290,8 @@ const FeasibilityContainer = () => {
                     Abfrage laden
                   </label>
                   <Button
-                    id={""}
-                    label="Abfrage speichern"
+                    id={"save-query"}
+                    label={buttonLabels.saveQuery}
                     type="secondary"
                     className="m-0! font-medium!"
                     isActive={completedFilter}
@@ -309,7 +314,7 @@ const FeasibilityContainer = () => {
                 ))}
                 <FeasibilityCriteriaPanel
                   key="inclusionCriteria"
-                  label="Einschlusskriterien"
+                  label={commonTexts.inclusionCriteria}
                   selectedCriteria={selectedInclusionCriteria}
                   isPanelExpanded={isInclusionCriteriaOpen}
                   onToggleCriteriaPanel={() =>

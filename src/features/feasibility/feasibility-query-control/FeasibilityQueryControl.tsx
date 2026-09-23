@@ -12,6 +12,7 @@ import feasibilityQuery from "@app/services/feasibility-service";
 import loadingSpinnerIcon from "@assets/loading_spinner.svg";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import { AxiosError } from "axios";
+import { buttonLabels, resultTexts } from "@/app/constants/uiTexts";
 
 const FeasibilityQueryControl = ({
   completedFilter,
@@ -106,13 +107,13 @@ const FeasibilityQueryControl = ({
     <div className="flex h-15 bg-white border-b-[1.5px] border-(--color-border)">
       <div className="flex w-full max-w-240 justify-between m-auto px-8">
         <div className="flex w-full h-12.5 items-center px-2">
-          <span className="font-medium mr-2">Anzahl der Patienten: </span>
+          <span className="font-medium mr-2">{resultTexts.patientCount}</span>
           <span>
             {isQueryRunning && <img src={loadingSpinnerIcon} />}
             {!isQueryRunning &&
               (queryResult !== null
                 ? queryResult <= 3
-                  ? "Das Ergebnis ist zu klein"
+                  ? resultTexts.insufficientResult
                   : queryResult
                 : errorMessageResult || "-")}
           </span>
@@ -122,7 +123,7 @@ const FeasibilityQueryControl = ({
           <Button
             id="reset-query"
             type="secondary"
-            label="ZURÜCKSETZEN"
+            label={buttonLabels.reset.toLocaleUpperCase("de-DE")}
             className="text-black"
             isActive={isResetActived}
             onClick={resetAllData}
@@ -130,7 +131,9 @@ const FeasibilityQueryControl = ({
           <Button
             id="start-query"
             type="primary"
-            label={!isQueryRunning ? "ABFRAGE STARTEN" : "ABFRAGE STOPPEN"}
+            label={
+              !isQueryRunning ? buttonLabels.startQuery : buttonLabels.stopQuery
+            }
             isActive={completedFilter}
             onClick={toggleQuery}
           />

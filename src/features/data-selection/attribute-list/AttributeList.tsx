@@ -7,6 +7,7 @@ import { type Attribute } from "@features/data-selection/attribute-list/type";
 import { useEffect, useState, type DragEvent } from "react";
 import TreePanel from "@features/data-selection/ontology-container/ontologies/TreePanel";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
+import { placeholderTexts } from "@/app/constants/uiTexts";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 
 const AttributeList = () => {
@@ -73,7 +74,7 @@ const AttributeList = () => {
     >
       <InputTextField
         id="search-attribute"
-        label="Attribut suchen"
+        label={placeholderTexts.searchAttribute}
         value={textInput}
         onChange={handleTextChange}
       />

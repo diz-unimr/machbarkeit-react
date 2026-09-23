@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
 import DatePicker from "@components/ui/inputs/DatePicker";
 import type { TimeRangeType } from "@features/filters/controls/type";
-import { invalidBetweenMessage } from "@app/constants/constantText";
+import { commonTexts, validationMessages } from "@/app/constants/uiTexts";
 import type { Coding } from "@/app/types/ontologyType";
 
 export type OptionCode = "no filter" | "at" | "before" | "after" | "between";
@@ -118,7 +118,7 @@ const TimeRangeOption = ({
           <>
             <DatePicker
               id={id ? option + "-from-" + id : option + "-from"}
-              label="von"
+              label={commonTexts.from}
               value={selectedDate.afterDate ?? ""}
               size={size}
               onChange={(date) =>
@@ -127,7 +127,7 @@ const TimeRangeOption = ({
             />
             <DatePicker
               id={id ? option + "-to-" + id : option + "-to"}
-              label="bis"
+              label={commonTexts.to}
               value={selectedDate.beforeDate ?? ""}
               size={size}
               onChange={(date) =>
@@ -244,7 +244,9 @@ const TimeRangeOption = ({
         {getInputOption(selectedOption)}
       </DropDownContainer>
       {!isFilterCompleted && selectedOption === "between" ? (
-        <p className="text-xs text-red-500 m-1">{invalidBetweenMessage}</p>
+        <p className="text-xs text-red-500 m-1">
+          {validationMessages.minGreaterThanMax}
+        </p>
       ) : null}
     </div>
   );
