@@ -34,9 +34,6 @@ const TreeItem = ({
     event.dataTransfer.effectAllowed = "copy";
   };
 
-  const handleDragEnd = (event: DragEvent<HTMLDivElement>) => {
-    event.dataTransfer.clearData();
-  };
 
   return (
     <div
@@ -44,7 +41,6 @@ const TreeItem = ({
       className={`flex gap-2 items-start bg-white border border-(--color-border) rounded p-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab active:cursor-grabbing" : "cursor-auto"}`}
       draggable={criterion.selectable}
       onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
       onClick={onArrowClick}
     >
       <ArrowButton
