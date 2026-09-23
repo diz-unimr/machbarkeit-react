@@ -48,7 +48,6 @@ const useCriteriaDnD = () => {
         event.preventDefault();
         setActiveZone(null);
         const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.CRITERION);
-        event.dataTransfer.clearData(DRAG_DATA_FORMATS.CRITERION);
         if (!data) return;
         const criterion = JSON.parse(data) as Criterion;
         const newCriterion: CriterionNode = {
