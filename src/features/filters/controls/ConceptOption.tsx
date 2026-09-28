@@ -1,73 +1,65 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useEffect, useState } from "react";
-import type { Criterion } from "@app/types/ontologyType";
+import type { Coding } from "@app/types/ontologyType";
 import type { ConceptType } from "@features/filters/controls/type";
 import { validationMessages } from "@/app/constants/uiTexts";
 
+type ConceptValueFilter = ConceptType["valueFilter"];
+
 type ConceptOptionProps = {
-  criterion: Criterion;
-  onChange: (filterValue: ConceptType["valueFilter"] | null) => void;
+  id: string;
+  selectedFilters?: Coding[];
+  filterOptions: Coding[];
+  onChange: (nextFilter: ConceptValueFilter | null) => void;
 };
-type Concept = ConceptType["valueFilter"]["selectedConcepts"][number];
+const ConceptOption = ({
+  id,
+  selectedFilters,
+  filterOptions,
+  onChange,
+}: ConceptOptionProps) => {
+  const selectedConcepts: Coding[] = selectedFilters ?? [];
 
-const ConceptOption = ({ criterion, onChange }: ConceptOptionProps) => {
-  const [selectedValues, setSelectedValue] = useState<Concept[] | []>(
-    criterion.valueFilter
-      ? (criterion.valueFilter as ConceptType["valueFilter"]).selectedConcepts
-      : [],
-  );
+  const handleToggle = (concept: Coding, checked: boolean) => {
+    const nextConcepts = checked
+      ? [...selectedConcepts, concept]
+      : selectedConcepts.filter((c) => c.code !== concept.code);
 
-  const handleChange = (concept: Concept, checked: boolean) => {
-    const newSelectedValues = checked
-      ? [...selectedValues, concept]
-      : selectedValues.filter((v) => v.code !== concept.code);
-
-    setSelectedValue(newSelectedValues);
-
-    const valueFilter = {
-      selectedConcepts: newSelectedValues,
-      type: "concept",
-    };
-
-    onChange(newSelectedValues.length > 0 ? valueFilter : null);
+    onChange(
+      nextConcepts.length > 0
+        ? {
+            selectedConcepts: nextConcepts,
+            type: "concept",
+          }
+        : null,
+    );
   };
 
-  useEffect(() => {
-    const selected =
-      (criterion.valueFilter as ConceptType["valueFilter"] | undefined)
-        ?.selectedConcepts ?? [];
-
-    setSelectedValue(selected);
-  }, [criterion]);
-
-  useEffect(() => {
-    if (selectedValues.length === 0) {
-      onChange(null);
-    }
-  }, []);
+  const isInvalid = selectedConcepts.length === 0;
 
   return (
-    <div className="flex flex-col gap-1">
-      {criterion.filterOptions?.map((option) => (
-        <div key={option.code} className="flex gap-2">
-          <input
-            type="checkbox"
-            value={option.code}
-            checked={selectedValues.some((v) => v.code === option.code)}
-            onChange={(e) => handleChange(option, e.target.checked)}
-          />
-          <label>{option.display}</label>
-        </div>
-      ))}
-      {selectedValues.length === 0 && (
-        <p className="mt-1 text-red-500">
-          {validationMessages.minSelection}
-        </p>
+    <fieldset className="flex flex-col gap-1">
+      {filterOptions.map((option) => {
+        const inputId = `${id ?? "default"} - ${option.code}`;
+        const isChecked = selectedConcepts.some((c) => c.code === option.code);
+
+        return (
+          <div key={inputId} className="flex gap-2">
+            <input
+              id={inputId}
+              type="checkbox"
+              checked={isChecked}
+              onChange={(e) => handleToggle(option, e.target.checked)}
+            />
+            <label htmlFor={inputId}>{option.display}</label>
+          </div>
+        );
+      })}
+      {isInvalid && (
+        <p className="mt-1 text-red-500">{validationMessages.minSelection}</p>
       )}
-    </div>
+    </fieldset>
   );
 };
 
