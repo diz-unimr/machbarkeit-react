@@ -156,6 +156,7 @@ const LocalFilterPanel = ({
 
       {item.criterion.timeRestrictionAllowed && (
         <div className="flex flex-col gap-1">
+          <div className="font-bold pb-1">Zeitraum (optional)</div>
           {item.criterion.timeRestriction && (
             <div className="flex gap-3 bg-[#ccddff]">
               <div
@@ -189,23 +190,21 @@ const LocalFilterPanel = ({
           )}
 
           {item.isEditing && (
-            <div>
-              <div className="font-bold pb-1">Zeitraum (optional)</div>
-              <TimeRangeOption
-                id={item.uid}
-                size="sm"
-                timeRestrictionData={currentTimeRestriction ?? null}
-                onValidityChange={(isValid) => {
-                  setIsFilterCompleted(isValid);
-                }}
-                onCompleteChange={(filterValue) => {
-                  setLocalFilter({
-                    ...filterValue,
-                  });
-                }}
-              />
-            </div>
+            <TimeRangeOption
+              id={item.uid}
+              size="sm"
+              timeRestrictionData={currentTimeRestriction ?? null}
+              onValidityChange={(isValid) => {
+                setIsFilterCompleted(isValid);
+              }}
+              onCompleteChange={(filterValue) => {
+                setLocalFilter({
+                  ...filterValue,
+                });
+              }}
+            />
           )}
+
           <div className="flex flex-wrap pl-0.5 gap-4">
             {/* gap-10 */}
             {globalFilter.timeRange ? (
@@ -235,6 +234,7 @@ const LocalFilterPanel = ({
                 />
               ) : null
             ) : null}
+
             {item.isEditing ? (
               /* Abbrechen and Bestätigen */
               <div className="flex gap-2">
