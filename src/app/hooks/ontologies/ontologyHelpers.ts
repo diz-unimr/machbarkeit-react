@@ -5,10 +5,10 @@ import type { Criterion, ModuleColorProps } from "@app/types/ontologyType";
 
 const matchesSearchTerm = (node: Criterion, term: string) => {
   if (!node.selectable) return false;
-  const termLower = term.toLowerCase();
-  const displayMatch = node.display?.toLowerCase().includes(termLower);
+  const termLower = term.toLocaleLowerCase("de-DE");
+  const displayMatch = node.display?.toLocaleLowerCase("de-DE").includes(termLower);
   const codeMatch = node.termCodes?.some((tc) =>
-    tc.code?.toLowerCase().includes(termLower),
+    tc.code?.toLocaleLowerCase("de-DE").includes(termLower),
   );
   return displayMatch || codeMatch;
 };
