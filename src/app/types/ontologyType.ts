@@ -26,23 +26,28 @@ export type FilterType = "concept" | "quantity" | "reference";
 export type Coding = {
   code: string;
   display: string;
-  system?: string;
+  system: string;
   version?: string | null;
 };
 
 export type Context = Coding & {
-  system: string;
   version: string;
 };
 
-export type TermCode = Coding & {
-  system: string;
-};
+export type attributeDefinition = NonNullable<
+  Criterion["attributeDefinitions"]
+>[number];
 
-/* export type ValueDefinition = {
-  values: NonNullable<Criterion["valueDefinitions"]>[number]["values"];
-  type: NonNullable<Criterion["valueDefinitions"]>[number]["type"];
-}; */
+export type AttributeFilterRef = {
+  type: "reference";
+  criteria?: {
+    termCodes: Coding[];
+    context: Context;
+    timeRestriction: TimeRangeType["timeRestriction"];
+  }[];
+  selectedConcepts?: Coding[];
+  attributeCode: Coding[];
+};
 
 export type Criterion = {
   children?: Criterion[];
@@ -50,13 +55,12 @@ export type Criterion = {
   moduleId: string;
   parentId: string | null;
   display: string;
-  termCodes: TermCode[];
+  termCodes: Coding[];
   context?: Context;
   selectable: boolean;
   leaf: boolean;
   timeRestrictionAllowed?: boolean | null;
   filterName?: string;
-  filterType: FilterType | null;
   attributeDefinitions:
     | {
         type: FilterType;
