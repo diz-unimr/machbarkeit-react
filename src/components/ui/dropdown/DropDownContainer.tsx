@@ -10,7 +10,7 @@ type DropDownContainerProps = {
   id?: string;
   children?: React.ReactNode;
   selectedOption: OptionCode;
-  dropDownOptions?: DropDownOption[];
+  dropDownOptions: DropDownOption[];
   unitOptions?: Coding[] | null;
   size?: "sm" | "md";
   onSelectOption: (option: OptionCode) => void;
@@ -27,14 +27,6 @@ const DropDownContainer = ({
   onSelectOption,
   onSelectUnit,
 }: DropDownContainerProps) => {
-  const compareOptions: DropDownOption[] = [
-    { code: "no filter", display: "Bitte wählen..." },
-    { code: "eq", display: "gleich" },
-    { code: "lt", display: "kleiner" },
-    { code: "gt", display: "größer" },
-    { code: "between", display: "zwischen" },
-  ];
-
   return (
     <div className="flex items-center gap-3 pt-1.5">
       {/* overflow-x-auto */}
@@ -42,7 +34,7 @@ const DropDownContainer = ({
         id={id}
         size={size}
         selectedOption={selectedOption}
-        options={dropDownOptions || compareOptions}
+        options={dropDownOptions}
         onSelect={onSelectOption}
       />
       <div className="flex gap-2.5 items-center">

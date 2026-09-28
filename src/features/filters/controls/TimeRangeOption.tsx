@@ -7,7 +7,7 @@ import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
 import DatePicker from "@components/ui/inputs/DatePicker";
 import type { TimeRangeType } from "@features/filters/controls/type";
 import { commonTexts, validationMessages } from "@/app/constants/uiTexts";
-import type { Coding } from "@/app/types/ontologyType";
+import { TIMERANGE_COMPARATOR_OPTIONS } from "../comparatorOptions";
 
 export type OptionCode = "no filter" | "at" | "before" | "after" | "between";
 type SelectedDate = {
@@ -61,16 +61,10 @@ const TimeRangeOption = ({
   });
   const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
 
-  const dropDownOptions: Coding[] = [
-    { code: "no filter", display: "Bitte wählen..." },
-    { code: "at", display: "am" },
-    { code: "before", display: "vor" },
-    { code: "after", display: "nach" },
-    { code: "between", display: "zwischen" },
-  ];
-
   const getInputOption = (option: string) => {
-    const selected = dropDownOptions.find((o) => o.code === option);
+    const selected = TIMERANGE_COMPARATOR_OPTIONS.find(
+      (o) => o.code === option,
+    );
     switch (option) {
       case "no filter":
         return null;
@@ -238,7 +232,7 @@ const TimeRangeOption = ({
         id={id}
         size={size}
         selectedOption={selectedOption}
-        dropDownOptions={dropDownOptions}
+        dropDownOptions={TIMERANGE_COMPARATOR_OPTIONS}
         onSelectOption={(option: OptionCode) => setSelectedOption(option)}
       >
         {getInputOption(selectedOption)}

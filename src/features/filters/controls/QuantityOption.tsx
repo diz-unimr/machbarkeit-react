@@ -9,6 +9,7 @@ import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
 import type { QuantityType } from "@features/filters/controls/type";
 import { validationMessages, commonTexts } from "@/app/constants/uiTexts";
 import type { OptionCode } from "./TimeRangeOption";
+import { QUANTITY_COMPARATOR_OPTIONS } from "../comparatorOptions";
 
 type QuantityOptionProps = {
   id: string;
@@ -25,7 +26,6 @@ type SelectedValue = {
   min: string;
   max: string;
 };
-
 
 const QuantityOption = ({
   id,
@@ -147,6 +147,7 @@ const QuantityOption = ({
     <div className="flex flex-col overflow-x-auto">
       <DropDownContainer
         selectedOption={selectedOption}
+        dropDownOptions={QUANTITY_COMPARATOR_OPTIONS}
         unitOptions={unitOptions}
         size={size}
         onSelectOption={(option) => setSelectedOption(option)}
