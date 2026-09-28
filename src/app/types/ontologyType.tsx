@@ -35,25 +35,43 @@ export type Context = Coding & {
   version: string;
 };
 
+export type TermCode = Coding & {
+  system: string;
+};
+
+/* export type ValueDefinition = {
+  values: NonNullable<Criterion["valueDefinitions"]>[number]["values"];
+  type: NonNullable<Criterion["valueDefinitions"]>[number]["type"];
+}; */
+
 export type Criterion = {
   children?: Criterion[];
   id: string;
   moduleId: string;
   parentId: string | null;
   display: string;
-  termCodes: {
-    code: string;
-    system: string;
-    display: string;
-    version: string | null;
-  }[];
+  termCodes: TermCode[];
   context?: Context;
   selectable: boolean;
   leaf: boolean;
   timeRestrictionAllowed?: boolean | null;
   filterName?: string;
   filterType: FilterType | null;
-  filterOptions: Coding[] | null;
+  attributeDefinitions:
+    | {
+        type: FilterType;
+        optional: boolean;
+        allowedUnits: Coding[];
+        attributeCode: Coding;
+        selectableConcepts: Coding[];
+      }[]
+    | null;
+  valueDefinitions:
+    | {
+        type: Exclude<FilterType, "reference">;
+        values: Coding[];
+      }[]
+    | null;
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
   timeRestriction?: TimeRangeType["timeRestriction"];
   color?: ModuleColorProps;
