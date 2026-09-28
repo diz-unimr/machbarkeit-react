@@ -44,7 +44,9 @@ type SelectedCriteriaStore = {
   startEditing: (zone: DropZone, uid: string) => void;
   stopEditing: (zone: DropZone, uid: string) => void;
   removeCriterion: (idex: number, uid: string, zone: DropZone) => void;
-  updateCriterionFilter: (selectedFilterInfo: SelectedFilterProps | null) => void;
+  updateCriterionFilter: (
+    selectedFilterInfo: SelectedFilterProps | null,
+  ) => void;
   applyGlobalTimeRange: (includeLocal: boolean) => void;
   toggleLogic: (logicIndex: number) => void;
   reOrderCriteria: (active: Active, over: Over, zone: DropZone) => void;
@@ -213,8 +215,10 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
                         ...c,
                         criterion: {
                           ...c.criterion,
-                          valueFilter: selectedFilterInfo.selectedFilter ?? undefined,
-                          isLocalFilter: selectedFilterInfo.isLocalFilter ?? false,
+                          valueFilter:
+                            selectedFilterInfo.selectedFilter ?? undefined,
+                          isLocalFilter:
+                            selectedFilterInfo.isLocalFilter ?? false,
                         },
                       }
                     : c,
@@ -235,7 +239,8 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
                           selectedFilterInfo.selectedFilter?.afterDate
                             ? selectedFilterInfo.selectedFilter
                             : undefined,
-                        isLocalFilter: selectedFilterInfo.isLocalFilter ?? false,
+                        isLocalFilter:
+                          selectedFilterInfo.isLocalFilter ?? false,
                       },
                     }
                   : c,
