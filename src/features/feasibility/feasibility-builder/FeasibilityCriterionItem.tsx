@@ -12,6 +12,7 @@ import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import ArrowButton from "@/components/ui/buttons/ArrowButton";
 import LocalFilterPanel from "@/features/filters/LocalFilterPanel";
 import type { TimeRangeType } from "@/features/filters/controls/type";
+import { getModuleName } from "@/app/utils/moduleUtils";
 
 type DragProps = {
   setNodeRef: (el: HTMLElement | null) => void;
@@ -43,8 +44,14 @@ const FeasibilityCriterionItem = ({
   const removeCriterion = useSelectedCriteriaStore((s) => s.removeCriterion);
   const toggleLogic = useSelectedCriteriaStore((s) => s.toggleLogic);
   const [isExpanded, setIsExpanded] = useState<boolean>(
-    !!(item.isExpanded || item.criterion.filterType),
+    !!(
+      item.isExpanded ||
+      item.criterion.attributeDefinitions ||
+      item.criterion.valueDefinitions
+    ),
   );
+
+  const isDiagnosis = getModuleName(item.criterion.moduleId) === "Diagnose";
   const isOr = logic === "OR";
 
   const currentTimeRestriction: TimeRangeType["timeRestriction"] | null =
@@ -116,6 +123,7 @@ const FeasibilityCriterionItem = ({
               )}
             </div>
             <LocalFilterPanel
+              isDiagnosis={isDiagnosis}
               isExpanded={isExpanded}
               item={item}
               currentTimeRestriction={currentTimeRestriction}
