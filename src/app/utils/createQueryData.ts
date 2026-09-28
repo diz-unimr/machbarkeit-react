@@ -31,42 +31,43 @@ const createQueryData = (): FeasibilityQueryData | null => {
     })
     .filter((c) => c !== undefined);
 
+  const criterion = criteriaWithContext[0].criterion
   const criteria = {
-    id: criteriaWithContext[0].criterion.id,
-    termCodes: criteriaWithContext[0].criterion.termCodes,
-    context: criteriaWithContext[0].criterion.context,
+    id: criterion.id,
+    termCodes: criterion.termCodes,
+    context: criterion.context,
     valueFilter:
-      (criteriaWithContext[0].criterion
-        .valueFilter as ConceptType["valueFilter"]) ||
+      (criterion.valueFilter as ConceptType["valueFilter"]) ||
       undefined /* (criteriaWithContext[0].criterion.valueFilter as QuantityType["valueFilter"])?. */,
-    timeRestriction: criteriaWithContext[0].criterion.timeRestrictionAllowed
-      ? criteriaWithContext[0].criterion.timeRestriction
+    timeRestriction: criterion.timeRestrictionAllowed
+      ? criterion.timeRestriction
       : undefined,
-    isLocalFilter: criteriaWithContext[0].criterion.isLocalFilter ?? false,
+    isLocalFilter: criterion.isLocalFilter ?? false,
   };
 
   const logics = selectedInclusionCriteria.logics;
   let group = [criteria] as QueryCriterion[];
 
   for (let i = 0; i < logics.length; i++) {
+    const criterion = criteriaWithContext[i + 1]?.criterion;
+    if (!criterion) continue;
+
     const next = {
-      id: criteriaWithContext[i + 1].criterion.id,
-      termCodes: criteriaWithContext[i + 1].criterion.termCodes,
-      context: criteriaWithContext[i + 1].criterion.context,
+      id: criterion.id,
+      termCodes: criterion.termCodes,
+      context: criterion.context,
       valueFilter:
-        criteriaWithContext[i + 1].criterion.filterType === "concept"
-          ? (criteriaWithContext[i + 1].criterion
-              .valueFilter as ConceptType["valueFilter"])
-          : criteriaWithContext[i + 1].criterion.filterType === "quantity"
-            ? (criteriaWithContext[0].criterion
-                .valueFilter as QuantityType["valueFilter"])
+        criterion.valueFilter?.type === "concept"
+          ? (criterion.valueFilter as ConceptType["valueFilter"])
+          : ["quantity-range", "quantity-comparator"].includes(
+                criterion.valueFilter?.type || "",
+              )
+            ? (criterion.valueFilter as QuantityType["valueFilter"])
             : undefined,
-      timeRestriction: criteriaWithContext[i + 1].criterion
-        .timeRestrictionAllowed
-        ? criteriaWithContext[i + 1].criterion.timeRestriction
+      timeRestriction: criterion.timeRestrictionAllowed
+        ? criterion.timeRestriction
         : undefined,
-      isLocalFilter:
-        criteriaWithContext[i + 1].criterion.isLocalFilter ?? false,
+      isLocalFilter: criterion.isLocalFilter ?? false,
     };
     const logic = logics[i];
 
