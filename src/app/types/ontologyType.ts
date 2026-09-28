@@ -64,7 +64,7 @@ export type Criterion = {
   attributeDefinitions:
     | {
         type: FilterType;
-        optional: boolean;
+        optional?: boolean;
         allowedUnits: Coding[];
         attributeCode: Coding;
         selectableConcepts: Coding[];
@@ -74,6 +74,7 @@ export type Criterion = {
     | {
         type: Exclude<FilterType, "reference">;
         values: Coding[];
+        optional?: boolean;
       }[]
     | null;
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];

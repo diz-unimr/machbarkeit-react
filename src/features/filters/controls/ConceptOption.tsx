@@ -11,12 +11,14 @@ type ConceptOptionProps = {
   id: string;
   selectedFilters?: Coding[];
   filterOptions: Coding[];
+  optional?: boolean;
   onChange: (nextFilter: ConceptValueFilter | null) => void;
 };
 const ConceptOption = ({
   id,
   selectedFilters,
   filterOptions,
+  optional = false,
   onChange,
 }: ConceptOptionProps) => {
   const selectedConcepts: Coding[] = selectedFilters ?? [];
@@ -40,23 +42,27 @@ const ConceptOption = ({
 
   return (
     <fieldset className="flex flex-col gap-1">
-      {filterOptions.map((option) => {
-        const inputId = `${id ?? "default"} - ${option.code}`;
-        const isChecked = selectedConcepts.some((c) => c.code === option.code);
+      {filterOptions
+        .filter((option) => option.code !== "cc_or_cm")
+        .map((option) => {
+          const inputId = `${id ?? "default"} - ${option.code}`;
+          const isChecked = selectedConcepts.some(
+            (c) => c.code === option.code,
+          );
 
-        return (
-          <div key={inputId} className="flex gap-2">
-            <input
-              id={inputId}
-              type="checkbox"
-              checked={isChecked}
-              onChange={(e) => handleToggle(option, e.target.checked)}
-            />
-            <label htmlFor={inputId}>{option.display}</label>
-          </div>
-        );
-      })}
-      {isInvalid && (
+          return (
+            <div key={inputId} className="flex gap-2">
+              <input
+                id={inputId}
+                type="checkbox"
+                checked={isChecked}
+                onChange={(e) => handleToggle(option, e.target.checked)}
+              />
+              <label htmlFor={inputId}>{option.display}</label>
+            </div>
+          );
+        })}
+      {isInvalid && !optional && (
         <p className="mt-1 text-red-500">{validationMessages.minSelection}</p>
       )}
     </fieldset>
