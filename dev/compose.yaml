@@ -18,14 +18,19 @@ services:
       - "3000:3000"
 
   query:
-    image: ghcr.io/diz-unimr/machbarkeit-query:1.1.3
+    image: ghcr.io/diz-unimr/machbarkeit-query:1.2.2
+    restart: unless-stopped
     environment:
-      APP__LOG_LEVEL: debug
-      FEASIBILITY__BASE_URL: http://feasibility-test.diz.uni-marburg.de:8080/query/execute
-      BROKER__URL: ws://backend:3000/feasibility/ws
-      BROKER__AUTH__CLIENT_CREDENTIALS__CLIENT_ID: machbarkeit
-      BROKER__AUTH__CLIENT_CREDENTIALS__CLIENT_SECRET: ${AUTH__OIDC__CLIENT_SECRET}
-      BROKER__AUTH__CLIENT_CREDENTIALS__TOKEN_URL: ${AUTH__OIDC__TOKEN_ENDPOINT}
+      app.log_level: trace
+      feasibility.service: cql
+      feasibility.base_url: http://translate:8080
+      fhir_server.base_url: https://fhir.diz.uni-marburg.de/fhir
+      fhir_server.auth.basic.user: diz-fhir-admin
+      fhir_server.auth.basic.password: ${DIZ_FHIR_PASSWORD}
+      broker.url: ws://backend:3000/feasibility/ws
+      broker.auth.client_credentials.client_id: machbarkeit
+      broker.auth.client_credentials.client_secret: ${AUTH__OIDC__CLIENT_SECRET}
+      broker.auth.client_credentials.token_url: ${AUTH__OIDC__TOKEN_ENDPOINT}
     depends_on:
       - backend
 
@@ -55,6 +60,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  translate:
+    image: ghcr.io/diz-unimr/translate:2.0.1
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./ontology:/opt/translate/ontology:ro
 
 volumes:
   mdr-data:
