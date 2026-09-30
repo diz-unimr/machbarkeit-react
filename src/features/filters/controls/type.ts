@@ -4,9 +4,7 @@
 import type { Coding, Criterion } from "@app/types/ontologyType";
 export type ConceptType = {
   valueFilter: {
-    selectedConcepts: NonNullable<
-      Criterion["valueDefinitions"]
-    >[number]["values"];
+    selectedConcepts: NonNullable<Criterion["valueDefinition"]>["values"];
     type: "concept";
   };
 };
@@ -15,7 +13,7 @@ export type QuantityType = {
   valueFilter: {
     comparator: string | null;
     /* access only object inside array */
-    unit: NonNullable<Criterion["valueDefinitions"]>[number]["values"];
+    unit: NonNullable<Criterion["valueDefinition"]>["values"];
     value: number | null;
     minValue: number | null;
     maxValue: number | null;

@@ -38,16 +38,20 @@ export type attributeDefinition = NonNullable<
   Criterion["attributeDefinitions"]
 >[number];
 
-export type AttributeFilterRef = {
-  type: "reference";
-  criteria?: {
-    termCodes: Coding[];
-    context: Context;
-    timeRestriction: TimeRangeType["timeRestriction"];
-  }[];
-  selectedConcepts?: Coding[];
-  attributeCode: Coding[];
-};
+export type AttributeFilter = { attributeCode: Coding } & (
+  | {
+      type: "reference";
+      criteria?: {
+        termCodes: Coding[];
+        context: Context;
+        timeRestriction?: TimeRangeType["timeRestriction"];
+      };
+    }
+  | {
+      type: "concept";
+      selectedConcepts?: ConceptType["valueFilter"]["selectedConcepts"];
+    }
+);
 
 export type Criterion = {
   children?: Criterion[];
@@ -64,19 +68,20 @@ export type Criterion = {
   attributeDefinitions:
     | {
         type: FilterType;
-        optional?: boolean;
+        optional: boolean;
         allowedUnits: Coding[];
         attributeCode: Coding;
         selectableConcepts: Coding[];
       }[]
     | null;
-  valueDefinitions:
+  valueDefinition:
     | {
         type: Exclude<FilterType, "reference">;
         values: Coding[];
-        optional?: boolean;
-      }[]
+        optional: boolean;
+      }
     | null;
+  attributeFilters?: AttributeFilter[];
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
   timeRestriction?: TimeRangeType["timeRestriction"];
   color?: ModuleColorProps;

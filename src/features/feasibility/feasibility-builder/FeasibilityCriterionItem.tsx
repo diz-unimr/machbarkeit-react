@@ -47,7 +47,7 @@ const FeasibilityCriterionItem = ({
     !!(
       item.isExpanded ||
       item.criterion.attributeDefinitions ||
-      item.criterion.valueDefinitions
+      item.criterion.valueDefinition
     ),
   );
 
