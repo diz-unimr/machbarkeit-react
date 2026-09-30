@@ -51,7 +51,7 @@ services:
       retries: 5
 
   mdr:
-    image: ghcr.io/diz-unimr/mdr-service:1.5.0-beta.1
+    image: ghcr.io/diz-unimr/mdr-service:1.5.0-beta.3
     restart: unless-stopped
     environment:
       database.url: postgres://postgres:postgres@db/mdr
