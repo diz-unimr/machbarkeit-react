@@ -16,7 +16,7 @@ import type { CriterionNode } from "../feasibility/feasibility-builder/type";
 import type { ConceptType, TimeRangeType } from "./controls/type";
 import formatTimeRangeLabel from "@/app/utils/formatTimeRangeLabel";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Coding } from "@/app/types/ontologyType";
 
 type LocalFilterProps = {
@@ -68,18 +68,14 @@ const LocalFilterPanel = ({
     updateCriterionFilter(filterInfo);
   };
 
-  const conceptOption = (
-    index: number,
-    filterOptions: Coding[],
-    optional?: boolean,
-  ) => {
+  const conceptOption = (filterOptions: Coding[], optional: boolean) => {
     const valueFilter = item.criterion.valueFilter as
       | ConceptType["valueFilter"]
       | undefined;
     return (
       <ConceptOption
-        key={`concept-${index}-${item.uid}`}
-        id={`${index}-${item.uid}`}
+        key={`concept-${item.uid}`}
+        id={item.uid}
         selectedFilters={valueFilter?.selectedConcepts}
         filterOptions={filterOptions}
         optional={optional}
@@ -119,40 +115,32 @@ const LocalFilterPanel = ({
     >
       {isDiagnosis &&
         item.criterion.attributeDefinitions?.map(
-          (attributeDefinition, index) =>
+          (attributeDefinition) =>
             attributeDefinition.selectableConcepts && (
-              <div className="flex flex-col gap-2">
+              <div
+                key={attributeDefinition.attributeCode.code}
+                className="flex flex-col gap-2"
+              >
                 <div className="font-bold">
                   {attributeDefinition.attributeCode.display}
                 </div>
                 <div className="pl-3">
-                  {conceptOption(
-                    index,
-                    attributeDefinition.selectableConcepts,
-                    true,
-                  )}
+                  {conceptOption(attributeDefinition.selectableConcepts, true)}
                 </div>
               </div>
             ),
         )}
 
-      {item.criterion.valueDefinitions
-        ?.filter((valueDefinition) => valueDefinition.values)
-        .map((valueDefinition, index) => {
-          switch (valueDefinition.type) {
-            case "concept":
-              return conceptOption(
-                index,
-                valueDefinition.values,
-                valueDefinition.optional,
-              );
-            case "quantity":
-              return quantityOption(valueDefinition.values);
+      {(() => {
+        const valueDef = item.criterion.valueDefinition;
+        if (!valueDef) return null;
 
-            default:
-              return null;
-          }
-        })}
+        return valueDef.type === "concept"
+          ? conceptOption(valueDef.values, valueDef.optional)
+          : valueDef.type === "quantity"
+            ? quantityOption(valueDef.values)
+            : null;
+      })()}
 
       {item.criterion.timeRestrictionAllowed && (
         <div className="flex flex-col gap-1">

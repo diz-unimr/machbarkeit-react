@@ -16,6 +16,7 @@ import type {
   TimeRangeType,
 } from "@features/filters/controls/type";
 import useGlobalFilterStore from "./global-filter-store";
+import type { Criterion } from "../types/ontologyType";
 
 export type SelectedFilterProps =
   | {
@@ -54,6 +55,17 @@ type SelectedCriteriaStore = {
   clearSelectedCriteria: () => void;
 };
 
+const checkFilterRequired = (criterion: Criterion) => {
+  const hasAttributeDefinitionsFilterRequired =
+    criterion.attributeDefinitions?.some((filter) => filter.optional === false);
+  const hasValueDefinitionFilterRequired =
+    criterion.valueDefinition?.optional === false;
+
+  return (
+    hasAttributeDefinitionsFilterRequired || hasValueDefinitionFilterRequired
+  );
+};
+
 export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
   (set) => ({
     selectedInclusionCriteria: {
@@ -68,19 +80,22 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
     },
     addNewCriterion: (newCriterion, zone) => {
       set((state) => {
+        const hasFilterRequired = checkFilterRequired(newCriterion.criterion);
         const { globalFilter } = useGlobalFilterStore.getState();
         const nextCriteria = [
           ...state.selectedInclusionCriteria.criteria,
-          newCriterion.criterion.timeRestrictionAllowed &&
-          globalFilter.timeRange
-            ? {
-                ...newCriterion,
-                criterion: {
-                  ...newCriterion.criterion,
-                  timeRestriction: globalFilter.timeRange,
-                },
-              }
-            : newCriterion,
+          {
+            ...newCriterion,
+            criterion: {
+              ...newCriterion.criterion,
+              timeRestriction:
+                newCriterion.criterion.timeRestrictionAllowed &&
+                globalFilter.timeRange
+                  ? globalFilter.timeRange
+                  : undefined,
+            },
+            isEditing: hasFilterRequired,
+          },
         ];
 
         const nextLogics =
@@ -217,8 +232,6 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
                           ...c.criterion,
                           valueFilter:
                             selectedFilterInfo.selectedFilter ?? undefined,
-                          isLocalFilter:
-                            selectedFilterInfo.isLocalFilter ?? false,
                         },
                       }
                     : c,
