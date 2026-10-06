@@ -10,14 +10,18 @@ import QuantityOption from "./controls/QuantityOption";
 import TimeRangeOption from "./controls/TimeRangeOption";
 import {
   useSelectedCriteriaStore,
-  type SelectedFilterProps,
+  type SelectedValueFilterProps,
 } from "@/app/store/selected-criteria-store";
 import type { CriterionNode } from "../feasibility/feasibility-builder/type";
 import type { ConceptType, TimeRangeType } from "./controls/type";
 import formatTimeRangeLabel from "@/app/utils/formatTimeRangeLabel";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Coding } from "@/app/types/ontologyType";
+import {
+  createAttributeFilterInfo,
+  getSelectedConcepts,
+} from "./diagnosisFilterUtils";
 
 type LocalFilterProps = {
   isDiagnosis: boolean;
@@ -34,8 +38,11 @@ const LocalFilterPanel = ({
 }: LocalFilterProps) => {
   const startEditing = useSelectedCriteriaStore((s) => s.startEditing);
   const stopEditing = useSelectedCriteriaStore((s) => s.stopEditing);
-  const updateCriterionFilter = useSelectedCriteriaStore(
-    (s) => s.updateCriterionFilter,
+  const updateValueFilter = useSelectedCriteriaStore(
+    (s) => s.updateValueFilter,
+  );
+  const updateAttributeFilter = useSelectedCriteriaStore(
+    (s) => s.updateAttributeFilter,
   );
 
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
@@ -56,7 +63,7 @@ const LocalFilterPanel = ({
     const timeRange = data?.timeRange ?? null;
     const isLocalFilter = data?.isLocalFilter ?? false;
 
-    const filterInfo: SelectedFilterProps = {
+    const filterInfo: SelectedValueFilterProps = {
       uid: item.uid,
       filterType: "timeRange",
       selectedFilter: {
@@ -65,34 +72,7 @@ const LocalFilterPanel = ({
       isLocalFilter: timeRange ? isLocalFilter : undefined,
     };
 
-    updateCriterionFilter(filterInfo);
-  };
-
-  const conceptOption = (filterOptions: Coding[], optional: boolean) => {
-    const valueFilter = item.criterion.valueFilter as
-      | ConceptType["valueFilter"]
-      | undefined;
-    return (
-      <ConceptOption
-        key={`concept-${item.uid}`}
-        id={item.uid}
-        selectedFilters={valueFilter?.selectedConcepts}
-        filterOptions={filterOptions}
-        optional={optional}
-        onChange={(nextConcepts) => {
-          if (nextConcepts === null && !optional) {
-            startEditing("inclusionCriteria", item.uid);
-          } else {
-            stopEditing("inclusionCriteria", item.uid);
-          }
-          updateCriterionFilter({
-            uid: item.uid,
-            filterType: "concept",
-            selectedFilter: nextConcepts,
-          });
-        }}
-      />
-    );
+    updateValueFilter(filterInfo);
   };
 
   const quantityOption = (unitOptions: Coding[]) => {
@@ -113,7 +93,7 @@ const LocalFilterPanel = ({
       style={{ display: isExpanded ? "flex" : "none" }}
       className={`flex flex-col gap-3 p-2 pb-0 mt-3 ${isExpanded && "border-t-[1.5px] border-(--color-border)"}`}
     >
-      {isDiagnosis &&
+      {isDiagnosis ? (
         item.criterion.attributeDefinitions?.map(
           (attributeDefinition) =>
             attributeDefinition.selectableConcepts && (
@@ -125,22 +105,54 @@ const LocalFilterPanel = ({
                   {attributeDefinition.attributeCode.display}
                 </div>
                 <div className="pl-3">
-                  {conceptOption(attributeDefinition.selectableConcepts, true)}
+                  <ConceptOption
+                    id={item.uid}
+                    selectedFilters={getSelectedConcepts(
+                      item.criterion,
+                      attributeDefinition,
+                    )}
+                    filterOptions={attributeDefinition.selectableConcepts ?? []}
+                    optional={attributeDefinition.optional}
+                    onChange={(value) => {
+                      updateAttributeFilter({
+                        uid: item.uid,
+                        attributeCode: attributeDefinition.attributeCode,
+                        selectedFilter: value
+                          ? createAttributeFilterInfo(
+                              item.criterion,
+                              attributeDefinition,
+                              value,
+                            )
+                          : null,
+                      });
+                    }}
+                  />
                 </div>
               </div>
             ),
-        )}
-
-      {(() => {
-        const valueDef = item.criterion.valueDefinition;
-        if (!valueDef) return null;
-
-        return valueDef.type === "concept"
-          ? conceptOption(valueDef.values, valueDef.optional)
-          : valueDef.type === "quantity"
-            ? quantityOption(valueDef.values)
-            : null;
-      })()}
+        )
+      ) : (
+        <ConceptOption
+          id={item.uid}
+          selectedFilters={
+            (item.criterion.valueFilter as ConceptType["valueFilter"])
+              ?.selectedConcepts
+          }
+          filterOptions={item.criterion.valueDefinition?.values ?? []}
+          onChange={(value) => {
+            if (value === null) {
+              startEditing("inclusionCriteria", item.uid);
+            } else {
+              stopEditing("inclusionCriteria", item.uid);
+            }
+            updateValueFilter({
+              uid: item.uid,
+              filterType: "concept",
+              selectedFilter: value,
+            });
+          }}
+        />
+      )}
 
       {item.criterion.timeRestrictionAllowed && (
         <div className="flex flex-col gap-1">

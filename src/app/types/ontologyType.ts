@@ -21,7 +21,11 @@ export type Module = {
   color: ModuleColorProps;
 };
 
-export type FilterType = "concept" | "quantity" | "reference";
+export type FilterType =
+  | "concept"
+  | "reference"
+  | "quantity-range"
+  | "quantity-comparator";
 
 export type Coding = {
   code: string;
@@ -34,11 +38,7 @@ export type Context = Coding & {
   version: string;
 };
 
-export type attributeDefinition = NonNullable<
-  Criterion["attributeDefinitions"]
->[number];
-
-export type AttributeFilter = { attributeCode: Coding } & (
+/* export type AttributeFilter = { attributeCode: Coding } & (
   | {
       type: "reference";
       criteria?: {
@@ -51,7 +51,43 @@ export type AttributeFilter = { attributeCode: Coding } & (
       type: "concept";
       selectedConcepts?: ConceptType["valueFilter"]["selectedConcepts"];
     }
-);
+); */
+
+export type AttributeFilterConcept = ConceptType["valueFilter"] & {
+  attributeCode: Coding;
+};
+
+export type AttributeFilterQuantity = QuantityType["valueFilter"] & {
+  attributeCode: Coding;
+};
+
+export type AttributeFilterReference = {
+  type: "reference";
+  attributeCode: Coding;
+  criteria: {
+    termCodes: Coding[];
+    context?: Context;
+    timeRestriction?: TimeRangeType["timeRestriction"];
+  }[];
+};
+
+export type AttributeFilter =
+  | AttributeFilterConcept
+  | AttributeFilterQuantity
+  | AttributeFilterReference;
+
+export type AttributeDefinition = {
+  type: FilterType;
+  optional: boolean;
+  allowedUnits: Coding[];
+  attributeCode: Coding;
+  selectableConcepts: Coding[];
+};
+export type ValueDefinition = {
+  type: Exclude<FilterType, "reference">;
+  values: Coding[];
+  optional: boolean;
+};
 
 export type Criterion = {
   children?: Criterion[];
@@ -65,22 +101,8 @@ export type Criterion = {
   leaf: boolean;
   timeRestrictionAllowed?: boolean | null;
   filterName?: string;
-  attributeDefinitions:
-    | {
-        type: FilterType;
-        optional: boolean;
-        allowedUnits: Coding[];
-        attributeCode: Coding;
-        selectableConcepts: Coding[];
-      }[]
-    | null;
-  valueDefinition:
-    | {
-        type: Exclude<FilterType, "reference">;
-        values: Coding[];
-        optional: boolean;
-      }
-    | null;
+  attributeDefinitions: AttributeDefinition[] | null;
+  valueDefinition: ValueDefinition | null;
   attributeFilters?: AttributeFilter[];
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
   timeRestriction?: TimeRangeType["timeRestriction"];

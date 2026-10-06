@@ -16,9 +16,9 @@ import type {
   TimeRangeType,
 } from "@features/filters/controls/type";
 import useGlobalFilterStore from "./global-filter-store";
-import type { Criterion } from "../types/ontologyType";
+import type { AttributeFilter, Coding, Criterion } from "../types/ontologyType";
 
-export type SelectedFilterProps =
+export type SelectedValueFilterProps =
   | {
       uid: string;
       filterType: "concept";
@@ -38,6 +38,13 @@ export type SelectedFilterProps =
       isLocalFilter?: boolean;
     };
 
+export type SelectedAttributeFilterProps = {
+  uid: string;
+  attributeCode: Coding;
+  selectedFilter: AttributeFilter | null;
+  isLocalFilter?: boolean;
+};
+
 type SelectedCriteriaStore = {
   selectedInclusionCriteria: SelectedCriteria;
   selectedExclusionCriteria: SelectedCriteria;
@@ -45,8 +52,9 @@ type SelectedCriteriaStore = {
   startEditing: (zone: DropZone, uid: string) => void;
   stopEditing: (zone: DropZone, uid: string) => void;
   removeCriterion: (idex: number, uid: string, zone: DropZone) => void;
-  updateCriterionFilter: (
-    selectedFilterInfo: SelectedFilterProps | null,
+  updateValueFilter: (selectedFilterInfo: SelectedValueFilterProps) => void;
+  updateAttributeFilter: (
+    selectedFilterInfo: SelectedAttributeFilterProps,
   ) => void;
   applyGlobalTimeRange: (includeLocal: boolean) => void;
   toggleLogic: (logicIndex: number) => void;
@@ -215,23 +223,23 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
       });
     },
     // update local filter
-    updateCriterionFilter: (selectedFilterInfo) => {
+    updateValueFilter: (selectedValueFilter) => {
       set((state) => {
         const selectedCriteria = state.selectedInclusionCriteria;
-        switch (selectedFilterInfo?.filterType) {
+        switch (selectedValueFilter?.filterType) {
           case "concept":
           case "quantity":
             return {
               selectedInclusionCriteria: {
                 ...selectedCriteria,
                 criteria: selectedCriteria.criteria.map((c) =>
-                  c.uid === selectedFilterInfo.uid
+                  c.uid === selectedValueFilter.uid
                     ? {
                         ...c,
                         criterion: {
                           ...c.criterion,
                           valueFilter:
-                            selectedFilterInfo.selectedFilter ?? undefined,
+                            selectedValueFilter.selectedFilter ?? undefined,
                         },
                       }
                     : c,
@@ -242,18 +250,18 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
             const updatedCriteria: SelectedCriteria = {
               ...selectedCriteria,
               criteria: selectedCriteria.criteria.map((c) =>
-                c.uid === selectedFilterInfo.uid
+                c.uid === selectedValueFilter.uid
                   ? {
                       ...c,
                       criterion: {
                         ...c.criterion,
                         timeRestriction:
-                          selectedFilterInfo.selectedFilter?.beforeDate ||
-                          selectedFilterInfo.selectedFilter?.afterDate
-                            ? selectedFilterInfo.selectedFilter
+                          selectedValueFilter.selectedFilter?.beforeDate ||
+                          selectedValueFilter.selectedFilter?.afterDate
+                            ? selectedValueFilter.selectedFilter
                             : undefined,
                         isLocalFilter:
-                          selectedFilterInfo.isLocalFilter ?? false,
+                          selectedValueFilter.isLocalFilter ?? false,
                       },
                     }
                   : c,
@@ -269,6 +277,44 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
               selectedInclusionCriteria: { ...selectedCriteria },
             };
         }
+      });
+    },
+
+    updateAttributeFilter: (selectedAttributeFilter) => {
+      set((state) => {
+        const selectedCriteria = state.selectedInclusionCriteria;
+        return {
+          selectedInclusionCriteria: {
+            ...selectedCriteria,
+            criteria: selectedCriteria.criteria.map((c) => {
+              if (c.uid !== selectedAttributeFilter.uid) return c;
+
+              const otherAttributeFilters = (
+                c.criterion.attributeFilters ?? []
+              ).filter((af) => {
+                return selectedAttributeFilter.attributeCode.code === "Fallart"
+                  ? af.attributeCode.code !== "Fallart"
+                  : af.attributeCode.code === "Fallart";
+              });
+
+              const nextAttributeFilters =
+                selectedAttributeFilter.selectedFilter
+                  ? [
+                      ...otherAttributeFilters,
+                      selectedAttributeFilter.selectedFilter,
+                    ]
+                  : otherAttributeFilters;
+
+              return {
+                ...c,
+                criterion: {
+                  ...c.criterion,
+                  attributeFilters: nextAttributeFilters,
+                },
+              };
+            }),
+          },
+        };
       });
     },
 
