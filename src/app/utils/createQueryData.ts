@@ -17,7 +17,7 @@ const createQueryData = (): FeasibilityQueryData | null => {
   const selectedInclusionCriteria =
     useSelectedCriteriaStore.getState().selectedInclusionCriteria;
 
-  if (selectedInclusionCriteria.criteria.length === 0) return null;
+  if (!selectedInclusionCriteria?.criteria?.length) return null;
   const queryData: FeasibilityQueryData = {
     version: "1.0.0",
     display: "Feasibility Query",

@@ -38,21 +38,6 @@ export type Context = Coding & {
   version: string;
 };
 
-/* export type AttributeFilter = { attributeCode: Coding } & (
-  | {
-      type: "reference";
-      criteria?: {
-        termCodes: Coding[];
-        context: Context;
-        timeRestriction?: TimeRangeType["timeRestriction"];
-      };
-    }
-  | {
-      type: "concept";
-      selectedConcepts?: ConceptType["valueFilter"]["selectedConcepts"];
-    }
-); */
-
 export type AttributeFilterConcept = ConceptType["valueFilter"] & {
   attributeCode: Coding;
 };
