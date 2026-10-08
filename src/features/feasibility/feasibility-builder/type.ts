@@ -7,7 +7,7 @@ import type {
   TimeRangeType,
 } from "@features/filters/controls/type";
 import type { Attribute } from "@features/data-selection/attribute-list/type";
-import type { Criterion } from "@app/types/ontologyType";
+import type { AttributeFilter, Criterion } from "@app/types/ontologyType";
 
 export type DropZone = "inclusionCriteria" | "exclusionCriteria" | "attribute";
 
@@ -43,6 +43,7 @@ export type QueryCriterion = {
   termCodes: Criterion["termCodes"];
   context: Criterion["context"];
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
+  attributeFilters?: AttributeFilter[],
   timeRestriction?: TimeRangeType["timeRestriction"];
   isLocalFilter?: boolean;
 };
