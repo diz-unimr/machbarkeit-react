@@ -12,7 +12,7 @@ type Color = {
 type ModuleColorMap = Record<string, Color>;
 
 const moduleColor: ModuleColorMap = {
-  Default: {
+  default: {
     btnColor: "#adbcd7",
     bgColor: "#ffffff",
   },
@@ -35,7 +35,7 @@ const moduleColor: ModuleColorMap = {
 };
 
 export const getModuleColor = (moduleCode: string): ModuleColorProps => {
-  return moduleColor[moduleCode] || moduleColor["Default"];
+  return moduleColor[moduleCode] || moduleColor["default"];
 };
 
 export const getModuleName = (moduleId: string) => {

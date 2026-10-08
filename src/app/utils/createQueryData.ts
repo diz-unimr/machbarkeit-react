@@ -11,6 +11,7 @@ import type {
   ConceptType,
   QuantityType,
 } from "@/features/filters/controls/type";
+import { buildAttributeFilters } from "@/features/filters/diagnosisFilterUtils";
 
 const createQueryData = (): FeasibilityQueryData | null => {
   const selectedInclusionCriteria =
@@ -31,7 +32,32 @@ const createQueryData = (): FeasibilityQueryData | null => {
     })
     .filter((c) => c !== undefined);
 
-  const criterion = criteriaWithContext[0].criterion
+  const criteriaWithAttributeFilters = criteriaWithContext.map((c) => {
+    if (!c.criterion.attributeFilters) return c;
+
+    return {
+      ...c,
+      criterion: {
+        ...c.criterion,
+        attributeFilters: buildAttributeFilters(c.criterion) ?? undefined,
+        termCodes: [
+          {
+            code: "einrichtungskontakt",
+            display: "Einrichtungskontakt",
+            system: "http://fhir.de/CodeSystem/Kontaktebene",
+          },
+        ],
+        context: {
+          code: "Fall",
+          display: "Fall",
+          system: "fdpg.mii.cds",
+          version: "1.0.0",
+        },
+      },
+    };
+  });
+
+  const criterion = criteriaWithAttributeFilters[0].criterion;
   const criteria = {
     id: criterion.id,
     termCodes: criterion.termCodes,
@@ -39,9 +65,11 @@ const createQueryData = (): FeasibilityQueryData | null => {
     valueFilter:
       (criterion.valueFilter as ConceptType["valueFilter"]) ||
       undefined /* (criteriaWithContext[0].criterion.valueFilter as QuantityType["valueFilter"])?. */,
-    timeRestriction: criterion.timeRestrictionAllowed
-      ? criterion.timeRestriction
-      : undefined,
+    attributeFilters: criterion.attributeFilters,
+    timeRestriction:
+      !criterion.attributeFilters && criterion.timeRestrictionAllowed
+        ? criterion.timeRestriction
+        : undefined,
     isLocalFilter: criterion.isLocalFilter ?? false,
   };
 
@@ -49,7 +77,7 @@ const createQueryData = (): FeasibilityQueryData | null => {
   let group = [criteria] as QueryCriterion[];
 
   for (let i = 0; i < logics.length; i++) {
-    const criterion = criteriaWithContext[i + 1]?.criterion;
+    const criterion = criteriaWithAttributeFilters[i + 1]?.criterion;
     if (!criterion) continue;
 
     const next = {
@@ -64,9 +92,11 @@ const createQueryData = (): FeasibilityQueryData | null => {
               )
             ? (criterion.valueFilter as QuantityType["valueFilter"])
             : undefined,
-      timeRestriction: criterion.timeRestrictionAllowed
-        ? criterion.timeRestriction
-        : undefined,
+      attributeFilters: criterion.attributeFilters,
+      timeRestriction:
+        !criterion.attributeFilters && criterion.timeRestrictionAllowed
+          ? criterion.timeRestriction
+          : undefined,
       isLocalFilter: criterion.isLocalFilter ?? false,
     };
     const logic = logics[i];

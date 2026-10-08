@@ -8,6 +8,9 @@ import type {
 import generateUID from "./generateUID";
 import { getConcept } from "../services/ontologyService";
 import { getModuleColor } from "./moduleUtils";
+import { getDiagnosisPriorityCode } from "../constants/diagnosisPriorityCodes";
+import type { AttributeFilterConcept, Criterion } from "../types/ontologyType";
+import { getSelectedConcepts } from "@/features/filters/diagnosisFilterUtils";
 
 const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
   if (!uploadedData.inclusionCriteria) return null;
@@ -25,12 +28,53 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
       const concept = await getConcept(c.id);
       if (!concept) return;
 
-      const next = { ...concept };
-      next.context = c.context;
-      next.color = getModuleColor(next.context?.code || "Default");
+      const next: Criterion = { ...concept };
+
+      let context = c.context;
+      if (c.context?.code === "Fall" && c.attributeFilters) {
+        context = c.attributeFilters.find((attr) => attr.type === "reference")
+          ?.criteria[0].context;
+      }
+
+      next.context = context;
+      next.color = getModuleColor(next.context?.code || "default");
 
       if ("valueFilter" in c) {
         next.valueFilter = c.valueFilter;
+      }
+      if ("attributeFilters" in c) {
+        const conceptAttr = c.attributeFilters?.find(
+          (attr) => attr.type === "concept",
+        );
+        const referenceAttr = c.attributeFilters?.find(
+          (attr) => attr.type === "reference",
+        );
+
+        const selectedFilters = [];
+        if (conceptAttr) selectedFilters.push(conceptAttr);
+        if (referenceAttr) {
+          const selectedConcepts = (referenceAttr.attributeCode.code === "cc_or_cm"
+              ? ["cc", "cm"]
+              : []
+            ).flatMap((code) => {
+              const result = getDiagnosisPriorityCode(next, code);
+              return result ? [result] : [];
+            })
+
+          const attributeFilters = {
+            type: "concept",
+            attributeCode: {
+              code: "Diagnosispriority",
+              system: "http://hl7.org/fhir/StructureDefinition",
+              display: "Diagnosepriorität",
+              version: null,
+            },
+            selectedConcepts: selectedConcepts,
+          }
+
+          selectedFilters.push(attributeFilters as AttributeFilterConcept);
+        }
+        next.attributeFilters = selectedFilters;
       }
       if ("timeRestriction" in c && concept.timeRestrictionAllowed) {
         next.timeRestriction = c.timeRestriction;

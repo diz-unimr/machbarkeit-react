@@ -16,7 +16,12 @@ import type {
   TimeRangeType,
 } from "@features/filters/controls/type";
 import useGlobalFilterStore from "./global-filter-store";
-import type { AttributeFilter, Coding, Criterion } from "../types/ontologyType";
+import type {
+  // AttributeFilter,
+  AttributeFilterConcept,
+  Coding,
+  Criterion,
+} from "../types/ontologyType";
 
 export type SelectedValueFilterProps =
   | {
@@ -41,8 +46,7 @@ export type SelectedValueFilterProps =
 export type SelectedAttributeFilterProps = {
   uid: string;
   attributeCode: Coding;
-  selectedFilter: AttributeFilter | null;
-  isLocalFilter?: boolean;
+  selectedFilter: ConceptType["valueFilter"] | null;
 };
 
 type SelectedCriteriaStore = {
@@ -283,33 +287,69 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
     updateAttributeFilter: (selectedAttributeFilter) => {
       set((state) => {
         const selectedCriteria = state.selectedInclusionCriteria;
+
         return {
           selectedInclusionCriteria: {
             ...selectedCriteria,
             criteria: selectedCriteria.criteria.map((c) => {
               if (c.uid !== selectedAttributeFilter.uid) return c;
 
-              const otherAttributeFilters = (
-                c.criterion.attributeFilters ?? []
-              ).filter((af) => {
-                return selectedAttributeFilter.attributeCode.code === "Fallart"
-                  ? af.attributeCode.code !== "Fallart"
-                  : af.attributeCode.code === "Fallart";
-              });
+              const currentFilters = c.criterion.attributeFilters ?? [];
+              const selectedFilter = selectedAttributeFilter.selectedFilter;
 
-              const nextAttributeFilters =
-                selectedAttributeFilter.selectedFilter
-                  ? [
-                      ...otherAttributeFilters,
-                      selectedAttributeFilter.selectedFilter,
-                    ]
-                  : otherAttributeFilters;
+              // Case 1: selectedFilter = null → delete object
+              if (selectedFilter === null) {
+                const nextFilters = currentFilters.filter(
+                  (attr) =>
+                    attr.attributeCode.code !==
+                    selectedAttributeFilter.attributeCode.code,
+                );
+
+                return {
+                  ...c,
+                  criterion: {
+                    ...c.criterion,
+                    attributeFilters:
+                      nextFilters.length > 0 ? nextFilters : undefined,
+                  },
+                };
+              }
+
+              // Case 2: update or add
+              const existing = currentFilters.find(
+                (attr) =>
+                  attr.attributeCode.code ===
+                  selectedAttributeFilter.attributeCode.code,
+              );
+
+              const nextFilters = existing
+                ? currentFilters.map(
+                    (
+                      attr, // update filter
+                    ) =>
+                      attr.attributeCode.code ===
+                      selectedAttributeFilter.attributeCode.code
+                        ? ({
+                            ...attr,
+                            selectedConcepts: selectedFilter.selectedConcepts,
+                          } as AttributeFilterConcept)
+                        : attr,
+                  )
+                : [
+                    // add new filter
+                    ...currentFilters,
+                    {
+                      type: "concept",
+                      attributeCode: selectedAttributeFilter.attributeCode,
+                      selectedConcepts: selectedFilter.selectedConcepts,
+                    } as AttributeFilterConcept,
+                  ];
 
               return {
                 ...c,
                 criterion: {
                   ...c.criterion,
-                  attributeFilters: nextAttributeFilters,
+                  attributeFilters: nextFilters,
                 },
               };
             }),

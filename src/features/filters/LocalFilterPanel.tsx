@@ -6,7 +6,7 @@ import { buttonLabels } from "@/app/constants/uiTexts";
 import globalFilterIcon from "@assets/global-filter-icon.svg";
 import localFilterIcon from "@assets/local-filter-icon.svg";
 import ConceptOption from "./controls/ConceptOption";
-import QuantityOption from "./controls/QuantityOption";
+// import QuantityOption from "./controls/QuantityOption";
 import TimeRangeOption from "./controls/TimeRangeOption";
 import {
   useSelectedCriteriaStore,
@@ -17,11 +17,11 @@ import type { ConceptType, TimeRangeType } from "./controls/type";
 import formatTimeRangeLabel from "@/app/utils/formatTimeRangeLabel";
 import useGlobalFilterStore from "@/app/store/global-filter-store";
 import { useState } from "react";
-import type { Coding } from "@/app/types/ontologyType";
-import {
+// import type { Coding } from "@/app/types/ontologyType";
+/* import {
   createAttributeFilterInfo,
   getSelectedConcepts,
-} from "./diagnosisFilterUtils";
+} from "./diagnosisFilterUtils"; */
 
 type LocalFilterProps = {
   isDiagnosis: boolean;
@@ -75,7 +75,7 @@ const LocalFilterPanel = ({
     updateValueFilter(filterInfo);
   };
 
-  const quantityOption = (unitOptions: Coding[]) => {
+  /* const quantityOption = (unitOptions: Coding[]) => {
     return (
       <QuantityOption
         key={`quantity-${item.uid}`}
@@ -85,11 +85,10 @@ const LocalFilterPanel = ({
         onChange={() => {}}
       />
     );
-  };
+  }; */
 
   return (
     <div
-      /* aria-hidden={!isExpanded} */
       style={{ display: isExpanded ? "flex" : "none" }}
       className={`flex flex-col gap-3 p-2 pb-0 mt-3 ${isExpanded && "border-t-[1.5px] border-(--color-border)"}`}
     >
@@ -107,23 +106,26 @@ const LocalFilterPanel = ({
                 <div className="pl-3">
                   <ConceptOption
                     id={item.uid}
-                    selectedFilters={getSelectedConcepts(
+                    selectedFilters={
+                      (
+                        item.criterion.attributeFilters?.find(
+                          (attr) =>
+                            attr.attributeCode.code ===
+                            attributeDefinition.attributeCode.code,
+                        ) as ConceptType["valueFilter"] | null
+                      )?.selectedConcepts
+                    }
+                    /* getSelectedConcepts(
                       item.criterion,
                       attributeDefinition,
-                    )}
+                    ) */
                     filterOptions={attributeDefinition.selectableConcepts ?? []}
                     optional={attributeDefinition.optional}
                     onChange={(value) => {
                       updateAttributeFilter({
                         uid: item.uid,
                         attributeCode: attributeDefinition.attributeCode,
-                        selectedFilter: value
-                          ? createAttributeFilterInfo(
-                              item.criterion,
-                              attributeDefinition,
-                              value,
-                            )
-                          : null,
+                        selectedFilter: value,
                       });
                     }}
                   />
@@ -206,7 +208,7 @@ const LocalFilterPanel = ({
           )}
 
           <div className="flex flex-wrap pl-0.5 gap-4">
-            {/* gap-10 */}
+            {/* Globaler Filter */}
             {globalFilter.timeRange ? (
               item.criterion.isLocalFilter ? (
                 <Button
@@ -260,6 +262,7 @@ const LocalFilterPanel = ({
                 />
               </div>
             ) : item.criterion.isLocalFilter ? (
+              /* Lokaler Filter bearbeiten */
               <Button
                 id={`edit-local-filter-btn-${item.uid}`}
                 label={buttonLabels.editLocalFilter}
@@ -269,6 +272,7 @@ const LocalFilterPanel = ({
                 }}
               />
             ) : (
+              /* Lokaler Filter setzen */
               <Button
                 id={`set-local-filter-btn-${item.uid}`}
                 label={buttonLabels.setLocalFilter}
