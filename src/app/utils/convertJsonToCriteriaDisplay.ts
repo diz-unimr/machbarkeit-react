@@ -10,7 +10,6 @@ import { getConcept } from "../services/ontologyService";
 import { getModuleColor } from "./moduleUtils";
 import { getDiagnosisPriorityCode } from "../constants/diagnosisPriorityCodes";
 import type { AttributeFilterConcept, Criterion } from "../types/ontologyType";
-import { getSelectedConcepts } from "@/features/filters/diagnosisFilterUtils";
 
 const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
   if (!uploadedData.inclusionCriteria) return null;
