@@ -19,8 +19,7 @@ import GlobalFilterPanel, {
   type globalFilterWarning,
 } from "@/features/filters/GlobalFilterPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
-import useGlobalFilterStore from "@/app/store/global-filter-store";
-import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
+import useFilterStore from "@/app/store/filter-store";
 import { Button } from "@/components/ui/buttons/Button";
 import WarningModal from "../WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
@@ -32,6 +31,7 @@ import {
   warningMessages,
   commonTexts,
 } from "@/app/constants/uiTexts";
+import { getIncompleteFilterCount } from "@/app/utils/getIncompleteFilterCount";
 
 const FeasibilityContainer = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
@@ -53,11 +53,17 @@ const FeasibilityContainer = () => {
   const applyGlobalTimeRange = useSelectedCriteriaStore(
     (s) => s.applyGlobalTimeRange,
   );
-  const stopEditing = useGlobalFilterStore((s) => s.stopEditing);
-  const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
-  const updateGlobalFilter = useGlobalFilterStore((s) => s.updateGlobalFilter);
-  const isQueryRunning = useFeasibilityQueryStore((s) => s.isQueryRunning);
-  const [completedFilter, setCompletedFilter] = useState<boolean>(false);
+
+  const editingFilters = useFilterStore((s) => s.editingFilters);
+  const incompleteFilterCount = getIncompleteFilterCount({
+    scope: "all",
+    editingFilters: editingFilters,
+    criteria: selectedInclusionCriteria.criteria,
+  });
+  const stopEditing = useFilterStore((s) => s.stopEditing);
+  const updateGlobalFilter = useFilterStore((s) => s.updateGlobalFilter);
+  const clearFilter = useFilterStore((s) => s.clearFilter);
+
   const [hasAnyLocalFilter, setHasAnyLocalFilter] = useState<boolean>(false);
   const [warningModal, setWarningModal] = useState<{
     open: boolean;
@@ -65,7 +71,6 @@ const FeasibilityContainer = () => {
   }>({ open: false });
   const [isDeleteAction, setIsDeleteAction] = useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
-  const [numberOfEditing, setNumberOfEditing] = useState<number>(0);
 
   const handleWarningChoice = (selectedChoice: SelectedChoice) => {
     warningModal.resolver?.(selectedChoice);
@@ -117,7 +122,6 @@ const FeasibilityContainer = () => {
       default:
         return;
     }
-    stopEditing();
   };
 
   const removeCriterion = (uid: string) => {
@@ -172,7 +176,7 @@ const FeasibilityContainer = () => {
             c.criterion.timeRestriction &&
             !c.criterion.isLocalFilter
           ) {
-            updateGlobalFilter("timeRange", c.criterion.timeRestriction);
+            updateGlobalFilter("timeRestriction", c.criterion.timeRestriction);
             return true;
           }
           return false;
@@ -200,9 +204,7 @@ const FeasibilityContainer = () => {
 
   const resetAllData = () => {
     clearSelectedCriteria();
-    updateGlobalFilter("timeRange", null);
-    // updateGlobalFilter("caseType", "no filter");
-    stopEditing();
+    clearFilter();
   };
 
   const hasNoTimeRestriction = useMemo(() => {
@@ -216,39 +218,15 @@ const FeasibilityContainer = () => {
   useEffect(() => {
     if (!hasNoTimeRestriction) return;
 
-    updateGlobalFilter("timeRange", null);
-    stopEditing();
-  }, [hasNoTimeRestriction]);
-
-  useEffect(() => {
-    const hasEditing =
-      selectedInclusionCriteria.criteria.some((c) => c.isEditing) ||
-      globalFilter.isEditing;
-    if (hasEditing) {
-      const numberOfSelectedCriteriaEditing =
-        selectedInclusionCriteria.criteria.filter((c) => c.isEditing).length;
-      const numberOfGlobalFilterEditing = globalFilter.isEditing ? 1 : 0;
-      const numberOfTotalEditing =
-        numberOfSelectedCriteriaEditing + numberOfGlobalFilterEditing;
-      setNumberOfEditing(numberOfTotalEditing);
-    } else {
-      setNumberOfEditing(0);
-    }
-    setCompletedFilter(
-      !hasEditing && selectedInclusionCriteria.criteria.length > 0,
-    );
-  }, [selectedInclusionCriteria.criteria, globalFilter.isEditing]);
-
-  useEffect(() => {
-    if (!isQueryRunning) return;
-    // TODO: show warning popup
-  }, [selectedInclusionCriteria, globalFilter]);
+    updateGlobalFilter("timeRestriction", null);
+    stopEditing({ scope: "global", filterName: "timeRestriction" });
+  }, [hasNoTimeRestriction, selectedInclusionCriteria]);
 
   return (
     <>
       <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
         <FeasibilityQueryControl
-          completedFilter={completedFilter}
+          completedFilter={incompleteFilterCount === 0}
           createQueryData={createQueryData}
           onResetAllData={resetAllData}
         />
@@ -262,11 +240,12 @@ const FeasibilityContainer = () => {
           >
             <div className="flex justify-between items-center py-3 border-b-[1.5px] border-(--color-border)">
               <div className="flex gap-2">
-                {numberOfEditing > 0 && (
+                {incompleteFilterCount > 0 && (
                   <>
                     <img src={warningIcon} className="inline w-4 mr-1" />
                     <p className="text-sm">
-                      {warningMessages.unconfirmedFilterCount + numberOfEditing}
+                      {warningMessages.incompletedFilterCount +
+                        incompleteFilterCount}
                     </p>
                   </>
                 )}
@@ -294,7 +273,7 @@ const FeasibilityContainer = () => {
                     label={buttonLabels.saveQuery}
                     type="secondary"
                     className="m-0! font-medium!"
-                    isActive={completedFilter}
+                    isActive={incompleteFilterCount === 0}
                     onClick={() => setSaveModalOpen(true)}
                   />
                 </li>

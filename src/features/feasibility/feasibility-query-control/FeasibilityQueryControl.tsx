@@ -10,7 +10,7 @@ import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
 import feasibilityQuery from "@app/services/feasibility-service";
 import loadingSpinnerIcon from "@assets/loading_spinner.svg";
-import useGlobalFilterStore from "@/app/store/global-filter-store";
+import useGlobalFilterStore from "@/app/store/filter-store";
 import { AxiosError } from "axios";
 import { buttonLabels, resultTexts } from "@/app/constants/uiTexts";
 
@@ -95,9 +95,7 @@ const FeasibilityQueryControl = ({
 
   const isResetActived =
     selectedInclusionCriteria.criteria.length > 0 ||
-    !!globalFilter.timeRange ||
-    globalFilter.isEditing ||
-    globalFilter.caseType !== "no filter";
+    !!globalFilter.timeRestriction;
 
   useEffect(() => {
     clearRunningQuery();

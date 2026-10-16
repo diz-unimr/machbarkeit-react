@@ -13,6 +13,8 @@ import ArrowButton from "@/components/ui/buttons/ArrowButton";
 import LocalFilterPanel from "@/features/filters/LocalFilterPanel";
 import type { TimeRangeType } from "@/features/filters/controls/type";
 import { getModuleName } from "@/app/utils/moduleUtils";
+import useFilterStore from "@/app/store/filter-store";
+import { getIncompleteFilterCount } from "@/app/utils/getIncompleteFilterCount";
 
 type DragProps = {
   setNodeRef: (el: HTMLElement | null) => void;
@@ -41,6 +43,7 @@ const FeasibilityCriterionItem = ({
     isDragging: false,
   },
 }: FeasibilityCriterionItemProps) => {
+  const editingFilters = useFilterStore((s) => s.editingFilters);
   const removeCriterion = useSelectedCriteriaStore((s) => s.removeCriterion);
   const toggleLogic = useSelectedCriteriaStore((s) => s.toggleLogic);
   const [isExpanded, setIsExpanded] = useState<boolean>(
@@ -53,12 +56,16 @@ const FeasibilityCriterionItem = ({
 
   const isDiagnosis = getModuleName(item.criterion.moduleId) === "Diagnose";
   const isOr = logic === "OR";
+  const hasIncompletedFilter = !!getIncompleteFilterCount({
+    scope: "inclusionCriteria",
+    editingFilters: editingFilters,
+    item: item,
+  });
 
-  const currentTimeRestriction: TimeRangeType["timeRestriction"] | null =
-    (item.criterion.timeRestrictionAllowed || item.isEditing) &&
-    item.criterion.timeRestriction
-      ? item.criterion.timeRestriction
-      : null;
+  const currentTimeRestriction: TimeRangeType["timeRestriction"] | null = item
+    .criterion.timeRestrictionAllowed
+    ? (item.criterion.timeRestriction ?? null)
+    : null;
 
   useEffect(() => {
     if (item.criterion.timeRestriction) {
@@ -113,11 +120,11 @@ const FeasibilityCriterionItem = ({
                 </p>
               </div>
 
-              {!isExpanded && item.isEditing && (
+              {!isExpanded && hasIncompletedFilter && (
                 <div className="flex gap-2 p-1 bg-[#FEF5E2]">
                   <img src={warningIcon} className="inline w-4 mr-1" />
                   <p className=" text-[#804909]">
-                    {warningMessages.unconfirmedFilterAction}
+                    {warningMessages.incompletedFilterAction}
                   </p>
                 </div>
               )}

@@ -6,14 +6,14 @@ import TimeRangeOption from "./controls/TimeRangeOption";
 // import ArrowButton from "@components/ui/buttons/ArrowButton";
 // import warningIcon from "@assets/warning-icon.svg";
 import { useState } from "react";
-import useGlobalFilterStore from "@/app/store/global-filter-store";
+import useFilterStore from "@/app/store/filter-store";
 import type { TimeRangeType } from "./controls/type";
 import { Button } from "@components/ui/buttons/Button";
 import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { buttonLabels, warningMessages } from "@/app/constants/uiTexts";
 
-export type GlobalFilterName = "timeRange" | "caseType";
+export type GlobalFilterName = "timeRestriction";
 export type globalFilterWarning = {
   filterName: GlobalFilterName;
   value: TimeRangeType["timeRestriction"] | null;
@@ -30,10 +30,13 @@ const GlobalFilterPanel = ({
   onHandleWarning,
 }: GlobalFilterPanelProps) => {
   // const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
-  const startEditing = useGlobalFilterStore((s) => s.startEditing);
-  const stopEditing = useGlobalFilterStore((s) => s.stopEditing);
-  const updateGlobalFilter = useGlobalFilterStore((s) => s.updateGlobalFilter);
+  const globalFilter = useFilterStore((s) => s.globalFilter);
+  const editingFilters = useFilterStore((state) => state.editingFilters);
+  const isGlobalFilterEditing =
+    editingFilters?.some((filter) => filter.scope === "global") ?? false;
+  const startEditing = useFilterStore((s) => s.startEditing);
+  const stopEditing = useFilterStore((s) => s.stopEditing);
+  const updateGlobalFilter = useFilterStore((s) => s.updateGlobalFilter);
   const [globalFilterTemp, setGlobalFilterTemp] = useState<
     TimeRangeType["timeRestriction"] | null
   >(null);
@@ -44,17 +47,19 @@ const GlobalFilterPanel = ({
   );
 
   const cancelFilterChanges = () => {
-    updateGlobalFilter("timeRange", globalFilter.timeRange ?? null);
-    stopEditing();
+    updateGlobalFilter("timeRestriction", globalFilter.timeRestriction ?? null);
+    stopEditing({
+      scope: "global",
+      filterName: "timeRestriction",
+    });
   };
 
-  const checkTimeRangeConflicts = (): boolean => {
+  const hasLocalTimeRestrictionFilter = (): boolean => {
     const criteria = selectedInclusionCriteria.criteria;
     const hasAnyLocal = criteria.some(
       (c) =>
-        (c.criterion.timeRestrictionAllowed &&
-          c.criterion.isLocalFilter === true) ||
-        c.isEditing === true,
+        c.criterion.timeRestrictionAllowed &&
+        c.criterion.isLocalFilter === true,
     );
     return hasAnyLocal;
   };
@@ -65,11 +70,14 @@ const GlobalFilterPanel = ({
   ) => {
     if (selectedInclusionCriteria.criteria.length === 0) {
       updateGlobalFilter(filterName, value);
-      stopEditing();
+      stopEditing({
+        scope: "global",
+        filterName: "timeRestriction",
+      });
       return;
     }
 
-    const hasLocalFilter = checkTimeRangeConflicts();
+    const hasLocalFilter = hasLocalTimeRestrictionFilter();
 
     onHandleWarning({
       filterName,
@@ -81,7 +89,7 @@ const GlobalFilterPanel = ({
 
   return (
     <Card
-      className={`py-3 ${hasNoTimeRestriction ? "opacity-50 pointer-events-none select-none" : ""}`}
+      className={`py-3 ${hasNoTimeRestriction ? "pointer-events-none select-none" : ""}`}
     >
       <div className="flex flex-col">
         <div className="flex gap-3">
@@ -89,9 +97,9 @@ const GlobalFilterPanel = ({
             Globaler Zeitraum :
           </p>
           <div className="flex flex-col min-w-0 flex-1">
-            {globalFilter.isEditing ? (
+            {isGlobalFilterEditing ? (
               <TimeRangeOption
-                timeRestrictionData={globalFilter.timeRange} //data from file just on first time
+                timeRestrictionData={globalFilter.timeRestriction} //data from file just on first time
                 onValidityChange={(isValid) => {
                   setIsFilterCompleted(isValid);
                 }}
@@ -103,20 +111,20 @@ const GlobalFilterPanel = ({
               />
             ) : (
               <div className="pl-1">
-                {formatTimeRangeLabel(globalFilter.timeRange ?? null) ||
+                {formatTimeRangeLabel(globalFilter.timeRestriction ?? null) ||
                   "Kein Filter"}
               </div>
             )}
 
             <div className="flex gap-10 pl-0.5">
-              {(globalFilter.isEditing || globalFilter.timeRange) && (
+              {(isGlobalFilterEditing || globalFilter.timeRestriction) && (
                 <Button
                   id={"clear-filter-btn"}
                   label={buttonLabels.delete}
                   type="tertiary"
                   onClick={() => {
                     onHandleWarning({
-                      filterName: "timeRange",
+                      filterName: "timeRestriction",
                       value: null,
                       hasLocalFilter: false,
                       isDeleteAction: true,
@@ -125,7 +133,7 @@ const GlobalFilterPanel = ({
                 />
               )}
               {!hasNoTimeRestriction &&
-                (globalFilter.isEditing ? (
+                (isGlobalFilterEditing ? (
                   <div className="flex gap-2">
                     <Button
                       id={"global-btn"}
@@ -139,7 +147,10 @@ const GlobalFilterPanel = ({
                       type="tertiary"
                       isActive={isFilterComplete}
                       onClick={() => {
-                        handleGlobalFilterChange("timeRange", globalFilterTemp);
+                        handleGlobalFilterChange(
+                          "timeRestriction",
+                          globalFilterTemp,
+                        );
                       }}
                     />
                   </div>
@@ -147,13 +158,16 @@ const GlobalFilterPanel = ({
                   <Button
                     id={"global-btn"}
                     label={
-                      globalFilter.timeRange
+                      globalFilter.timeRestriction
                         ? buttonLabels.edit
                         : buttonLabels.setFilter
                     }
                     type="tertiary"
                     onClick={() => {
-                      startEditing();
+                      startEditing({
+                        scope: "global",
+                        filterName: "timeRestriction",
+                      });
                     }}
                   />
                 ))}

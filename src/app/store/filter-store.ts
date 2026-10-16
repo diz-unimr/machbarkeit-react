@@ -58,7 +58,6 @@ const useFilterStore = create<FilterStore>((set) => ({
 
   startEditing: (editingFilterInfo) =>
     set((state) => {
-      console.log("editingFilterInfo: ", editingFilterInfo);
       const editingFilters = state.editingFilters ?? [];
       const isEditing = editingFilters.some(
         (filter) =>
@@ -66,8 +65,6 @@ const useFilterStore = create<FilterStore>((set) => ({
           filter.criterionUid === editingFilterInfo.criterionUid &&
           filter.filterName === editingFilterInfo.filterName,
       );
-
-      console.log("isEditing: ", isEditing);
 
       if (isEditing) {
         return state;
@@ -80,7 +77,6 @@ const useFilterStore = create<FilterStore>((set) => ({
 
   stopEditing: (editingFilterInfo: EditingFilter) =>
     set((state) => {
-      console.log("stopEditing: ", editingFilterInfo);
       const editingFilters = state.editingFilters ?? [];
 
       return {
