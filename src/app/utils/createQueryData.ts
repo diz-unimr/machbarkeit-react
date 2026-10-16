@@ -34,12 +34,17 @@ const createQueryData = (): FeasibilityQueryData | null => {
 
   const criteriaWithAttributeFilters = criteriaWithContext.map((c) => {
     if (!c.criterion.attributeFilters) return c;
+    
+    const attributeFilters = buildAttributeFilters(c.criterion);
 
     return {
       ...c,
       criterion: {
         ...c.criterion,
-        attributeFilters: buildAttributeFilters(c.criterion) ?? undefined,
+        attributeFilters:
+          attributeFilters && attributeFilters.length > 0
+            ? attributeFilters
+            : undefined,
         termCodes: [
           {
             code: "einrichtungskontakt",
@@ -58,6 +63,7 @@ const createQueryData = (): FeasibilityQueryData | null => {
   });
 
   const criterion = criteriaWithAttributeFilters[0].criterion;
+
   const criteria = {
     id: criterion.id,
     termCodes: criterion.termCodes,

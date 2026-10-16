@@ -42,19 +42,31 @@ export const getSelectedConcepts = (
 export const buildAttributeFilters = (
   criterion: Criterion,
 ): AttributeFilter[] | null => {
-  if (criterion.context?.code !== "Diagnose" || !criterion.attributeFilters)
-    return null;
+  if (criterion.context?.code !== "Diagnose") return null;
 
-  const updatedAttributeFilters = criterion.attributeFilters
-    .map((attr) => {
-      const attrDefinition = criterion.attributeDefinitions?.find(
-        (def) => def.attributeCode.code === attr.attributeCode.code,
-      );
+  const filters = criterion.attributeFilters;
+  if (!filters) return null;
 
-      if (!attrDefinition) return null;
+  const definitions = new Map(
+    (criterion.attributeDefinitions ?? []).map((def) => [
+      def.attributeCode.code,
+      def,
+    ]),
+  );
 
-      if (attrDefinition.type === "concept" && attr.type === "concept") {
-        return {
+  const hasReferenceFilter = filters.some(
+    (attr) => definitions.get(attr.attributeCode.code)?.type === "reference",
+  );
+
+  const result = filters.flatMap((attr): AttributeFilter[] => {
+    const definition = definitions.get(attr.attributeCode.code);
+
+    if (!definition) return [];
+
+    // Concept filter: Fallart
+    if (definition.type === "concept" && attr.type === "concept") {
+      return [
+        {
           type: "concept",
           attributeCode: {
             code: "Fallart",
@@ -62,26 +74,29 @@ export const buildAttributeFilters = (
             system: "http://hl7.org/fhir/StructureDefinition",
           },
           selectedConcepts: attr.selectedConcepts,
-        } as AttributeFilterConcept;
-      }
+        } as AttributeFilterConcept,
+      ];
+    }
 
-      if (attrDefinition.type === "reference") {
-        const selectedCodes =
-          attr.type === "concept"
-            ? attr.selectedConcepts.map((c) => c.code)
-            : [];
+    // Reference filter: DiagnosisPriority
+    if (definition.type === "reference") {
+      const selectedCodes =
+        attr.type === "concept" && attr.selectedConcepts?.length
+          ? attr.selectedConcepts.map((c) => c.code)
+          : ["cc", "cm"];
 
-        const priorityCodeKey =
-          selectedCodes.length > 1 ? "cc_or_cm" : selectedCodes[0];
+      const priorityCodeKey =
+        selectedCodes.length > 1 ? "cc_or_cm" : selectedCodes[0];
 
-        const diagnosisCoding = getDiagnosisPriorityCode(
-          criterion,
-          priorityCodeKey,
-        );
+      const diagnosisCoding = getDiagnosisPriorityCode(
+        criterion,
+        priorityCodeKey,
+      );
 
-        if (!diagnosisCoding) return null;
+      if (!diagnosisCoding) return [];
 
-        return {
+      return [
+        {
           type: "reference",
           attributeCode: diagnosisCoding,
           criteria: [
@@ -91,11 +106,31 @@ export const buildAttributeFilters = (
               timeRestriction: criterion.timeRestriction,
             },
           ],
-        } satisfies AttributeFilterReference;
-      }
-      return null;
-    })
-    .filter((attr) => attr !== null && attr !== undefined);
+        } as AttributeFilterReference,
+      ];
+    }
 
-  return updatedAttributeFilters;
+    return [];
+  });
+
+  // default cc_or_cm
+  if (!hasReferenceFilter) {
+    const diagnosisCoding = getDiagnosisPriorityCode(criterion, "cc_or_cm");
+
+    if (diagnosisCoding) {
+      result.push({
+        type: "reference",
+        attributeCode: diagnosisCoding,
+        criteria: [
+          {
+            termCodes: criterion.termCodes,
+            context: criterion.context,
+            timeRestriction: criterion.timeRestriction,
+          },
+        ],
+      } as AttributeFilterReference);
+    }
+  }
+
+  return result;
 };

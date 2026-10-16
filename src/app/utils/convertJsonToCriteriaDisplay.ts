@@ -25,6 +25,7 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
   const items = await Promise.all(
     uploadedCriteria.flat().map(async (c) => {
       const concept = await getConcept(c.id);
+
       if (!concept) return;
 
       const next: Criterion = { ...concept };
@@ -41,6 +42,12 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
       if ("valueFilter" in c) {
         next.valueFilter = c.valueFilter;
       }
+      if ("timeRestriction" in c && concept.timeRestrictionAllowed) {
+        next.timeRestriction = c.timeRestriction;
+      }
+      if ("isLocalFilter" in c) {
+        next.isLocalFilter = c.isLocalFilter;
+      }
       if ("attributeFilters" in c) {
         const conceptAttr = c.attributeFilters?.find(
           (attr) => attr.type === "concept",
@@ -50,15 +57,18 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
         );
 
         const selectedFilters = [];
+
         if (conceptAttr) selectedFilters.push(conceptAttr);
+
         if (referenceAttr) {
-          const selectedConcepts = (referenceAttr.attributeCode.code === "cc_or_cm"
+          const selectedConcepts = (
+            referenceAttr.attributeCode.code === "cc_or_cm"
               ? ["cc", "cm"]
-              : []
-            ).flatMap((code) => {
-              const result = getDiagnosisPriorityCode(next, code);
-              return result ? [result] : [];
-            })
+              : [referenceAttr.attributeCode.code]
+          ).flatMap((code) => {
+            const result = getDiagnosisPriorityCode(next, code);
+            return result ? [result] : [];
+          });
 
           const attributeFilters = {
             type: "concept",
@@ -69,17 +79,13 @@ const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
               version: null,
             },
             selectedConcepts: selectedConcepts,
-          }
+          };
 
           selectedFilters.push(attributeFilters as AttributeFilterConcept);
         }
+
         next.attributeFilters = selectedFilters;
-      }
-      if ("timeRestriction" in c && concept.timeRestrictionAllowed) {
-        next.timeRestriction = c.timeRestriction;
-      }
-      if ("isLocalFilter" in c) {
-        next.isLocalFilter = c.isLocalFilter;
+        next.timeRestriction = referenceAttr?.criteria[0].timeRestriction;
       }
 
       return {
