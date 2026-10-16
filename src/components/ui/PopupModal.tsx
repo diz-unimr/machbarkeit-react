@@ -26,7 +26,7 @@ const PopupModal = ({
         headerClassName="text-2xl border-b-1 border-gray-300 "
         className={`flex w-fit max-w-150`}
       >
-        <p className="mb-5 leading-relaxed">{message}</p>
+        <p className="mb-5 leading-relaxed whitespace-pre-line">{message}</p>
         <div className="flex gap-3 justify-center">{children}</div>
       </Card>
     </div>
