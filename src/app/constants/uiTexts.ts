@@ -29,22 +29,20 @@ export const titleTexts = {
 export const validationMessages = {
   minGreaterThanMax:
     "Der minimale Wert muss kleiner als der maximale Wert sein.",
-  minSelection: "Wählen Sie mindestens einen Wert.",
+  minSelection: "Bitte wählen Sie mindestens einen Wert aus.",
 } as const;
 
 export const warningMessages = {
-  minGreaterThanMax:
-    "Der minimale Wert muss kleiner als der maximale Wert sein.",
-  minSelection: "Wählen Sie mindestens einen Wert.",
-  unconfirmedFilterCount: "Nicht bestätigte Filter: ",
-  unconfirmedFilterAction: "Bitte bestätigen Sie den Filter",
+  incompletedFilterCount: "Nicht bestätigte Filter: ",
+  incompletedFilterAction: "Bitte bestätigen Sie den Filter",
   noTimeReference:
     "Für die ausgewählten Kriterien ist kein Zeitbezug verfügbar.",
 } as const;
 
 export const confirmationMessages = {
   deleteGlobalFilter:
-    "Sind Sie sicher, dass Sie den globalen Filter löschen möchten?",
+    "Sind Sie sicher, dass Sie den globalen Filter löschen möchten? \n" +
+    "Die für die betroffenen Kriterien festgelegten Zeiträume werden ebenfalls gelöscht.",
   updateOrReplaceFilters:
     "Einige Kriterien verwenden derzeit lokale Filter. Möchten Sie nur bestehende globale Filter aktualisieren oder alle Filter ersetzen?",
   applyGlobalFilterToAll:
