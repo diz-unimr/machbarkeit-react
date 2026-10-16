@@ -53,7 +53,6 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
       ) : (
         <div className="flex px-4 py-3">
           <p className="font-medium">Merkmale</p>
-          {/* <div>Attributliste</div> */}
         </div>
       )}
     </div>

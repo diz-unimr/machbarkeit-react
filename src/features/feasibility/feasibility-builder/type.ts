@@ -9,7 +9,7 @@ import type {
 import type { Attribute } from "@features/data-selection/attribute-list/type";
 import type { AttributeFilter, Criterion } from "@app/types/ontologyType";
 
-export type DropZone = "inclusionCriteria" | "exclusionCriteria" | "attribute";
+export type DropZone = "inclusionCriteria" | "exclusionCriteria";
 
 export type SelectedAttribute = {
   uid: string;
@@ -20,7 +20,6 @@ export type CriterionNode = {
   uid: string;
   criterion: Criterion;
   isExpanded: boolean;
-  isEditing?: boolean;
 };
 
 export type SelectedChoice =
@@ -43,7 +42,7 @@ export type QueryCriterion = {
   termCodes: Criterion["termCodes"];
   context: Criterion["context"];
   valueFilter?: ConceptType["valueFilter"] | QuantityType["valueFilter"];
-  attributeFilters?: AttributeFilter[],
+  attributeFilters?: AttributeFilter[];
   timeRestriction?: TimeRangeType["timeRestriction"];
   isLocalFilter?: boolean;
 };

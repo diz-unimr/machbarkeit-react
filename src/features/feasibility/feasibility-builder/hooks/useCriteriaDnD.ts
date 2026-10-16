@@ -27,10 +27,7 @@ const useCriteriaDnD = () => {
 
   const handleDragOver = useCallback(
     (zone: DropZone) => (event: DragEvent<HTMLDivElement>) => {
-      const expectedType =
-        zone === "attribute"
-          ? DRAG_DATA_FORMATS.ATTRIBUTE
-          : DRAG_DATA_FORMATS.CRITERION;
+      const expectedType = DRAG_DATA_FORMATS.CRITERION;
       if (event.dataTransfer.types.includes(expectedType)) {
         event.preventDefault();
         event.dataTransfer.dropEffect = "copy";
@@ -54,7 +51,6 @@ const useCriteriaDnD = () => {
           uid: uid,
           criterion,
           isExpanded: false,
-          isEditing: false,
         };
         addNewCriterion(newCriterion, zone);
       },
