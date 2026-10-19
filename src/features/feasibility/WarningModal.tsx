@@ -4,6 +4,11 @@
 import { Button } from "@/components/ui/buttons/Button";
 import PopupModal from "@/components/ui/PopupModal";
 import type { SelectedChoice } from "./feasibility-builder/type";
+import {
+  buttonLabels,
+  titleTexts,
+  confirmationMessages,
+} from "@/app/constants/uiTexts";
 
 type WarningModalProps = {
   open: boolean;
@@ -24,7 +29,7 @@ const WarningModal = ({
     <Button
       type="primary"
       id="confirm-btn"
-      label="Bestätigen"
+      label={buttonLabels.confirm}
       onClick={() => onClick("confirm")}
     />
   );
@@ -32,7 +37,7 @@ const WarningModal = ({
     <Button
       type="secondary"
       id="cancel-btn"
-      label="ABBRECHEN"
+      label={buttonLabels.cancel.toLocaleUpperCase("de-DE")}
       onClick={() => onClick("cancel")}
     />
   );
@@ -40,7 +45,7 @@ const WarningModal = ({
     <Button
       type="primary"
       id="delete-btn"
-      label="LÖSCHEN"
+      label={buttonLabels.delete.toLocaleUpperCase("de-DE")}
       className="bg-red-800 text-white border-red-800 hover:bg-red-800"
       onClick={() => onClick("delete")}
     />
@@ -49,16 +54,16 @@ const WarningModal = ({
     <Button
       type="primary"
       id="replace-all-filter-btn"
-      label="Alle Filter ersetzen"
+      label={buttonLabels.replaceAllFilters}
       className="normal-case"
       onClick={() => onClick("replace all")}
     />
   );
-  const replaceGlobalFilterBtn = (
+  const updateGlobalFilterBtn = (
     <Button
       type="primary"
       id="replace-global-filter-btn"
-      label="Nur globale Filter aktualisieren"
+      label={buttonLabels.updateGlobalFilter}
       className="normal-case"
       onClick={() => onClick("replace global")}
     />
@@ -69,9 +74,8 @@ const WarningModal = ({
   let btnGroup;
 
   if (isDeleteAction) {
-    warningTitle = "Globalen Filter löschen";
-    warningText =
-      "Sind Sie sicher, dass Sie den globalen Filter löschen möchten?";
+    warningTitle = titleTexts.deleteGlobalFilter;
+    warningText = confirmationMessages.deleteGlobalFilter;
     btnGroup = (
       <>
         {cancelBtn}
@@ -79,24 +83,18 @@ const WarningModal = ({
       </>
     );
   } else if (hasAnyLocalFilter) {
-    warningTitle = "Globalen Filter anwenden";
-    warningText = (
-      <>
-        Einige Kriterien verwenden derzeit lokale Filter. Möchten Sie nur
-        bestehende globale Filter aktualisieren oder alle Filter ersetzen?
-      </>
-    );
+    warningTitle = titleTexts.applyGlobalFilter;
+    warningText = <>{confirmationMessages.updateOrReplaceFilters}</>;
     btnGroup = (
       <>
         {cancelBtn}
-        {replaceGlobalFilterBtn}
+        {updateGlobalFilterBtn}
         {replaceAllFilterBtn}
       </>
     );
   } else {
-    warningTitle = "Globalen Filter anwenden";
-    warningText =
-      "Möchten Sie den neuen globalen Filter auf alle Kriterien anwenden?";
+    warningTitle = titleTexts.applyGlobalFilter;
+    warningText = confirmationMessages.applyGlobalFilterToAll;
     btnGroup = (
       <>
         {cancelBtn}

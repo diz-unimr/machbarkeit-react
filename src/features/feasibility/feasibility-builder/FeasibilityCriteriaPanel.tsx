@@ -31,10 +31,7 @@ const FeasibilityCriteriaPanel = ({
     handleCriteriaDrop,
   } = useCriteriaDnD();
 
-  const removeCriterion = (
-    // zone: Exclude<DropZone, "attribute">,
-    uid: string,
-  ) => {
+  const removeCriterion = (uid: string) => {
     onRemoveCriterion(uid);
   };
 

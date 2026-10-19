@@ -13,14 +13,11 @@ type DataSelectionProps = {
 
 const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isAttributeListPanelOpen, setIsAttributeListPanelOpen] =
-    useState<boolean>(false);
   const [isOntologyContainerOpen, setIsOntologyContainerOpen] =
     useState<boolean>(true);
 
   const toggleOntologyContainer = () => {
     setIsOntologyContainerOpen((prev) => !prev);
-    if (isAttributeListPanelOpen) setIsAttributeListPanelOpen(false);
   };
 
   const toggleContainer = () => {
@@ -53,7 +50,6 @@ const DataSelectionContainer = ({ onToggle }: DataSelectionProps) => {
       ) : (
         <div className="flex px-4 py-3">
           <p className="font-medium">Merkmale</p>
-          {/* <div>Attributliste</div> */}
         </div>
       )}
     </div>

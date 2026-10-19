@@ -126,6 +126,9 @@ input[type="number"] {
 /* force ui in dark mode as light mode */
 @media (prefers-color-scheme: dark) {
   :root {
+    --color-bg: #ffffff;
+    --color-text: #213547;
+    --color-border: #efefef;
     --color-main-background: #ffffff;
     --color-main-background-rgb: 255, 255, 255;
     --color-main-background-translucent: rgba(

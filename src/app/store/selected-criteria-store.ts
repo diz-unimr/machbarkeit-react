@@ -15,41 +15,79 @@ import type {
   QuantityType,
   TimeRangeType,
 } from "@features/filters/controls/type";
-import useGlobalFilterStore from "./global-filter-store";
+import type { AttributeFilterConcept, Coding } from "../types/ontologyType";
+import useFilterStore from "./filter-store";
 
-export type FilterProps =
+export type SelectedValueFilterProps =
   | {
       uid: string;
       filterType: "concept";
-      filterValue: ConceptType["valueFilter"] | null;
+      selectedFilter: ConceptType["valueFilter"] | null;
       isLocalFilter?: boolean;
     }
   | {
       uid: string;
       filterType: "quantity";
-      filterValue: QuantityType["valueFilter"] | null;
+      selectedFilter: QuantityType["valueFilter"] | null;
       isLocalFilter?: boolean;
     }
   | {
       uid: string;
       filterType: "timeRange";
-      filterValue: TimeRangeType["timeRestriction"] | null;
+      selectedFilter: TimeRangeType["timeRestriction"] | null;
       isLocalFilter?: boolean;
     };
+
+export type SelectedAttributeFilterProps = {
+  uid: string;
+  attributeCode: Coding;
+  selectedFilter: ConceptType["valueFilter"] | null;
+};
 
 type SelectedCriteriaStore = {
   selectedInclusionCriteria: SelectedCriteria;
   selectedExclusionCriteria: SelectedCriteria;
   addNewCriterion: (newCriterion: CriterionNode, zone: DropZone) => void;
-  startEditing: (zone: DropZone, uid: string) => void;
-  stopEditing: (zone: DropZone, uid: string) => void;
   removeCriterion: (idex: number, uid: string, zone: DropZone) => void;
-  updateCriterionFilter: (filterInfo: FilterProps | null) => void;
+  updateValueFilter: (selectedFilterInfo: SelectedValueFilterProps) => void;
+  updateAttributeFilter: (
+    selectedFilterInfo: SelectedAttributeFilterProps,
+  ) => void;
   applyGlobalTimeRange: (includeLocal: boolean) => void;
   toggleLogic: (logicIndex: number) => void;
   reOrderCriteria: (active: Active, over: Over, zone: DropZone) => void;
   setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
   clearSelectedCriteria: () => void;
+};
+
+const stopEditingForCriterion = (item: CriterionNode, zone: DropZone) => {
+  const stopEditing = useFilterStore.getState().stopEditing;
+  const criterion = item.criterion;
+  const criterionUid = item.uid;
+
+  criterion.attributeDefinitions?.forEach((filter) => {
+    stopEditing({
+      scope: zone,
+      criterionUid,
+      filterName: filter.type,
+    });
+  });
+
+  if (criterion.valueDefinition) {
+    stopEditing({
+      scope: zone,
+      criterionUid,
+      filterName: criterion.valueDefinition.type,
+    });
+  }
+
+  if (criterion.timeRestrictionAllowed) {
+    stopEditing({
+      scope: zone,
+      criterionUid,
+      filterName: "timeRestriction",
+    });
+  }
 };
 
 export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
@@ -66,19 +104,20 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
     },
     addNewCriterion: (newCriterion, zone) => {
       set((state) => {
-        const { globalFilter } = useGlobalFilterStore.getState();
+        const { globalFilter } = useFilterStore.getState();
         const nextCriteria = [
           ...state.selectedInclusionCriteria.criteria,
-          newCriterion.criterion.timeRestrictionAllowed &&
-          globalFilter.timeRange
-            ? {
-                ...newCriterion,
-                criterion: {
-                  ...newCriterion.criterion,
-                  timeRestriction: globalFilter.timeRange,
-                },
-              }
-            : newCriterion,
+          {
+            ...newCriterion,
+            criterion: {
+              ...newCriterion.criterion,
+              timeRestriction:
+                newCriterion.criterion.timeRestrictionAllowed &&
+                globalFilter.timeRestriction
+                  ? globalFilter.timeRestriction
+                  : undefined,
+            },
+          },
         ];
 
         const nextLogics =
@@ -113,62 +152,24 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
       });
     },
 
-    startEditing: (zone, uid) =>
-      set((state) => {
-        if (zone === "inclusionCriteria") {
-          return {
-            selectedInclusionCriteria: {
-              ...state.selectedInclusionCriteria,
-              criteria: state.selectedInclusionCriteria.criteria.map((c) =>
-                c.uid === uid ? { ...c, isEditing: true } : c,
-              ),
-            },
-          };
-        } else if (zone === "exclusionCriteria") {
-          return {
-            selectedExclusionCriteria: {
-              ...state.selectedExclusionCriteria,
-              criteria: state.selectedExclusionCriteria.criteria.map((c) =>
-                c.uid === uid ? { ...c, isEditing: true } : c,
-              ),
-            },
-          };
-        }
-        return state;
-      }),
-
-    stopEditing: (zone, uid) =>
-      set((state) => {
-        if (zone === "inclusionCriteria") {
-          return {
-            selectedInclusionCriteria: {
-              ...state.selectedInclusionCriteria,
-              criteria: state.selectedInclusionCriteria.criteria.map((c) =>
-                c.uid === uid ? { ...c, isEditing: false } : c,
-              ),
-            },
-          };
-        } else if (zone === "exclusionCriteria") {
-          return {
-            selectedExclusionCriteria: {
-              ...state.selectedExclusionCriteria,
-              criteria: state.selectedExclusionCriteria.criteria.map((c) =>
-                c.uid === uid ? { ...c, isEditing: false } : c,
-              ),
-            },
-          };
-        }
-        return state;
-      }),
-
     removeCriterion: (index, uid, zone) => {
+      const state = useSelectedCriteriaStore.getState();
+      const currentCriteria =
+        zone === "inclusionCriteria"
+          ? state.selectedInclusionCriteria
+          : state.selectedExclusionCriteria;
+
+      const currentItem = currentCriteria.criteria.find((c) => c.uid === uid);
+
+      if (currentItem) stopEditingForCriterion(currentItem, zone);
+
       set((state) => {
-        const currentCriteria = state.selectedInclusionCriteria;
         const nextCriteria = currentCriteria.criteria.filter(
           (c) => c.uid !== uid,
         );
         const nextLogics = currentCriteria.logics.filter((_, i) => {
-          if (index === currentCriteria.criteria.length - 1) return i;
+          if (index === currentCriteria.criteria.length - 1)
+            return i; // if (index === currentCriteria.criteria.length - 1) return true;
           else if (currentCriteria.logics[index - 1] === "OR")
             return i != index - 1;
           else return i != index;
@@ -198,23 +199,23 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
       });
     },
     // update local filter
-    updateCriterionFilter: (filterInfo) => {
+    updateValueFilter: (selectedValueFilter) => {
       set((state) => {
         const selectedCriteria = state.selectedInclusionCriteria;
-        switch (filterInfo?.filterType) {
+        switch (selectedValueFilter?.filterType) {
           case "concept":
           case "quantity":
             return {
               selectedInclusionCriteria: {
                 ...selectedCriteria,
                 criteria: selectedCriteria.criteria.map((c) =>
-                  c.uid === filterInfo.uid
+                  c.uid === selectedValueFilter.uid
                     ? {
                         ...c,
                         criterion: {
                           ...c.criterion,
-                          valueFilter: filterInfo.filterValue ?? undefined,
-                          isLocalFilter: filterInfo.isLocalFilter ?? false,
+                          valueFilter:
+                            selectedValueFilter.selectedFilter ?? undefined,
                         },
                       }
                     : c,
@@ -225,17 +226,18 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
             const updatedCriteria: SelectedCriteria = {
               ...selectedCriteria,
               criteria: selectedCriteria.criteria.map((c) =>
-                c.uid === filterInfo.uid
+                c.uid === selectedValueFilter.uid
                   ? {
                       ...c,
                       criterion: {
                         ...c.criterion,
                         timeRestriction:
-                          filterInfo.filterValue?.beforeDate ||
-                          filterInfo.filterValue?.afterDate
-                            ? filterInfo.filterValue
+                          selectedValueFilter.selectedFilter?.beforeDate ||
+                          selectedValueFilter.selectedFilter?.afterDate
+                            ? selectedValueFilter.selectedFilter
                             : undefined,
-                        isLocalFilter: filterInfo.isLocalFilter ?? false,
+                        isLocalFilter:
+                          selectedValueFilter.isLocalFilter ?? false,
                       },
                     }
                   : c,
@@ -254,25 +256,112 @@ export const useSelectedCriteriaStore = create<SelectedCriteriaStore>(
       });
     },
 
+    updateAttributeFilter: (selectedAttributeFilter) => {
+      set((state) => {
+        const selectedCriteria = state.selectedInclusionCriteria;
+
+        return {
+          selectedInclusionCriteria: {
+            ...selectedCriteria,
+            criteria: selectedCriteria.criteria.map((c) => {
+              if (c.uid !== selectedAttributeFilter.uid) return c;
+
+              const currentFilters = c.criterion.attributeFilters ?? [];
+              const selectedFilter = selectedAttributeFilter.selectedFilter;
+
+              // Case 1: selectedFilter = null → delete object
+              if (selectedFilter === null) {
+                const nextFilters = currentFilters.filter(
+                  (attr) =>
+                    attr.attributeCode.code !==
+                    selectedAttributeFilter.attributeCode.code,
+                );
+
+                return {
+                  ...c,
+                  criterion: {
+                    ...c.criterion,
+                    attributeFilters:
+                      nextFilters.length > 0 ? nextFilters : undefined,
+                  },
+                };
+              }
+
+              // Case 2: update or add
+              const existing = currentFilters.find(
+                (attr) =>
+                  attr.attributeCode.code ===
+                  selectedAttributeFilter.attributeCode.code,
+              );
+
+              const nextFilters = existing
+                ? currentFilters.map(
+                    (
+                      attr, // update filter
+                    ) =>
+                      attr.attributeCode.code ===
+                      selectedAttributeFilter.attributeCode.code
+                        ? ({
+                            ...attr,
+                            selectedConcepts: selectedFilter.selectedConcepts,
+                          } as AttributeFilterConcept)
+                        : attr,
+                  )
+                : [
+                    // add new filter
+                    ...currentFilters,
+                    {
+                      type: "concept",
+                      attributeCode: selectedAttributeFilter.attributeCode,
+                      selectedConcepts: selectedFilter.selectedConcepts,
+                    } as AttributeFilterConcept,
+                  ];
+
+              return {
+                ...c,
+                criterion: {
+                  ...c.criterion,
+                  attributeFilters: nextFilters,
+                },
+              };
+            }),
+          },
+        };
+      });
+    },
+
     applyGlobalTimeRange: (includeLocal) => {
       set((state) => {
-        const { globalFilter } = useGlobalFilterStore.getState();
+        const { globalFilter } = useFilterStore.getState();
+        const { stopEditing } = useFilterStore.getState();
         const current = state.selectedInclusionCriteria;
+
         return {
           selectedInclusionCriteria: {
             ...current,
             criteria: current.criteria.map((c) => {
-              if (!c.criterion.timeRestrictionAllowed) return c;
+              // stop editing the current time restriction
+              stopEditing({
+                scope: "inclusionCriteria",
+                criterionUid: c.uid,
+                filterName: "timeRestriction",
+              });
 
+              // skips timeRestriction not allowed and skips local
               const isLocal = c.criterion.isLocalFilter === true;
-              if (!includeLocal && (isLocal || c.isEditing)) return c; // skips local
+              if (
+                !c.criterion.timeRestrictionAllowed ||
+                (!includeLocal && isLocal)
+              )
+                return c;
+
               return {
                 ...c,
                 isEditing: false,
                 criterion: {
                   ...c.criterion,
-                  timeRestriction: globalFilter.timeRange
-                    ? globalFilter.timeRange
+                  timeRestriction: globalFilter.timeRestriction
+                    ? globalFilter.timeRestriction
                     : undefined,
                   isLocalFilter: false,
                 },

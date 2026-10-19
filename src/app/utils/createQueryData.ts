@@ -11,12 +11,13 @@ import type {
   ConceptType,
   QuantityType,
 } from "@/features/filters/controls/type";
+import { buildAttributeFilters } from "@/features/filters/diagnosisFilterUtils";
 
 const createQueryData = (): FeasibilityQueryData | null => {
   const selectedInclusionCriteria =
     useSelectedCriteriaStore.getState().selectedInclusionCriteria;
 
-  if (selectedInclusionCriteria.criteria.length === 0) return null;
+  if (!selectedInclusionCriteria?.criteria?.length) return null;
   const queryData: FeasibilityQueryData = {
     version: "1.0.0",
     display: "Feasibility Query",
@@ -31,42 +32,78 @@ const createQueryData = (): FeasibilityQueryData | null => {
     })
     .filter((c) => c !== undefined);
 
+  const criteriaWithAttributeFilters = criteriaWithContext.map((c) => {
+    if (!c.criterion.attributeFilters) return c;
+
+    const attributeFilters = buildAttributeFilters(c.criterion);
+
+    return {
+      ...c,
+      criterion: {
+        ...c.criterion,
+        attributeFilters:
+          attributeFilters && attributeFilters.length > 0
+            ? attributeFilters
+            : undefined,
+        termCodes: [
+          {
+            code: "einrichtungskontakt",
+            display: "Einrichtungskontakt",
+            system: "http://fhir.de/CodeSystem/Kontaktebene",
+          },
+        ],
+        context: {
+          code: "Fall",
+          display: "Fall",
+          system: "fdpg.mii.cds",
+          version: "1.0.0",
+        },
+      },
+    };
+  });
+
+  const criterion = criteriaWithAttributeFilters[0].criterion;
+
   const criteria = {
-    id: criteriaWithContext[0].criterion.id,
-    termCodes: criteriaWithContext[0].criterion.termCodes,
-    context: criteriaWithContext[0].criterion.context,
+    id: criterion.id,
+    termCodes: criterion.termCodes,
+    context: criterion.context,
     valueFilter:
-      (criteriaWithContext[0].criterion
-        .valueFilter as ConceptType["valueFilter"]) ||
+      (criterion.valueFilter as ConceptType["valueFilter"]) ||
       undefined /* (criteriaWithContext[0].criterion.valueFilter as QuantityType["valueFilter"])?. */,
-    timeRestriction: criteriaWithContext[0].criterion.timeRestrictionAllowed
-      ? criteriaWithContext[0].criterion.timeRestriction
-      : undefined,
-    isLocalFilter: criteriaWithContext[0].criterion.isLocalFilter ?? false,
+    attributeFilters: criterion.attributeFilters,
+    timeRestriction:
+      !criterion.attributeFilters && criterion.timeRestrictionAllowed
+        ? criterion.timeRestriction
+        : undefined,
+    isLocalFilter: criterion.isLocalFilter ?? false,
   };
 
   const logics = selectedInclusionCriteria.logics;
   let group = [criteria] as QueryCriterion[];
 
   for (let i = 0; i < logics.length; i++) {
+    const criterion = criteriaWithAttributeFilters[i + 1]?.criterion;
+    if (!criterion) continue;
+
     const next = {
-      id: criteriaWithContext[i + 1].criterion.id,
-      termCodes: criteriaWithContext[i + 1].criterion.termCodes,
-      context: criteriaWithContext[i + 1].criterion.context,
+      id: criterion.id,
+      termCodes: criterion.termCodes,
+      context: criterion.context,
       valueFilter:
-        criteriaWithContext[i + 1].criterion.filterType === "concept"
-          ? (criteriaWithContext[i + 1].criterion
-              .valueFilter as ConceptType["valueFilter"])
-          : criteriaWithContext[i + 1].criterion.filterType === "quantity"
-            ? (criteriaWithContext[0].criterion
-                .valueFilter as QuantityType["valueFilter"])
+        criterion.valueFilter?.type === "concept"
+          ? (criterion.valueFilter as ConceptType["valueFilter"])
+          : ["quantity-range", "quantity-comparator"].includes(
+                criterion.valueFilter?.type || "",
+              )
+            ? (criterion.valueFilter as QuantityType["valueFilter"])
             : undefined,
-      timeRestriction: criteriaWithContext[i + 1].criterion
-        .timeRestrictionAllowed
-        ? criteriaWithContext[i + 1].criterion.timeRestriction
-        : undefined,
-      isLocalFilter:
-        criteriaWithContext[i + 1].criterion.isLocalFilter ?? false,
+      attributeFilters: criterion.attributeFilters,
+      timeRestriction:
+        !criterion.attributeFilters && criterion.timeRestrictionAllowed
+          ? criterion.timeRestriction
+          : undefined,
+      isLocalFilter: criterion.isLocalFilter ?? false,
     };
     const logic = logics[i];
 

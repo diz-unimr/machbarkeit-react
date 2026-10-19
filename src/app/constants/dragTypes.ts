@@ -3,5 +3,4 @@
 
 export const DRAG_DATA_FORMATS = {
   CRITERION: "application/ontology-criterion",
-  ATTRIBUTE: "application/attribute",
 } as const;

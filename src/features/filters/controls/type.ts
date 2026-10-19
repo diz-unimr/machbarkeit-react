@@ -1,11 +1,11 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "@app/types/ontologyType";
+import type { Coding, Criterion } from "@app/types/ontologyType";
 export type ConceptType = {
   valueFilter: {
-    selectedConcepts: NonNullable<Criterion["filterOptions"]> | [];
-    type: string;
+    selectedConcepts: NonNullable<Criterion["valueDefinition"]>["values"];
+    type: "concept";
   };
 };
 
@@ -13,11 +13,11 @@ export type QuantityType = {
   valueFilter: {
     comparator: string | null;
     /* access only object inside array */
-    unit: NonNullable<Criterion["filterOptions"]>[number];
+    unit: NonNullable<Criterion["valueDefinition"]>["values"];
     value: number | null;
     minValue: number | null;
     maxValue: number | null;
-    type: string;
+    type: "quantity-range" | "quantity-comparator";
   };
 };
 
@@ -29,3 +29,7 @@ export type TimeRangeType = {
 };
 
 export type CaseType = "no filter" | "imp" | "amb";
+
+export type DropDownOption = Omit<Coding, "system"> & {
+  system?: string;
+};

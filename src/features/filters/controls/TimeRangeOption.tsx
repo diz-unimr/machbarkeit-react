@@ -4,10 +4,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
 import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
-import type { DropDownOption } from "@components/ui/dropdown/type";
 import DatePicker from "@components/ui/inputs/DatePicker";
 import type { TimeRangeType } from "@features/filters/controls/type";
-import { invalidBetweenMessage } from "@app/constants/constantText";
+import { commonTexts, validationMessages } from "@/app/constants/uiTexts";
+import { TIMERANGE_COMPARATOR_OPTIONS } from "../comparatorOptions";
 
 export type OptionCode = "no filter" | "at" | "before" | "after" | "between";
 type SelectedDate = {
@@ -61,16 +61,10 @@ const TimeRangeOption = ({
   });
   const [isFilterCompleted, setIsFilterCompleted] = useState<boolean>(true);
 
-  const dropDownOptions: DropDownOption[] = [
-    { code: "no filter", display: "Bitte wählen..." },
-    { code: "at", display: "am" },
-    { code: "before", display: "vor" },
-    { code: "after", display: "nach" },
-    { code: "between", display: "zwischen" },
-  ];
-
   const getInputOption = (option: string) => {
-    const selected = dropDownOptions.find((o) => o.code === option);
+    const selected = TIMERANGE_COMPARATOR_OPTIONS.find(
+      (o) => o.code === option,
+    );
     switch (option) {
       case "no filter":
         return null;
@@ -118,7 +112,7 @@ const TimeRangeOption = ({
           <>
             <DatePicker
               id={id ? option + "-from-" + id : option + "-from"}
-              label="von"
+              label={commonTexts.from}
               value={selectedDate.afterDate ?? ""}
               size={size}
               onChange={(date) =>
@@ -127,7 +121,7 @@ const TimeRangeOption = ({
             />
             <DatePicker
               id={id ? option + "-to-" + id : option + "-to"}
-              label="bis"
+              label={commonTexts.to}
               value={selectedDate.beforeDate ?? ""}
               size={size}
               onChange={(date) =>
@@ -238,13 +232,15 @@ const TimeRangeOption = ({
         id={id}
         size={size}
         selectedOption={selectedOption}
-        dropDownOptions={dropDownOptions}
+        dropDownOptions={TIMERANGE_COMPARATOR_OPTIONS}
         onSelectOption={(option: OptionCode) => setSelectedOption(option)}
       >
         {getInputOption(selectedOption)}
       </DropDownContainer>
       {!isFilterCompleted && selectedOption === "between" ? (
-        <p className="text-xs text-red-500 m-1">{invalidBetweenMessage}</p>
+        <p className="text-xs text-red-500 m-1">
+          {validationMessages.minGreaterThanMax}
+        </p>
       ) : null}
     </div>
   );

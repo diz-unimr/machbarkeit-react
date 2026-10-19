@@ -7,6 +7,7 @@ import { type Criterion, type Module } from "@app/types/ontologyType";
 import { useEffect, useState } from "react";
 import useOntologies from "@/app/hooks/ontologies/useOntologies";
 import InputTextField from "@components/ui/inputs/InputTextField";
+import { placeholderTexts, commonTexts } from "@/app/constants/uiTexts";
 
 type OntologyTreePanelProps = {
   activeModule: Module | null;
@@ -21,6 +22,28 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
     debouncedSearch,
   );
 
+  const NoSearchResults = (textInput: string) => {
+    return (
+      <div className="flex items-center justify-center h-full">
+        {textInput.trim() !== "" ? (
+          <div className="flex flex-col items-center">
+            <p>
+              Der Suchbegriff{" "}
+              <span className="font-medium">{'"' + textInput + '"'}</span>
+            </p>{" "}
+            <p>
+              wurde im Modul{" "}
+              <span className="font-medium">{activeModule?.name}</span> nicht
+              gefunden.
+            </p>
+          </div>
+        ) : (
+          commonTexts.noData
+        )}
+      </div>
+    );
+  };
+
   useEffect(() => {
     const handler = setTimeout(
       () => setDebouncedSearch(textInput!.trim()),
@@ -34,7 +57,7 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
       <div className="flex flex-col flex-1 min-h-0 w-full h-full p-3 pl-4 gap-4 overflow-hidden">
         <InputTextField
           id="search-text"
-          label="Code oder Suchbegriff eingeben"
+          label={placeholderTexts.searchInput}
           value={textInput ?? ""}
           resultStatus={
             ontologyResult.status ? ontologyResult.status : undefined
@@ -49,29 +72,11 @@ const OntologyTreePanel = ({ activeModule }: OntologyTreePanelProps) => {
           {ontologyResult.status !== 400 ? (
             isLoading ? (
               <p className="flex items-center justify-center h-full">
-                loading...
+                {commonTexts.loading}
               </p>
             ) : !ontologyResult.criteria ||
               ontologyResult.criteria.length === 0 ? (
-              <div className="flex items-center justify-center h-full">
-                {textInput.trim() !== "" ? (
-                  <div className="flex flex-col items-center">
-                    <p>
-                      Der Suchbegriff{" "}
-                      <span className="font-medium">
-                        {'"' + textInput + '"'}
-                      </span>
-                    </p>{" "}
-                    <p>
-                      wurde im Modul{" "}
-                      <span className="font-medium">{activeModule?.name}</span>{" "}
-                      nicht gefunden.
-                    </p>
-                  </div>
-                ) : (
-                  "Keine daten"
-                )}
-              </div>
+              NoSearchResults(textInput)
             ) : (
               <>
                 <p

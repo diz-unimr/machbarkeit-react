@@ -2,20 +2,21 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Criterion } from "@app/types/ontologyType";
-import type { DropDownOption } from "@components/ui/dropdown/type";
+import type { Coding } from "@app/types/ontologyType";
 import { useEffect, useState } from "react";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
 import type { QuantityType } from "@features/filters/controls/type";
-import { invalidBetweenMessage } from "@app/constants/constantText";
+import { validationMessages, commonTexts } from "@/app/constants/uiTexts";
 import type { OptionCode } from "./TimeRangeOption";
+import { QUANTITY_COMPARATOR_OPTIONS } from "../comparatorOptions";
 
 type QuantityOptionProps = {
-  criterion: Criterion;
+  id: string;
+  unitOptions: Coding[];
   size?: "sm" | "md";
   onChange: (
-    filterValue: QuantityType["valueFilter"] | null,
+    selectedValueFilter: QuantityType["valueFilter"] | null,
     completeFilter?: boolean,
   ) => void;
 };
@@ -26,22 +27,15 @@ type SelectedValue = {
   max: string;
 };
 
-const dropDownOptions: DropDownOption[] = [
-  { code: "no filter", display: "Bitte wählen..." },
-  { code: "eq", display: "gleich" },
-  { code: "lt", display: "kleine" },
-  { code: "gt", display: "größer" },
-  { code: "between", display: "zwischen" },
-];
-
 const QuantityOption = ({
-  criterion,
+  id,
+  unitOptions,
   size = "md",
   onChange,
 }: QuantityOptionProps) => {
   const [selectedOption, setSelectedOption] = useState<OptionCode>("no filter");
   const [selectedUnit, setSelectedUnit] = useState(
-    criterion.filterOptions?.[0].display || "",
+    unitOptions?.[0].display || "",
   );
   const [selectedValue, setSelectedValue] = useState<SelectedValue>({
     value: "0",
@@ -60,8 +54,8 @@ const QuantityOption = ({
       case "gt":
         return (
           <InputTextField
-            id={option}
-            label="wert"
+            id={`${id}-${option}`}
+            label={commonTexts.value}
             type="number"
             value={selectedValue["value"]}
             onChange={(value) =>
@@ -74,8 +68,8 @@ const QuantityOption = ({
         return (
           <>
             <InputTextField
-              id={option}
-              label="min"
+              id={`${id}-${option}`}
+              label={commonTexts.min}
               type="number"
               value={selectedValue["min"]}
               onChange={(min) =>
@@ -84,8 +78,8 @@ const QuantityOption = ({
               width="w-[100px]"
             />
             <InputTextField
-              id={option}
-              label="max"
+              id={`${id}-${option}`}
+              label={commonTexts.max}
               type="number"
               value={selectedValue["max"]}
               onChange={(max) =>
@@ -103,47 +97,41 @@ const QuantityOption = ({
     selectedUnit: string,
     selectedValue: SelectedValue,
   ) => {
-    if (criterion.filterOptions) {
-      let valueFilter: QuantityType["valueFilter"] | null = null;
-      if (selectedOption === "no filter") {
-        setIsFilterCompleted(true);
-        setIsFilterNull(true);
-        return null;
-      }
-      setIsFilterNull(false);
-      const invalidBetween =
-        selectedOption === "between" &&
-        selectedValue["min"] !== "" &&
-        selectedValue["max"] !== "" &&
-        Number(selectedValue["min"]) >= Number(selectedValue["max"]);
-
-      if (invalidBetween) {
-        setIsFilterCompleted(false);
-        return null;
-      } else {
-        valueFilter = {
-          unit: criterion.filterOptions?.filter(
-            (option) => option.code === selectedUnit,
-          )[0],
-          comparator: selectedOption === "between" ? null : selectedOption,
-          value:
-            selectedOption === "between"
-              ? null
-              : Number(selectedValue["value"]),
-          minValue:
-            selectedOption === "between" ? Number(selectedValue["min"]) : null,
-          maxValue:
-            selectedOption === "between" ? Number(selectedValue["max"]) : null,
-          type:
-            selectedOption === "between"
-              ? "quantity-range"
-              : "quantity-comparator",
-        };
-        setIsFilterCompleted(true);
-      }
-
-      return valueFilter;
+    let valueFilter: QuantityType["valueFilter"] | null = null;
+    if (selectedOption === "no filter") {
+      setIsFilterCompleted(true);
+      setIsFilterNull(true);
+      return null;
     }
+    setIsFilterNull(false);
+    const invalidBetween =
+      selectedOption === "between" &&
+      selectedValue["min"] !== "" &&
+      selectedValue["max"] !== "" &&
+      Number(selectedValue["min"]) >= Number(selectedValue["max"]);
+
+    if (invalidBetween) {
+      setIsFilterCompleted(false);
+      return null;
+    } else {
+      valueFilter = {
+        unit: unitOptions.filter((unit) => unit.code === selectedUnit),
+        comparator: selectedOption === "between" ? null : selectedOption,
+        value:
+          selectedOption === "between" ? null : Number(selectedValue["value"]),
+        minValue:
+          selectedOption === "between" ? Number(selectedValue["min"]) : null,
+        maxValue:
+          selectedOption === "between" ? Number(selectedValue["max"]) : null,
+        type:
+          selectedOption === "between"
+            ? "quantity-range"
+            : "quantity-comparator",
+      };
+      setIsFilterCompleted(true);
+    }
+
+    return valueFilter;
   };
 
   useEffect(() => {
@@ -159,8 +147,8 @@ const QuantityOption = ({
     <div className="flex flex-col overflow-x-auto">
       <DropDownContainer
         selectedOption={selectedOption}
-        dropDownOptions={dropDownOptions}
-        unitOptions={criterion.filterOptions}
+        dropDownOptions={QUANTITY_COMPARATOR_OPTIONS}
+        unitOptions={unitOptions}
         size={size}
         onSelectOption={(option) => setSelectedOption(option)}
         onSelectUnit={(unit) => setSelectedUnit(unit)}
@@ -168,10 +156,12 @@ const QuantityOption = ({
         {getInputOption(selectedOption)}
       </DropDownContainer>
       {!isFilterCompleted && (
-        <p className="text-xs text-red-500 m-1">{invalidBetweenMessage}</p>
+        <p className="text-xs text-red-500 m-1">
+          {validationMessages.minGreaterThanMax}
+        </p>
       )}
       {isFilterNull && (
-        <p className="mt-1 text-red-500">Wählen Sie mindestens einen Wert.</p>
+        <p className="mt-1 text-red-500">{validationMessages.minSelection}</p>
       )}
     </div>
   );

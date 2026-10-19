@@ -4,6 +4,11 @@
 import { Button } from "@/components/ui/buttons/Button";
 import PopupModal from "@/components/ui/PopupModal";
 import InputTextField from "@components/ui/inputs/InputTextField";
+import {
+  titleTexts,
+  buttonLabels,
+  placeholderTexts,
+} from "@/app/constants/uiTexts";
 import { useState } from "react";
 
 type SaveQueryModalProps = {
@@ -19,11 +24,11 @@ const SaveQueryModal = ({
 }: SaveQueryModalProps) => {
   const [saveFileName, setSaveFileName] = useState<string>("");
   return (
-    <PopupModal open={open} title="Abspeichern der aktuellen Suchanfrage">
+    <PopupModal open={open} title={titleTexts.saveQuery}>
       <div className="flex flex-col w-full gap-3">
         <InputTextField
           id="save-query-name"
-          label="Dateiname"
+          label={placeholderTexts.fileName}
           type="text"
           value={saveFileName}
           onChange={setSaveFileName}
@@ -32,7 +37,7 @@ const SaveQueryModal = ({
         <div className="flex gap-3 justify-end">
           <Button
             id="cancel-save-btn"
-            label="ABBRECHEN"
+            label={buttonLabels.cancel.toLocaleUpperCase("de-DE")}
             type="secondary"
             onClick={() => {
               onCancel();
@@ -42,7 +47,7 @@ const SaveQueryModal = ({
           <Button
             isActive={saveFileName.length > 0}
             id="confirm-save-btn"
-            label="speichern"
+            label={buttonLabels.save.toLocaleUpperCase("de-DE")}
             type="primary"
             onClick={() => {
               onSaveFile(saveFileName);

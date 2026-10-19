@@ -27,10 +27,7 @@ const useCriteriaDnD = () => {
 
   const handleDragOver = useCallback(
     (zone: DropZone) => (event: DragEvent<HTMLDivElement>) => {
-      const expectedType =
-        zone === "attribute"
-          ? DRAG_DATA_FORMATS.ATTRIBUTE
-          : DRAG_DATA_FORMATS.CRITERION;
+      const expectedType = DRAG_DATA_FORMATS.CRITERION;
       if (event.dataTransfer.types.includes(expectedType)) {
         event.preventDefault();
         event.dataTransfer.dropEffect = "copy";
@@ -43,22 +40,19 @@ const useCriteriaDnD = () => {
   );
 
   const handleCriteriaDrop = useCallback(
-    (zone: Exclude<DropZone, "attribute">) =>
-      (event: DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setActiveZone(null);
-        const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.CRITERION);
-        event.dataTransfer.clearData(DRAG_DATA_FORMATS.CRITERION);
-        if (!data) return;
-        const criterion = JSON.parse(data) as Criterion;
-        const newCriterion: CriterionNode = {
-          uid: uid,
-          criterion,
-          isExpanded: false,
-          isEditing: false,
-        };
-        addNewCriterion(newCriterion, zone);
-      },
+    (zone: DropZone) => (event: DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      setActiveZone(null);
+      const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.CRITERION);
+      if (!data) return;
+      const criterion = JSON.parse(data) as Criterion;
+      const newCriterion: CriterionNode = {
+        uid: uid,
+        criterion,
+        isExpanded: false,
+      };
+      addNewCriterion(newCriterion, zone);
+    },
     [addNewCriterion, uid],
   );
 
