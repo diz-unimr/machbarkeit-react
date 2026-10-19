@@ -9,8 +9,6 @@ import type { FilterType } from "../types/ontologyType";
 
 export type GlobalFilter = {
   timeRestriction: TimeRangeType["timeRestriction"] | null;
-  /* caseType: CaseType | null;
-  isEditing: boolean; */
 };
 
 export type EditingFilter = {

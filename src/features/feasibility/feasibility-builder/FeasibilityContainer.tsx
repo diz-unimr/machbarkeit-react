@@ -6,8 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import download from "downloadjs";
 import Card from "@components/ui/Card";
 import type {
-  /* DropZone,
-  SelectedAttribute, */
   CriterionNode,
   SelectedCriteria,
   FeasibilityQueryData,
@@ -15,9 +13,6 @@ import type {
 } from "./type";
 import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQueryControl";
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
-import GlobalFilterPanel, {
-  type globalFilterWarning,
-} from "@/features/filters/GlobalFilterPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useFilterStore from "@/app/store/filter-store";
 import { Button } from "@/components/ui/buttons/Button";
@@ -32,6 +27,8 @@ import {
   commonTexts,
 } from "@/app/constants/uiTexts";
 import { getIncompleteFilterCount } from "@/app/utils/getIncompleteFilterCount";
+import type { globalFilterWarning } from "@/features/filters/GlobalFilterPanel";
+import GlobalFilterPanel from "@/features/filters/GlobalFilterPanel";
 
 const FeasibilityContainer = () => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
