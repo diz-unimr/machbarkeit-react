@@ -3,7 +3,7 @@
 
 import { create } from "zustand";
 import type { TimeRangeType } from "@features/filters/controls/type";
-import type { GlobalFilterName } from "@/features/filters/GlobalFilterPanel";
+import type { GlobalFilterName } from "src/features/filters/GlobalFilterPanel";
 import type { DropZone } from "@/features/feasibility/feasibility-builder/type";
 import type { FilterType } from "../types/ontologyType";
 
