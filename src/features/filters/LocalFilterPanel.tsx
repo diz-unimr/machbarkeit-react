@@ -80,7 +80,6 @@ const LocalFilterPanel = ({
     updateValueFilter(filterInfo);
   };
 
-
   return (
     <div
       style={{ display: isExpanded ? "flex" : "none" }}

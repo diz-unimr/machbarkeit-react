@@ -13,8 +13,8 @@ export const QUANTITY_COMPARATOR_OPTIONS: DropDownOption[] = [
 
 export const TIMERANGE_COMPARATOR_OPTIONS: DropDownOption[] = [
   { code: "no filter", display: "Bitte wählen..." },
-    { code: "at", display: "am" },
-    { code: "before", display: "vor" },
-    { code: "after", display: "nach" },
-    { code: "between", display: "zwischen" },
+  { code: "at", display: "am" },
+  { code: "before", display: "vor" },
+  { code: "after", display: "nach" },
+  { code: "between", display: "zwischen" },
 ];

@@ -15,10 +15,7 @@ import type {
   QuantityType,
   TimeRangeType,
 } from "@features/filters/controls/type";
-import type {
-  AttributeFilterConcept,
-  Coding,
-} from "../types/ontologyType";
+import type { AttributeFilterConcept, Coding } from "../types/ontologyType";
 import useFilterStore from "./filter-store";
 
 export type SelectedValueFilterProps =
@@ -62,7 +59,6 @@ type SelectedCriteriaStore = {
   setSelectedCriteria: (selectedCriteria: SelectedCriteria) => void;
   clearSelectedCriteria: () => void;
 };
-
 
 const stopEditingForCriterion = (item: CriterionNode, zone: DropZone) => {
   const stopEditing = useFilterStore.getState().stopEditing;

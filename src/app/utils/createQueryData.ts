@@ -34,7 +34,7 @@ const createQueryData = (): FeasibilityQueryData | null => {
 
   const criteriaWithAttributeFilters = criteriaWithContext.map((c) => {
     if (!c.criterion.attributeFilters) return c;
-    
+
     const attributeFilters = buildAttributeFilters(c.criterion);
 
     return {

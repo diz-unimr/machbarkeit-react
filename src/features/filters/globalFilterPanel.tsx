@@ -3,8 +3,6 @@
 
 import Card from "@components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
-// import ArrowButton from "@components/ui/buttons/ArrowButton";
-// import warningIcon from "@assets/warning-icon.svg";
 import { useState } from "react";
 import useFilterStore from "@/app/store/filter-store";
 import type { TimeRangeType } from "./controls/type";
@@ -29,7 +27,6 @@ const GlobalFilterPanel = ({
   hasNoTimeRestriction = false,
   onHandleWarning,
 }: GlobalFilterPanelProps) => {
-  // const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const globalFilter = useFilterStore((s) => s.globalFilter);
   const editingFilters = useFilterStore((state) => state.editingFilters);
   const isGlobalFilterEditing =

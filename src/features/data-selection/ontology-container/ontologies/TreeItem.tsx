@@ -34,7 +34,6 @@ const TreeItem = ({
     event.dataTransfer.effectAllowed = "copy";
   };
 
-
   return (
     <div
       key={criterion.id}
