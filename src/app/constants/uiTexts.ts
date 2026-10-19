@@ -51,7 +51,6 @@ export const confirmationMessages = {
 
 export const placeholderTexts = {
   searchInput: "Code oder Suchbegriff eingeben",
-  searchAttribute: "Attribut suchen",
   fileName: "Dateiname",
 } as const;
 

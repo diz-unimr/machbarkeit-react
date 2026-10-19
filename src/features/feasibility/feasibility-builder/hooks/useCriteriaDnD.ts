@@ -40,20 +40,19 @@ const useCriteriaDnD = () => {
   );
 
   const handleCriteriaDrop = useCallback(
-    (zone: Exclude<DropZone, "attribute">) =>
-      (event: DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setActiveZone(null);
-        const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.CRITERION);
-        if (!data) return;
-        const criterion = JSON.parse(data) as Criterion;
-        const newCriterion: CriterionNode = {
-          uid: uid,
-          criterion,
-          isExpanded: false,
-        };
-        addNewCriterion(newCriterion, zone);
-      },
+    (zone: DropZone) => (event: DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      setActiveZone(null);
+      const data = event.dataTransfer.getData(DRAG_DATA_FORMATS.CRITERION);
+      if (!data) return;
+      const criterion = JSON.parse(data) as Criterion;
+      const newCriterion: CriterionNode = {
+        uid: uid,
+        criterion,
+        isExpanded: false,
+      };
+      addNewCriterion(newCriterion, zone);
+    },
     [addNewCriterion, uid],
   );
 

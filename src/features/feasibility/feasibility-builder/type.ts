@@ -6,15 +6,9 @@ import type {
   QuantityType,
   TimeRangeType,
 } from "@features/filters/controls/type";
-import type { Attribute } from "@features/data-selection/attribute-list/type";
 import type { AttributeFilter, Criterion } from "@app/types/ontologyType";
 
 export type DropZone = "inclusionCriteria" | "exclusionCriteria";
-
-export type SelectedAttribute = {
-  uid: string;
-  attribute: Attribute;
-};
 
 export type CriterionNode = {
   uid: string;
