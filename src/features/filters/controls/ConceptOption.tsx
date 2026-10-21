@@ -14,6 +14,7 @@ type ConceptOptionProps = {
   optional?: boolean;
   onChange: (nextFilter: ConceptValueFilter | null) => void;
 };
+
 const ConceptOption = ({
   id,
   selectedFilters,
