@@ -1,7 +1,13 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 type handlePanelProps = {
   toggleLeftPanel: (isToggle: boolean) => void;
@@ -16,7 +22,7 @@ type SplitterProps = {
 const Splitter = ({
   leftChild,
   rightChild,
-  startLeftPercent = 50,
+  startLeftPercent = 40,
 }: SplitterProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isResizing = useRef<boolean>(false);
@@ -33,39 +39,40 @@ const Splitter = ({
     document.body.style.userSelect = "none";
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing.current || !containerRef.current) return;
+
     const currentWidth = e.clientX;
     setLeftWidth(currentWidth);
-  };
+  }, []);
 
-  const stopResizing = () => {
+  const stopResizing = useCallback(() => {
     isResizing.current = false;
     document.body.style.cursor = "default";
     document.body.style.userSelect = "auto";
-  };
-
-  window.addEventListener("mousemove", handleMouseMove);
-  window.addEventListener("mouseup", stopResizing);
+  }, []);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const width = containerRef.current.offsetWidth;
-      setLeftWidth(width / 2);
-    }
-  }, []);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", stopResizing);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", stopResizing);
+    };
+  }, [handleMouseMove, stopResizing]);
 
   return (
     <div ref={containerRef} className="flex w-full h-screen overflow-hidden">
       {/* Left Panel */}
       <div
-        className="w-[45%] h-full bg-white flex flex-col overflow-x-auto"
+        className="h-full bg-white flex flex-col overflow-x-auto"
         style={{
           width: isExpanded
             ? (leftWidth ?? `${startLeftPercent}%`)
             : "fit-content",
-          minWidth: isExpanded ? "clamp(380px,50%,420px)" : undefined,
-          maxWidth: "clamp(380px,45%,1000px)",
+          minWidth: isExpanded ? "35%" : undefined,
+          maxWidth: "min(45%,1000px)",
           transition: isResizing.current ? "none" : "width 0.3s ease",
         }}
       >

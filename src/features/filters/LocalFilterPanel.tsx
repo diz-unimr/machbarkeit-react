@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { Button, TertiaryButton } from "@/components/ui/buttons/Button";
+import { Button, TertiaryButton } from "@/components/buttons/Button";
 import { buttonLabels } from "@/app/constants/uiTexts";
 import globalFilterIcon from "@assets/global-filter-icon.svg";
 import localFilterIcon from "@assets/local-filter-icon.svg";

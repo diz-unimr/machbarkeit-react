@@ -1,12 +1,12 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import Card from "@components/ui/Card";
+import Card from "@/components/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
 import { useState } from "react";
 import useFilterStore from "@/app/store/filter-store";
 import type { TimeRangeType } from "./controls/type";
-import { Button } from "@components/ui/buttons/Button";
+import { Button } from "@components/buttons/Button";
 import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { buttonLabels, warningMessages } from "@/app/constants/uiTexts";

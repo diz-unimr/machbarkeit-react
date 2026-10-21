@@ -4,8 +4,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { Coding } from "@app/types/ontologyType";
 import { useEffect, useState } from "react";
-import InputTextField from "@components/ui/inputs/InputTextField";
-import DropDownContainer from "@components/ui/dropdown/DropDownContainer";
+import InputTextField from "@components/inputs/InputTextField";
+import DropDownContainer from "@components/dropdown/DropDownContainer";
 import type { QuantityType } from "@features/filters/controls/type";
 import { validationMessages, commonTexts } from "@/app/constants/uiTexts";
 import type { OptionCode } from "./TimeRangeOption";

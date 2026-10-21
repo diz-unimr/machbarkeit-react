@@ -3,7 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { DropDownOption } from "@/features/filters/controls/type";
 import type { Coding } from "@app/types/ontologyType";
-import DropDown from "@components/ui/dropdown/DropDown";
+import DropDown from "@components/dropdown/DropDown";
 import type { OptionCode } from "@features/filters/controls/TimeRangeOption";
 
 type DropDownContainerProps = {

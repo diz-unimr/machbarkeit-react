@@ -3,8 +3,8 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@components/ui/buttons/Button";
-import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
+import { Button } from "@components/buttons/Button";
+import ButtonContainer from "@components/buttons/ฺButtonContainer";
 import type { FeasibilityQueryData } from "@features/feasibility/feasibility-builder/type";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";

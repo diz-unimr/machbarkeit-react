@@ -2,7 +2,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import "@app/App.css";
-import Splitter from "@components/ui/Splitter";
+import Splitter from "@/components/Splitter";
 import DataSelectionContainer from "@features/data-selection/DataSelectionContainer";
 import FeasibilityContainer from "@features/feasibility/feasibility-builder/FeasibilityContainer";
 import login from "./services/loginService";

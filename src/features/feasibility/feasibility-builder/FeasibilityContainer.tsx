@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useMemo, useState } from "react";
 import download from "downloadjs";
-import Card from "@components/ui/Card";
+import Card from "@/components/Card";
 import type {
   CriterionNode,
   SelectedCriteria,
@@ -15,7 +15,7 @@ import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQue
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useFilterStore from "@/app/store/filter-store";
-import { Button } from "@/components/ui/buttons/Button";
+import { Button } from "@/components/buttons/Button";
 import WarningModal from "../WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
 import createQueryData from "@/app/utils/createQueryData";

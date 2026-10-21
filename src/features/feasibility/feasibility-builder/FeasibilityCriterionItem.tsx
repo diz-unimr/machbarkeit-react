@@ -9,7 +9,7 @@ import warningIcon from "@assets/warning-icon.svg";
 import { warningMessages } from "@/app/constants/uiTexts";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import ArrowButton from "@/components/ui/buttons/ArrowButton";
+import ArrowButton from "@/components/buttons/ArrowButton";
 import LocalFilterPanel from "@/features/filters/LocalFilterPanel";
 import type { TimeRangeType } from "@/features/filters/controls/type";
 import { getModuleName } from "@/app/utils/moduleUtils";

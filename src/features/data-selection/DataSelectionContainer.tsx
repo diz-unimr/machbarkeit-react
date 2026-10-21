@@ -3,7 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useState } from "react";
 import sidebarCollapse from "@assets/sidebar-arrow.svg";
-import ArrowButton from "@components/ui/buttons/ArrowButton";
+import ArrowButton from "@components/buttons/ArrowButton";
 import appIcon from "@assets/app-icon.svg";
 import OntologyContainer from "./ontology-container/layout/OntologyContainer";
 

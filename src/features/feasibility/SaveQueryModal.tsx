@@ -1,9 +1,9 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { Button } from "@/components/ui/buttons/Button";
-import PopupModal from "@/components/ui/PopupModal";
-import InputTextField from "@components/ui/inputs/InputTextField";
+import { Button } from "@/components/buttons/Button";
+import PopupModal from "@/components/PopupModal";
+import InputTextField from "@components/inputs/InputTextField";
 import {
   titleTexts,
   buttonLabels,
