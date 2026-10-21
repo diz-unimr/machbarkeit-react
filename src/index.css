@@ -69,7 +69,7 @@ button {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  font-size: clamp(11px, 1vw, 14px);
+  font-size: clamp(10px, 1vw, 14px);
   padding: clamp(6px, 1vw, 8px) clamp(9px, 1vw, 12px);
   white-space: nowrap;
 }

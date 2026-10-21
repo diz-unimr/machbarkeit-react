@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { Button } from "@/components/ui/buttons/Button";
+import { Button } from "@/components/buttons/Button";
 import PopupModal from "@/components/PopupModal";
 import type { SelectedChoice } from "./feasibility-builder/type";
 import {
