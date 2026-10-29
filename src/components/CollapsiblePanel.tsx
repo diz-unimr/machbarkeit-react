@@ -19,8 +19,16 @@ const CollapsiblePanel = ({
   onToggleCriteriaPanel,
 }: CollapsibleProps) => {
   return (
-    <>
-      <div className="flex justify-between p-2">
+    <div
+      className="flex flex-col min-h-0 overflow-hidden"
+      style={{
+        height: isPanelExpanded ? "100%" : "fit-content",
+        borderBottom: !isPanelExpanded
+          ? "1.5px solid var(--color-border)"
+          : undefined,
+      }}
+    >
+      <div className="flex justify-between py-2 px-1">
         <p className="text-lg font-medium">{label}</p>
         <ArrowButton
           id="characteristic-btn"
@@ -33,12 +41,12 @@ const CollapsiblePanel = ({
       <div className={`min-h-0 ${isPanelExpanded ? "flex-1" : "hidden"}`}>
         <Card
           className="flex flex-col flex-1 h-full"
-          bodyClassName="bg-gray-50 flex flex-col flex-1 min-h-0 overflow-hidden"
+          bodyClassName="flex flex-col flex-1 min-h-0 overflow-hidden"
         >
           {children}
         </Card>
       </div>
-    </>
+    </div>
   );
 };
 
