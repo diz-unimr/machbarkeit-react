@@ -30,7 +30,13 @@ import { getIncompleteFilterCount } from "@/app/utils/getIncompleteFilterCount";
 import type { globalFilterWarning } from "@/features/filters/GlobalFilterPanel";
 import GlobalFilterPanel from "@/features/filters/GlobalFilterPanel";
 
-const FeasibilityContainer = () => {
+type FeasibilityContainerProps = {
+  onShowQueryManagement: () => void;
+};
+
+const FeasibilityContainer = ({
+  onShowQueryManagement,
+}: FeasibilityContainerProps) => {
   const [isInclusionCriteriaOpen, setIsInclusionCriteriaOpen] =
     useState<boolean>(true);
   const [inclusionCriteria, setInclusionCriteria] = useState<SelectedCriteria>({
@@ -249,6 +255,13 @@ const FeasibilityContainer = () => {
               </div>
               <menu className="flex gap-8">
                 <li className="flex gap-7 m-auto">
+                  <Button
+                    id={"save-query"}
+                    label="Abfrageverwaltung"
+                    type="secondary"
+                    className="m-0! font-medium!"
+                    onClick={onShowQueryManagement}
+                  />
                   <input
                     id="upload"
                     type="file"
