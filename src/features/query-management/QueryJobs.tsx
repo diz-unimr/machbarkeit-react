@@ -97,7 +97,10 @@ const QueryJobs = ({ queryJobs }: QueryJobsProps) => {
 
                       <TableCell>
                         <div onClick={(event) => event.stopPropagation()}>
-                          <ActionsButton queryId={queryJob.id} />
+                          <ActionsButton
+                            actions={["run", "edit", "save"]}
+                            queryId={queryJob.id}
+                          />
                         </div>
                       </TableCell>
                     </TableRow>
