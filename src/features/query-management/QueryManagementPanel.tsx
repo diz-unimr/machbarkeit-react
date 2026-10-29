@@ -4,12 +4,15 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import Card from "@components/Card";
 import QueryJobs from "./QueryJobs";
 import SavedQueries from "./SaveQueries";
+import useQueries from "@features/query-management/hooks/useQueries";
 
 type QueryManagementContainerProps = {
   onClose: () => void;
 };
 
 const QueryManagementPanel = ({ onClose }: QueryManagementContainerProps) => {
+  const { queryJobs } = useQueries();
+
   return (
     <div className="flex w-full h-screen p-6 mx-auto overflow-hidden">
       <Card
@@ -21,8 +24,8 @@ const QueryManagementPanel = ({ onClose }: QueryManagementContainerProps) => {
         onClose={onClose}
       >
         <div className="h-full flex flex-col gap-6">
-          <QueryJobs />
-          <SavedQueries />
+          <QueryJobs queryJobs={queryJobs} />
+          <SavedQueries queryJobs={queryJobs} />
         </div>
       </Card>
     </div>
