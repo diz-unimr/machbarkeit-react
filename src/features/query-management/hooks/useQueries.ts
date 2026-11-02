@@ -22,8 +22,8 @@ const useQueries = () => {
         getSavedQueries(),
       ]);
 
-      if (queryJobs) {
-        setQueryJobs(queryJobs);
+      if (queryJobs[0]) {
+        setQueryJobs(queryJobs[0]);
       }
 
       if (savedQueries) {
