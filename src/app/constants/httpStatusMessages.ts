@@ -24,15 +24,11 @@ export const queryJobStatusMessages: Record<
     label: "Ausstehend",
     className: "border-yellow-200 bg-yellow-50 text-yellow-700",
   },
-  running: {
-    label: "Wird ausgeführt",
-    className: "border-blue-200 bg-blue-50 text-blue-700",
-  },
   completed: {
     label: "Abgeschlossen",
     className: "border-green-200 bg-green-50 text-green-700",
   },
-  failed: {
+  error: {
     label: "Fehlgeschlagen",
     className: "border-red-200 bg-red-50 text-red-700",
   },
