@@ -1,32 +1,37 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import Papa from "papaparse";
+import axios, { AxiosError } from "axios";
 import type { QueryJob, SavedQuery } from "@/features/query-management/type";
 
-const CSVReader = <T>(fileName: string): Promise<T[]> => {
-  return new Promise((resolve, reject) => {
-    Papa.parse<T>(fileName, {
-      download: true,
-      header: true,
+export const getQueryJobs = async (): Promise<
+  [QueryJob[] | null, string | null]
+> => {
+  let queryJobs: QueryJob[] | null = null;
+  let errorMessage: string | null = null;
 
-      complete: (results) => {
-        resolve(results.data);
+  try {
+    const response = await axios.get(
+      import.meta.env.VITE_BACKEND_API_BASE + "/feasibility/request",
+      {
+        withCredentials: true,
       },
+    );
 
-      error: (error) => {
-        reject(error);
-      },
-    });
-  });
+    if (response.status === 200) {
+      queryJobs = response.data;
+    }
+  } catch (error) {
+    if ((error as AxiosError).response) {
+      errorMessage = ((error as AxiosError).response!.data as { error: string })
+        .error;
+      errorMessage = error ? "Found some error!" : null;
+    }
+  }
+  return [queryJobs, errorMessage];
 };
 
-export const getSavedQueries = async (): Promise<SavedQuery[]> => {
-  const results = await CSVReader<SavedQuery>("src/assets/query_jobs.csv");
-  return results;
-};
-
-export const getQueryJobs = async (): Promise<QueryJob[]> => {
-  const results = await CSVReader<QueryJob>("src/assets/query_jobs.csv");
+export const getSavedQueries = async (): Promise<SavedQuery[] | null> => {
+  const results = null;
   return results;
 };
