@@ -159,7 +159,7 @@ const FeasibilityCriterionItem = ({
       </li>
       {logic ? (
         <div
-          className={`z-100 pt-2 ${isOr ? "absolute -translate-y-1/2" : "flex relative"}`}
+          className={`z-10 pt-2 ${isOr ? "absolute -translate-y-1/2" : "flex relative"}`}
         >
           <button
             key={"logic-" + index}
