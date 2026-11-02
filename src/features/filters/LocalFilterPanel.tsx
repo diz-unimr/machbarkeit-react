@@ -13,7 +13,7 @@ import {
 } from "@/app/store/selected-criteria-store";
 import type { CriterionNode } from "../feasibility/feasibility-builder/type";
 import type { ConceptType, TimeRangeType } from "./controls/type";
-import formatTimeRangeLabel from "@/app/utils/formatTimeRangeLabel";
+import { formatTimeRangeLabel } from "@/app/utils/formatDateTime";
 import useFilterStore from "@/app/store/filter-store";
 import { useState } from "react";
 

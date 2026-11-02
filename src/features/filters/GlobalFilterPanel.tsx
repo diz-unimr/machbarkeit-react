@@ -7,7 +7,7 @@ import { useState } from "react";
 import useFilterStore from "@/app/store/filter-store";
 import type { TimeRangeType } from "./controls/type";
 import { Button } from "@components/buttons/Button";
-import formatTimeRangeLabel from "@app/utils/formatTimeRangeLabel";
+import { formatTimeRangeLabel } from "@/app/utils/formatDateTime";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { buttonLabels, warningMessages } from "@/app/constants/uiTexts";
 
