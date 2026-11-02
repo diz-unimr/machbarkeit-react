@@ -110,9 +110,9 @@ const FeasibilityQueryControl = ({
             {isQueryRunning && <img src={loadingSpinnerIcon} />}
             {!isQueryRunning &&
               (queryResult !== null
-                ? queryResult <= 3
+                ? /* queryResult <= 3
                   ? resultTexts.insufficientResult
-                  : queryResult
+                  :  */ queryResult
                 : errorMessageResult || "-")}
           </span>
         </div>
