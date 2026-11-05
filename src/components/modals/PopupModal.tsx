@@ -2,7 +2,7 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import type { ReactNode } from "react";
-import Card from "./Card";
+import Card from "../Card";
 
 type PopupModalProps = {
   open: boolean;
@@ -24,7 +24,7 @@ const PopupModal = ({
       <Card
         header={title}
         headerClassName="text-2xl border-b-1 border-gray-300 "
-        className={`flex w-fit max-w-150`}
+        className={`flex w-fit max-w-170`}
       >
         <p className="mb-5 leading-relaxed whitespace-pre-line">{message}</p>
         <div className="flex gap-3 justify-center">{children}</div>
