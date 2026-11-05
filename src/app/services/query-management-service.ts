@@ -35,3 +35,27 @@ export const getSavedQueries = async (): Promise<SavedQuery[] | null> => {
   const results = null;
   return results;
 };
+
+export const deleteSavedQuery = async (
+  id: string,
+): Promise<[boolean, string | null]> => {
+  try {
+    await axios.delete(
+      `${import.meta.env.VITE_BACKEND_API_BASE}/feasibility/request/${id}`,
+      {
+        withCredentials: true,
+      },
+    );
+
+    return [true, null];
+  } catch (error) {
+    const axiosError = error as AxiosError<{ error?: string }>;
+
+    return [
+      false,
+      axiosError.response?.data?.error ??
+        axiosError.message ??
+        "Failed to delete saved query.",
+    ];
+  }
+};
