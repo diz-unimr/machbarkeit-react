@@ -8,6 +8,7 @@ import FeasibilityContainer from "@features/feasibility/feasibility-builder/Feas
 import login from "./services/loginService";
 import { useEffect, useState } from "react";
 import QueryManagementPanel from "@/features/query-management/QueryManagementPanel";
+import { Toaster } from "sonner";
 
 function App() {
   const [isQueryManagementOpen, setIsQueryManagementOpen] = useState(false);
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <>
+      <Toaster position="top-right" richColors />
       <main className="relative h-full min-h-0">
         <Splitter
           leftChild={({ toggleLeftPanel }) => (
