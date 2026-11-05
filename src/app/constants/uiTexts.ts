@@ -24,6 +24,18 @@ export const titleTexts = {
   deleteGlobalFilter: "Globalen Filter löschen",
   applyGlobalFilter: "Globalen Filter anwenden",
   saveQuery: "Aktuelle Abfrage speichern",
+  deleteQuery: "Abfrage löschen",
+} as const;
+
+export const confirmationMessages = {
+  deleteGlobalFilter:
+    "Sind Sie sicher, dass Sie den globalen Filter löschen möchten? \n" +
+    "Die für die betroffenen Kriterien festgelegten Zeiträume werden ebenfalls gelöscht.",
+  updateOrReplaceFilters:
+    "Einige Kriterien verwenden derzeit lokale Filter. Möchten Sie nur bestehende globale Filter aktualisieren oder alle Filter ersetzen?",
+  applyGlobalFilterToAll:
+    "Möchten Sie den neuen globalen Filter auf alle Kriterien anwenden?",
+  deleteQuery: "Sind Sie sicher, dass Sie die Abfrage löschen möchten?",
 } as const;
 
 export const validationMessages = {
@@ -37,16 +49,6 @@ export const warningMessages = {
   incompletedFilterAction: "Bitte bestätigen Sie den Filter",
   noTimeReference:
     "Für die ausgewählten Kriterien ist kein Zeitbezug verfügbar.",
-} as const;
-
-export const confirmationMessages = {
-  deleteGlobalFilter:
-    "Sind Sie sicher, dass Sie den globalen Filter löschen möchten? \n" +
-    "Die für die betroffenen Kriterien festgelegten Zeiträume werden ebenfalls gelöscht.",
-  updateOrReplaceFilters:
-    "Einige Kriterien verwenden derzeit lokale Filter. Möchten Sie nur bestehende globale Filter aktualisieren oder alle Filter ersetzen?",
-  applyGlobalFilterToAll:
-    "Möchten Sie den neuen globalen Filter auf alle Kriterien anwenden?",
 } as const;
 
 export const placeholderTexts = {
@@ -65,6 +67,7 @@ export const commonTexts = {
   globalTimeRange: "Globaler Zeitraum: ",
   noFilter: "Kein Filter",
   noData: "Keine Daten",
+  noQueries: "Keine Abfragen vorhanden",
   loading: "Laden...",
   value: "wert",
   max: "max",
