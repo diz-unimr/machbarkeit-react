@@ -26,12 +26,18 @@ export type QueryReference =
   | {
       type: "queryJob";
       id: string;
+      name?: string;
+      query: FeasibilityQueryData;
     }
   | {
       type: "savedQuery";
       id: string;
+      name?: string;
+      query?: FeasibilityQueryData;
     }
   | {
       type: "draftQuery";
       id: string;
+      name?: string;
+      query?: FeasibilityQueryData;
     };
