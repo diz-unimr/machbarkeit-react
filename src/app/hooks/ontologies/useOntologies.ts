@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import useOntologiesStore from "@/app/store/ontologies-store";
 import { getOntology } from "@app/services/ontologyService";
-import type { Criterion } from "@app/types/ontologyType";
+import type { Criterion } from "@/app/types/ontologyTypes";
 import useModulesStore from "@app/store/modules-store";
 import { setModuleColor, collectMatches } from "./ontologyHelpers";
 

@@ -1,8 +1,8 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Coding } from "@app/types/ontologyType";
-import type { ConceptType } from "@features/filters/controls/type";
+import type { Coding } from "@/app/types/ontologyTypes";
+import type { ConceptType } from "@/features/filters/controls/types";
 import { validationMessages } from "@/app/constants/uiTexts";
 
 type ConceptValueFilter = ConceptType["valueFilter"];

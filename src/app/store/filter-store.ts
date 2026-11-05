@@ -2,10 +2,10 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { TimeRangeType } from "@features/filters/controls/type";
+import type { TimeRangeType } from "@/features/filters/controls/types";
 import type { GlobalFilterName } from "src/features/filters/GlobalFilterPanel";
-import type { DropZone } from "@/features/feasibility/feasibility-builder/type";
-import type { FilterType } from "../types/ontologyType";
+import type { DropZone } from "@/features/feasibility/feasibility-builder/types";
+import type { FilterType } from "../types/ontologyTypes";
 
 export type GlobalFilter = {
   timeRestriction: TimeRangeType["timeRestriction"] | null;

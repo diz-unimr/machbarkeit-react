@@ -11,8 +11,8 @@ import {
   useSelectedCriteriaStore,
   type SelectedValueFilterProps,
 } from "@/app/store/selected-criteria-store";
-import type { CriterionNode } from "../feasibility/feasibility-builder/type";
-import type { ConceptType, TimeRangeType } from "./controls/type";
+import type { CriterionNode } from "../feasibility/feasibility-builder/types";
+import type { ConceptType, TimeRangeType } from "./controls/types";
 import { formatTimeRangeLabel } from "@/app/utils/formatDateTime";
 import useFilterStore from "@/app/store/filter-store";
 import { useState } from "react";

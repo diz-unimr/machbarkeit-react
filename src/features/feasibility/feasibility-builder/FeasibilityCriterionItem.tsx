@@ -3,7 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
-import type { CriterionNode } from "./type";
+import type { CriterionNode } from "./types";
 import closeIcon from "@assets/close-icon.svg";
 import warningIcon from "@assets/warning-icon.svg";
 import { warningMessages } from "@/app/constants/uiTexts";
@@ -11,7 +11,7 @@ import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import ArrowButton from "@/components/buttons/ArrowButton";
 import LocalFilterPanel from "@/features/filters/LocalFilterPanel";
-import type { TimeRangeType } from "@/features/filters/controls/type";
+import type { TimeRangeType } from "@/features/filters/controls/types";
 import { getModuleName } from "@/app/utils/moduleUtils";
 import useFilterStore from "@/app/store/filter-store";
 import { getIncompleteFilterCount } from "@/app/utils/getIncompleteFilterCount";

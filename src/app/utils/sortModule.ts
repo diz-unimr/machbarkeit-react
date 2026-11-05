@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Module } from "../types/ontologyType";
+import type { Module } from "../types/ontologyTypes";
 
 const MODULE_ORDER = ["Patient", "Diagnose", "Prozedur", "Laboruntersuchung"];
 

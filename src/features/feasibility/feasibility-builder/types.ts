@@ -5,8 +5,8 @@ import type {
   ConceptType,
   QuantityType,
   TimeRangeType,
-} from "@features/filters/controls/type";
-import type { AttributeFilter, Criterion } from "@app/types/ontologyType";
+} from "@/features/filters/controls/types";
+import type { AttributeFilter, Criterion } from "@/app/types/ontologyTypes";
 
 export type DropZone = "inclusionCriteria" | "exclusionCriteria";
 
@@ -15,13 +15,6 @@ export type CriterionNode = {
   criterion: Criterion;
   isExpanded: boolean;
 };
-
-export type SelectedChoice =
-  | "replace all"
-  | "replace global"
-  | "confirm"
-  | "cancel"
-  | "delete";
 
 export type LogicOperator = "AND" | "OR";
 

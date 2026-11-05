@@ -2,7 +2,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de> */
 
 import useModules from "@app/hooks/useModules";
-import type { Module } from "@app/types/ontologyType";
+import type { Module } from "@/app/types/ontologyTypes";
 import { useEffect, useMemo, useState } from "react";
 
 type ModulesPanelProps = {

@@ -3,7 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import useCriteriaDnD from "./hooks/useCriteriaDnD";
 import FeasibilityCriteriaSortableList from "./FeasibilityCriteriaSortableList";
-import type { CriterionNode, SelectedCriteria } from "./type";
+import type { CriterionNode, SelectedCriteria } from "./types";
 import CollapsiblePanel from "@/components/CollapsiblePanel";
 
 type FeasibilityCriteriaPanelProps = {
@@ -40,9 +40,13 @@ const FeasibilityCriteriaPanel = ({
       onToggleCriteriaPanel={onToggleCriteriaPanel}
     >
       <div
-        className={`"h-full" ${dropZoneClasses("inclusionCriteria")} ${
-          selectedCriteria.criteria.length === 0 ? "justify-center" : ""
-        } flex-1 overflow-y-auto`}
+        className={`flex flex-1 min-h-0 flex-col overflow-y-auto ${dropZoneClasses(
+          "inclusionCriteria",
+        )} ${
+          selectedCriteria.criteria.length === 0
+            ? "items-center justify-center"
+            : ""
+        }`}
         onDragOver={handleDragOver("inclusionCriteria")}
         onDragLeave={handleDragLeave("inclusionCriteria")}
         onDrop={handleCriteriaDrop("inclusionCriteria")}

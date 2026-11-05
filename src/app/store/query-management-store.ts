@@ -2,7 +2,7 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { create } from "zustand";
-import type { QueryJob, SavedQuery } from "@features/query-management/type";
+import type { QueryJob, SavedQuery } from "@/features/query-management/types";
 
 type QueryManagementStore = {
   queryJobs: QueryJob[];

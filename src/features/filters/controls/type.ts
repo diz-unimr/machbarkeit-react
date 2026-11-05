@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { Coding, Criterion } from "@app/types/ontologyType";
+import type { Coding, Criterion } from "@/app/types/ontologyTypes";
 export type ConceptType = {
   valueFilter: {
     selectedConcepts: NonNullable<Criterion["valueDefinition"]>["values"];

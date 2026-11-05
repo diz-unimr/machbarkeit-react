@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import axios, { type AxiosResponse, AxiosError } from "axios";
-import type { Criterion } from "@app/types/ontologyType";
+import type { Criterion } from "@/app/types/ontologyTypes";
 import transformObjectKeys from "@app/utils/transformObjectKeys";
 import login from "@app/services/loginService.ts";
 

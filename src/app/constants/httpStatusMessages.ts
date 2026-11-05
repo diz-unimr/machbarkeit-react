@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { QueryJobStatus } from "@/features/query-management/type";
+import type { QueryJobStatus } from "@/features/query-management/types";
 
 export const httpStatusMessages = {
   200: "",

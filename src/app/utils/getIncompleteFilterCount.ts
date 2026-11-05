@@ -5,7 +5,7 @@ import type { EditingFilter } from "@/app/store/filter-store";
 import type {
   DropZone,
   CriterionNode,
-} from "@/features/feasibility/feasibility-builder/type";
+} from "@/features/feasibility/feasibility-builder/types";
 
 /* type UnconfirmedFilter = {
   scope: "global" | "local";

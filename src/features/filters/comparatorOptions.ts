@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { DropDownOption } from "./controls/type";
+import type { DropDownOption } from "./controls/types";
 
 export const QUANTITY_COMPARATOR_OPTIONS: DropDownOption[] = [
   { code: "no filter", display: "Bitte wählen..." },

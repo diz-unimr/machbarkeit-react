@@ -4,8 +4,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import { useCallback, useState, type DragEvent } from "react";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
-import type { Criterion } from "@app/types/ontologyType";
-import type { DropZone, CriterionNode } from "../type";
+import type { Criterion } from "@/app/types/ontologyTypes";
+import type { DropZone, CriterionNode } from "../types";
 import generateId from "@/app/utils/generateUID";
 
 const useCriteriaDnD = () => {

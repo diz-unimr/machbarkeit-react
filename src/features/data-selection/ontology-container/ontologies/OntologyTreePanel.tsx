@@ -3,7 +3,7 @@
 
 import TreePanel from "./TreePanel";
 import TreeNode from "./TreeNode";
-import { type Criterion, type Module } from "@app/types/ontologyType";
+import { type Criterion, type Module } from "@/app/types/ontologyTypes";
 import { useEffect, useState } from "react";
 import useOntologies from "@/app/hooks/ontologies/useOntologies";
 import InputTextField from "@components/inputs/InputTextField";

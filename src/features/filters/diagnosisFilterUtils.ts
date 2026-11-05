@@ -7,7 +7,7 @@ import type {
   AttributeFilterReference,
   Coding,
   Criterion,
-} from "@/app/types/ontologyType";
+} from "@/app/types/ontologyTypes";
 import { getDiagnosisPriorityCode } from "@/app/constants/diagnosisPriorityCodes";
 
 export const getSelectedConcepts = (

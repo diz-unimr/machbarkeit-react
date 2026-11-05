@@ -4,13 +4,13 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import type {
   FeasibilityQueryData,
   QueryCriterion,
-} from "@/features/feasibility/feasibility-builder/type";
+} from "@/features/feasibility/feasibility-builder/types";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import setCriterionContext from "./setCriterionContext";
 import type {
   ConceptType,
   QuantityType,
-} from "@/features/filters/controls/type";
+} from "@/features/filters/controls/types";
 import { buildAttributeFilters } from "@/features/filters/diagnosisFilterUtils";
 
 const createQueryData = (): FeasibilityQueryData | null => {

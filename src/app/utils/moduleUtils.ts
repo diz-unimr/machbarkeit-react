@@ -2,7 +2,7 @@
     SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import useModulesStore from "@app/store/modules-store";
-import type { Module, ModuleColorProps } from "@app/types/ontologyType";
+import type { Module, ModuleColorProps } from "@/app/types/ontologyTypes";
 
 type Color = {
   btnColor: string;

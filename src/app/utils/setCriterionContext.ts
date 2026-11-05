@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import useModulesStore from "@app/store/modules-store";
-import type { Criterion, Module } from "../types/ontologyType";
+import type { Criterion, Module } from "../types/ontologyTypes";
 
 const setCriterionContext = (criterion: Criterion) => {
   const modules = useModulesStore.getState().modules;

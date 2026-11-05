@@ -4,12 +4,12 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import type {
   FeasibilityQueryData,
   SelectedCriteria,
-} from "@/features/feasibility/feasibility-builder/type";
+} from "@/features/feasibility/feasibility-builder/types";
 import generateUID from "./generateUID";
 import { getConcept } from "../services/ontologyService";
 import { getModuleColor } from "./moduleUtils";
 import { getDiagnosisPriorityCode } from "../constants/diagnosisPriorityCodes";
-import type { AttributeFilterConcept, Criterion } from "../types/ontologyType";
+import type { AttributeFilterConcept, Criterion } from "../types/ontologyTypes";
 
 const convertToCriteriaDisplay = async (uploadedData: FeasibilityQueryData) => {
   if (!uploadedData.inclusionCriteria) return null;

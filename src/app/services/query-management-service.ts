@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import axios, { AxiosError } from "axios";
-import type { QueryJob, SavedQuery } from "@/features/query-management/type";
+import type { QueryJob, SavedQuery } from "@/features/query-management/types";
 
 export const getQueryJobs = async (): Promise<
   [QueryJob[] | null, string | null]

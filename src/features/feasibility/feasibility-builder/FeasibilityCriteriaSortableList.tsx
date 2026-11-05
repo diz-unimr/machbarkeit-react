@@ -1,4 +1,4 @@
-import type { CriterionNode, SelectedCriteria } from "./type";
+import type { CriterionNode, SelectedCriteria } from "./types";
 import FeasibilityCriterionItem from "./FeasibilityCriterionItem";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import {
