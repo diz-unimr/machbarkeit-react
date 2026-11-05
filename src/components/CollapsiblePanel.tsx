@@ -7,12 +7,14 @@ import ArrowButton from "./buttons/ArrowButton";
 import Card from "./Card";
 
 type CollapsibleProps = {
+  icon?: React.ReactNode;
   children: React.ReactNode;
   label: string;
   isPanelExpanded: boolean;
   onToggleCriteriaPanel: () => void;
 };
 const CollapsiblePanel = ({
+  icon,
   children,
   label,
   isPanelExpanded,
@@ -20,16 +22,22 @@ const CollapsiblePanel = ({
 }: CollapsibleProps) => {
   return (
     <div
-      className="flex flex-col min-h-0 overflow-hidden"
+      className={`flex flex-col min-h-0 h-full overflow-hidden ${
+        isPanelExpanded ? "flex-1" : "shrink-0"
+      }`}
       style={{
-        height: isPanelExpanded ? "100%" : "fit-content",
+        height: isPanelExpanded ? undefined : "fit-content",
         borderBottom: !isPanelExpanded
           ? "1.5px solid var(--color-border)"
           : undefined,
       }}
     >
-      <div className="flex justify-between py-2 px-1">
-        <p className="text-lg font-medium">{label}</p>
+      <div className="flex items-center py-2 px-1">
+        <div className="flex items-center gap-2 flex-1">
+          {icon && <span>{icon}</span>}
+          <p className="text-lg font-medium">{label}</p>
+        </div>
+
         <ArrowButton
           id="characteristic-btn"
           image={accordionArrow}
@@ -38,7 +46,9 @@ const CollapsiblePanel = ({
           onClick={onToggleCriteriaPanel}
         />
       </div>
-      <div className={`min-h-0 ${isPanelExpanded ? "flex-1" : "hidden"}`}>
+      <div
+        className={`min-h-0 ${isPanelExpanded ? "flex flex-1 flex-col" : "hidden"}`}
+      >
         <Card
           className="flex flex-col flex-1 h-full"
           bodyClassName="flex flex-col flex-1 min-h-0 overflow-hidden"
