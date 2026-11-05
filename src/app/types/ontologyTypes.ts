@@ -5,7 +5,7 @@ import type {
   ConceptType,
   QuantityType,
   TimeRangeType,
-} from "@features/filters/controls/type";
+} from "@/features/filters/controls/types";
 
 export type ModuleColorProps = {
   btnColor: string;
