@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { Button } from "@/components/buttons/Button";
-import PopupModal from "@/components/PopupModal";
+import PopupModal from "@/components/modals/PopupModal";
 import InputTextField from "@components/inputs/InputTextField";
 import {
   titleTexts,
