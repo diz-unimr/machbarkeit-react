@@ -3,7 +3,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
 import type { OptionCode } from "@features/filters/controls/TimeRangeOption";
-import type { DropDownOption } from "@/features/filters/controls/type";
+import type { DropDownOption } from "@/features/filters/controls/types";
 
 type DropDownProps = {
   id?: string;
