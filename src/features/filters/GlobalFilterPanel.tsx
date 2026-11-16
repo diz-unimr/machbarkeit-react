@@ -1,26 +1,32 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import Card from "@/components/Card";
+import Card from "@/components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
 import { useState } from "react";
 import useFilterStore from "@/app/store/filter-store";
-import type { TimeRangeType } from "./controls/type";
-import { Button } from "@components/buttons/Button";
+import type { TimeRangeType } from "./controls/types";
+import { Button } from "@components/ui/buttons/Button";
 import { formatTimeRangeLabel } from "@/app/utils/formatDateTime";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import { buttonLabels, warningMessages } from "@/app/constants/uiTexts";
 
 export type GlobalFilterName = "timeRestriction";
-export type globalFilterWarning = {
-  filterName: GlobalFilterName;
-  value: TimeRangeType["timeRestriction"] | null;
-  hasLocalFilter: boolean;
-  isDeleteAction: boolean;
-};
+export type GlobalFilterWarning =
+  | {
+      action: "update";
+      filterName: GlobalFilterName;
+      value: TimeRangeType["timeRestriction"] | null;
+      hasLocalFilter: boolean;
+    }
+  | {
+      action: "delete";
+      filterName: GlobalFilterName;
+    };
+
 type GlobalFilterPanelProps = {
   hasNoTimeRestriction?: boolean;
-  onHandleWarning: (warning: globalFilterWarning) => void;
+  onHandleWarning: (warning: GlobalFilterWarning) => void;
 };
 
 const GlobalFilterPanel = ({
@@ -77,10 +83,10 @@ const GlobalFilterPanel = ({
     const hasLocalFilter = hasLocalTimeRestrictionFilter();
 
     onHandleWarning({
+      action: "update",
       filterName,
       value,
       hasLocalFilter,
-      isDeleteAction: false,
     });
   };
 
@@ -121,10 +127,8 @@ const GlobalFilterPanel = ({
                   type="tertiary"
                   onClick={() => {
                     onHandleWarning({
+                      action: "delete",
                       filterName: "timeRestriction",
-                      value: null,
-                      hasLocalFilter: false,
-                      isDeleteAction: true,
                     });
                   }}
                 />
