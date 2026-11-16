@@ -2,17 +2,18 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@components/buttons/Button";
-import ButtonContainer from "@components/buttons/ฺButtonContainer";
-import type { FeasibilityQueryData } from "@features/feasibility/feasibility-builder/type";
+import { useEffect } from "react";
+import { Button } from "@components/ui/buttons/Button";
+import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
+import type {
+  FeasibilityQueryData,
+  SelectedCriteria,
+} from "@/features/feasibility/feasibility-builder/types";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
-import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
-import feasibilityQuery from "@app/services/feasibility-service";
 import loadingSpinnerIcon from "@assets/loading_spinner.svg";
 import useGlobalFilterStore from "@/app/store/filter-store";
-import { AxiosError } from "axios";
 import { buttonLabels, resultTexts } from "@/app/constants/uiTexts";
+import { useFeasibilityQuery } from "@/app/hooks/useFeasibilityQuery";
 
 const FeasibilityQueryControl = ({
   completedFilter,
@@ -20,19 +21,20 @@ const FeasibilityQueryControl = ({
   onResetAllData,
 }: {
   completedFilter: boolean;
-  createQueryData: () => FeasibilityQueryData | null;
+  createQueryData: (
+    selectedCriteria: SelectedCriteria,
+  ) => FeasibilityQueryData | null;
   onResetAllData: () => void;
 }) => {
-  const abortController = useRef<AbortController | null>(null);
-  const isQueryRunning = useFeasibilityQueryStore((s) => s.isQueryRunning);
-  const startQueryRunning = useFeasibilityQueryStore(
-    (s) => s.startQueryRunning,
-  );
-  const stopQueryRunning = useFeasibilityQueryStore((s) => s.stopQueryRunning);
-  const [queryResult, setQueryResult] = useState<number | null>(null);
-  const [errorMessageResult, setErrorMessageResult] = useState<string | null>(
-    null,
-  );
+  const {
+    isQueryRunning,
+    queryResult,
+    errorMessageResult,
+    clearRunningQuery,
+    startQuery,
+    stopQuery,
+  } = useFeasibilityQuery();
+
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria,
   );
@@ -41,55 +43,21 @@ const FeasibilityQueryControl = ({
   );
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
 
-  const clearRunningQuery = () => {
-    abortController.current?.abort();
-    abortController.current = null;
-    stopQueryRunning();
-    setQueryResult(null);
-    setErrorMessageResult(null);
-  };
-
   const toggleQuery = async () => {
     if (isQueryRunning) {
       // Stop Query
-      clearRunningQuery();
+      stopQuery();
       return;
     }
     // Start Query
-    const queryData = createQueryData();
+    const queryData = createQueryData(selectedInclusionCriteria);
     if (!queryData) return;
-    startQueryRunning();
-
-    // abort old controller
-    abortController.current?.abort();
-    // create new controller
-    const controller = new AbortController();
-    abortController.current = controller;
-
-    try {
-      const [numberOfPatients, errorMessage] = await feasibilityQuery(
-        queryData,
-        controller,
-      );
-
-      setQueryResult(numberOfPatients);
-      setErrorMessageResult(errorMessage);
-    } catch (error) {
-      if ((error as AxiosError).name !== "AbortError") {
-        setErrorMessageResult("Unexpected error");
-      }
-    } finally {
-      stopQueryRunning();
-    }
+    startQuery(queryData);
   };
 
   const resetAllData = () => {
-    abortController.current?.abort();
-    abortController.current = null;
+    clearRunningQuery();
     clearSelectedCriteria();
-    stopQueryRunning();
-    setQueryResult(null);
-    setErrorMessageResult(null);
     onResetAllData();
   };
 
@@ -99,7 +67,7 @@ const FeasibilityQueryControl = ({
 
   useEffect(() => {
     clearRunningQuery();
-  }, [selectedInclusionCriteria, globalFilter]);
+  }, []);
 
   return (
     <div className="flex h-15 bg-white border-b-[1.5px] border-(--color-border)">
