@@ -3,7 +3,13 @@
 
 import type { Module } from "../types/ontologyTypes";
 
-const MODULE_ORDER = ["Patient", "Diagnose", "Prozedur", "Laboruntersuchung"];
+const MODULE_ORDER = [
+  "Patient",
+  "Vitaldaten",
+  "Diagnose",
+  "Prozedur",
+  "Laboruntersuchung",
+];
 
 const sortModules = (modules: Module[]) => {
   return [...modules].sort(

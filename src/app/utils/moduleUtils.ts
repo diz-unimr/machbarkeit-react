@@ -20,6 +20,10 @@ const moduleColor: ModuleColorMap = {
     btnColor: "#3498DB",
     bgColor: "#D6EAF8",
   },
+  Vitaldaten: {
+    btnColor: "#F39C12" /* #E6A23C */,
+    bgColor: "#FCE8C3",
+  },
   Diagnose: {
     btnColor: "#E84393",
     bgColor: "#F7CBE6",
