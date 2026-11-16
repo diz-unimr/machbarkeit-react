@@ -3,8 +3,8 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useEffect, useState } from "react";
-import DropDownContainer from "@components/dropdowns/DropDownContainer";
-import DatePicker from "@components/inputs/DatePicker";
+import DropDownContainer from "@components/ui/dropdowns/DropDownContainer";
+import DatePicker from "@components/ui/inputs/DatePicker";
 import type { TimeRangeType } from "@/features/filters/controls/types";
 import { commonTexts, validationMessages } from "@/app/constants/uiTexts";
 import { TIMERANGE_COMPARATOR_OPTIONS } from "../comparatorOptions";
