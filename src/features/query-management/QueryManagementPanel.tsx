@@ -16,7 +16,10 @@ import { confirmationMessages, titleTexts } from "@/app/constants/uiTexts";
 import { deleteSavedQuery } from "@/app/services/query-management-service";
 import useQueryManagementStore from "@/app/store/query-management-store";
 
-const QueryManagementPanel = () => {
+type QueryManagementPanelProps = {
+  onFeasibility: () => void;
+};
+const QueryManagementPanel = ({ onFeasibility }: QueryManagementPanelProps) => {
   const { queryJobs, savedQueries } = useQueries();
   console.log("query Jobs; ", queryJobs);
   console.log("saved Queries; ", savedQueries);
@@ -44,6 +47,7 @@ const QueryManagementPanel = () => {
     if (!query) return; // Warning?
 
     handleSelectedQuery(query, setSelectedCriteria);
+    onFeasibility();
     /* onClose(); */
   };
 

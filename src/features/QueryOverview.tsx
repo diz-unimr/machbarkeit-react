@@ -32,7 +32,7 @@ const QueryOverview = ({ onFeasibility }: QueryOverviewProps) => {
         />
       </div>
       <div className="flex-1 min-h-0">
-        <QueryManagementPanel />
+        <QueryManagementPanel onFeasibility={onFeasibility} />
       </div>
     </PageSection>
   );

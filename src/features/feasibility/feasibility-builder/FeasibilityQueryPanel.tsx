@@ -28,6 +28,7 @@ import type { GlobalFilterWarning } from "@/features/filters/GlobalFilterPanel";
 import GlobalFilterPanel from "@/features/filters/GlobalFilterPanel";
 import type { WarningConfig } from "@/components/ui/modals/types";
 import { useWarningConfirmation } from "@/app/hooks/useWarningConfirmation";
+import { useResetQueryData } from "@/app/hooks/useResetQueryData";
 
 const FeasibilityQueryPanel = () => {
   const [inclusionCriteria, setInclusionCriteria] = useState<SelectedCriteria>({
@@ -41,9 +42,6 @@ const FeasibilityQueryPanel = () => {
   const setSelectedCriteria = useSelectedCriteriaStore(
     (s) => s.setSelectedCriteria,
   );
-  const clearSelectedCriteria = useSelectedCriteriaStore(
-    (s) => s.clearSelectedCriteria,
-  );
   const applyGlobalTimeRange = useSelectedCriteriaStore(
     (s) => s.applyGlobalTimeRange,
   );
@@ -56,11 +54,12 @@ const FeasibilityQueryPanel = () => {
   });
   const stopEditing = useFilterStore((s) => s.stopEditing);
   const updateGlobalFilter = useFilterStore((s) => s.updateGlobalFilter);
-  const clearFilter = useFilterStore((s) => s.clearFilter);
   const { warningModal, requestWarningConfirmation, handleWarningChoice } =
     useWarningConfirmation();
 
   const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
+
+  const { resetQueryData } = useResetQueryData();
 
   const getWarningConfig = (warning: GlobalFilterWarning): WarningConfig => {
     if (warning.action === "delete") {
@@ -188,11 +187,6 @@ const FeasibilityQueryPanel = () => {
     download(utf8JsonData, fileName + ".json", "application/json");
   };
 
-  const resetAllData = () => {
-    clearSelectedCriteria();
-    clearFilter();
-  };
-
   const hasNoTimeRestriction = useMemo(() => {
     const criteria = selectedInclusionCriteria.criteria;
     return (
@@ -209,7 +203,8 @@ const FeasibilityQueryPanel = () => {
 
   useEffect(() => {
     console.log("selectedInclusionCriteria: ", selectedInclusionCriteria);
-  }, [selectedInclusionCriteria]);
+    console.log("incompleteFilterCount: ", incompleteFilterCount);
+  }, [selectedInclusionCriteria, incompleteFilterCount]);
 
   return (
     <>
@@ -217,7 +212,6 @@ const FeasibilityQueryPanel = () => {
         <FeasibilityQueryControl
           completedFilter={incompleteFilterCount === 0}
           createQueryData={createQueryData}
-          onResetAllData={resetAllData}
         />
         <div className="flex flex-col flex-1 min-h-0 max-w-240 w-full px-5 py-5 mx-auto overflow-hidden">
           <Card
@@ -244,7 +238,7 @@ const FeasibilityQueryPanel = () => {
                     accept="application/json"
                     hidden
                     onChange={(e) => {
-                      resetAllData();
+                      resetQueryData();
                       handleFileUpload(e);
                     }}
                   />
@@ -259,7 +253,10 @@ const FeasibilityQueryPanel = () => {
                     label={buttonLabels.saveQuery}
                     type="secondary"
                     className="m-0! font-medium!"
-                    isActive={incompleteFilterCount === 0}
+                    isActive={
+                      incompleteFilterCount === 0 &&
+                      selectedInclusionCriteria.criteria.length > 0
+                    }
                     onClick={() => setSaveModalOpen(true)}
                   />
                 </li>

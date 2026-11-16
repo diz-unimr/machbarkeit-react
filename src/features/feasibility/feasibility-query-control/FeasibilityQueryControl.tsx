@@ -14,32 +14,29 @@ import loadingSpinnerIcon from "@assets/loading_spinner.svg";
 import useGlobalFilterStore from "@/app/store/filter-store";
 import { buttonLabels, resultTexts } from "@/app/constants/uiTexts";
 import { useFeasibilityQuery } from "@/app/hooks/useFeasibilityQuery";
+import { useResetQueryData } from "@/app/hooks/useResetQueryData";
 
 const FeasibilityQueryControl = ({
   completedFilter,
   createQueryData,
-  onResetAllData,
 }: {
   completedFilter: boolean;
   createQueryData: (
     selectedCriteria: SelectedCriteria,
   ) => FeasibilityQueryData | null;
-  onResetAllData: () => void;
 }) => {
   const {
     isQueryRunning,
     queryResult,
     errorMessageResult,
-    clearRunningQuery,
     startQuery,
     stopQuery,
   } = useFeasibilityQuery();
 
+  const { resetQueryData } = useResetQueryData();
+
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria,
-  );
-  const clearSelectedCriteria = useSelectedCriteriaStore(
-    (s) => s.clearSelectedCriteria,
   );
   const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
 
@@ -55,18 +52,12 @@ const FeasibilityQueryControl = ({
     startQuery(queryData);
   };
 
-  const resetAllData = () => {
-    clearRunningQuery();
-    clearSelectedCriteria();
-    onResetAllData();
-  };
-
   const isResetActived =
     selectedInclusionCriteria.criteria.length > 0 ||
     !!globalFilter.timeRestriction;
 
   useEffect(() => {
-    clearRunningQuery();
+    resetQueryData();
   }, []);
 
   return (
@@ -92,7 +83,7 @@ const FeasibilityQueryControl = ({
             label={buttonLabels.reset.toLocaleUpperCase("de-DE")}
             className="text-black"
             isActive={isResetActived}
-            onClick={resetAllData}
+            onClick={resetQueryData}
           />
           <Button
             id="start-query"
@@ -100,7 +91,9 @@ const FeasibilityQueryControl = ({
             label={
               !isQueryRunning ? buttonLabels.startQuery : buttonLabels.stopQuery
             }
-            isActive={completedFilter}
+            isActive={
+              completedFilter && selectedInclusionCriteria.criteria.length > 0
+            }
             onClick={toggleQuery}
           />
         </ButtonContainer>

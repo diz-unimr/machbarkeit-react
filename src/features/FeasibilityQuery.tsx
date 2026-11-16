@@ -6,12 +6,14 @@ import DataSelectionPanel from "./data-selection/DataSelectionPanel";
 import FeasibilityQueryPanel from "./feasibility/feasibility-builder/FeasibilityQueryPanel";
 import PageSection from "@/components/layout/PageSection";
 import PageHeader from "@/components/layout/PageHeader";
+import { useResetQueryData } from "@/app/hooks/useResetQueryData";
 
 type FeasibilityQueryProps = {
   onBack: () => void;
 };
 
 const FeasibilityQuery = ({ onBack }: FeasibilityQueryProps) => {
+  const { resetQueryData } = useResetQueryData();
   return (
     <PageSection id="feasibility-query" sectionClass="max-w-450">
       <div className="flex max-h-30 shrink-0 items-center justify-between">
@@ -19,7 +21,10 @@ const FeasibilityQuery = ({ onBack }: FeasibilityQueryProps) => {
           title="Abfrageübersicht"
           subtitle="Abfrageverlauf und gespeicherte Abfragen verwalten"
           backLabel="Zurück zur Abfrageübersicht"
-          onBack={onBack}
+          onBack={() => {
+            onBack();
+            resetQueryData();
+          }}
         />
       </div>
       <div className="flex-1 min-h-0">
