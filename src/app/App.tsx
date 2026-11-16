@@ -11,6 +11,7 @@ import FeasibilityQuery from "@/features/FeasibilityQuery";
 
 function App() {
   const [isFeasibilityOpen, setIsFeasibilityOpen] = useState(false);
+
   useEffect(() => {
     login().catch(console.error);
   }, []);
@@ -21,7 +22,11 @@ function App() {
       <Header />
       <main className="flex flex-1 h-full overflow-hidden">
         {isFeasibilityOpen ? (
-          <FeasibilityQuery onBack={() => setIsFeasibilityOpen(false)} />
+          <FeasibilityQuery
+            onBack={() => {
+              setIsFeasibilityOpen(false);
+            }}
+          />
         ) : (
           <QueryOverview onFeasibility={() => setIsFeasibilityOpen(true)} />
         )}
