@@ -46,31 +46,8 @@ const SavedQueries = ({
         onToggleCriteriaPanel={() => setIsSavedQueriesExpanded((prev) => !prev)}
       >
         <div className="min-h-0 flex-1 flex flex-col gap-3">
-          {/* <div className="flex justify-between">
-            <div className="flex items-center gap-2 border-b-1 border-[#E2E8F0] pb-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                <Bookmark size={25} className="text-green-600" />
-              </div>
-              <div>
-                <p className="text-lg font-semibold text-[#01014F]">
-                  Abfrageverlauf
-                </p>
-                <p className="text-sm text-gray-500">
-                  Alle bisherigen Abfragen
-                </p>
-              </div>
-            </div>
-            <ArrowButton
-              id="characteristic-btn"
-              image={accordionArrow}
-              mode="rotate-left"
-              isExpanded={isSavedQueriesExpanded}
-              onClick={() => setIsSavedQueriesExpanded((prev) => !prev)}
-            />
-          </div> */}
           <div className="min-h-0 flex-1 flex flex-col gap-3 overflow-hidden">
             <TableHeader gridClass={gridColumns}>
-              {/* <TableCell className="text-left font-medium">ID</TableCell> */}
               <TableCell className="font-medium">Name</TableCell>
               <TableCell className="font-medium">Erstelldatum</TableCell>
               <TableCell className="font-medium">Letzte Änderung</TableCell>
@@ -88,9 +65,7 @@ const SavedQueries = ({
                 ) : (
                   savedQueries.map((savedQuery) => {
                     const isExpanded = expandedQueryId === savedQuery.id;
-                    const { createdDate, createdTime } = formatDateTime(
-                      savedQuery.createdAt,
-                    );
+                    const { date, time } = formatDateTime(savedQuery.createdAt);
 
                     return (
                       <div
@@ -112,22 +87,18 @@ const SavedQueries = ({
                             )
                           }
                         >
-                          <TableCell className="break-words">
-                            {/* {savedQuery.name} */} -
+                          <TableCell className="wrap-break-word">
+                            {savedQuery.name}
                           </TableCell>
 
-                          <TableCell className="break-words">
-                            <div>{createdDate}</div>
-                            <div className="text-sm text-gray-500">
-                              {createdTime}
-                            </div>
+                          <TableCell className="wrap-break-word">
+                            <div>{date}</div>
+                            <div className="text-sm text-gray-500">{time}</div>
                           </TableCell>
 
-                          <TableCell className="break-words">
-                            <div>{createdDate}</div>
-                            <div className="text-sm text-gray-500">
-                              {createdTime}
-                            </div>
+                          <TableCell className="wrap-break-word">
+                            <div>{date}</div>
+                            <div className="text-sm text-gray-500">{time}</div>
                           </TableCell>
 
                           <TableCell>
@@ -151,8 +122,9 @@ const SavedQueries = ({
                         {isExpanded && (
                           <div className="bg-blue-50 p-2">
                             <QueryDetails
+                              type="savedQuery"
                               expandedQueryId={expandedQueryId}
-                              queryDetails={null}
+                              queryDetails={savedQuery}
                             />
                           </div>
                         )}
