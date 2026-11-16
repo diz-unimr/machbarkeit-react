@@ -4,8 +4,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 import type {
   FeasibilityQueryData,
   QueryCriterion,
+  SelectedCriteria,
 } from "@/features/feasibility/feasibility-builder/types";
-import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import setCriterionContext from "./setCriterionContext";
 import type {
   ConceptType,
@@ -13,11 +13,8 @@ import type {
 } from "@/features/filters/controls/types";
 import { buildAttributeFilters } from "@/features/filters/diagnosisFilterUtils";
 
-const createQueryData = (): FeasibilityQueryData | null => {
-  const selectedInclusionCriteria =
-    useSelectedCriteriaStore.getState().selectedInclusionCriteria;
-
-  if (!selectedInclusionCriteria?.criteria?.length) return null;
+const createQueryData = (selectedCriteria: SelectedCriteria): FeasibilityQueryData | null => {
+  if (!selectedCriteria?.criteria?.length) return null;
   const queryData: FeasibilityQueryData = {
     version: "1.0.0",
     display: "Feasibility Query",
@@ -25,7 +22,7 @@ const createQueryData = (): FeasibilityQueryData | null => {
     exclusionCriteria: [] as QueryCriterion[][],
   };
 
-  const criteriaWithContext = selectedInclusionCriteria.criteria
+  const criteriaWithContext = selectedCriteria.criteria
     .map((c) => {
       if (c.criterion.context) return c;
       else return { ...c, criterion: setCriterionContext(c.criterion) };
@@ -79,7 +76,7 @@ const createQueryData = (): FeasibilityQueryData | null => {
     isLocalFilter: criterion.isLocalFilter ?? false,
   };
 
-  const logics = selectedInclusionCriteria.logics;
+  const logics = selectedCriteria.logics;
   let group = [criteria] as QueryCriterion[];
 
   for (let i = 0; i < logics.length; i++) {
