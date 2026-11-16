@@ -40,15 +40,12 @@ const QueryDetails = ({
               {/* Metadaten and Abfrage-Statement */}
               <section className="rounded-lg border border-blue-100 bg-white p-4 mt-2">
                 <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-
                   {type === "queryJob" && (
                     <>
                       <div>
                         <p className="text-sm text-gray-500">Name</p>
                         <p className="wrap-break-word font-medium">
-                          {queryDetails.name.length > 0
-                            ? queryDetails.name
-                            : "-"}
+                          {queryDetails.name ?? "-"}
                         </p>
                       </div>
 
@@ -62,7 +59,9 @@ const QueryDetails = ({
 
                       <div>
                         <p className="text-sm text-gray-500">Erstelldatum</p>
-                        <span className="wrap-break-word font-medium">{date}</span>
+                        <span className="wrap-break-word font-medium">
+                          {date}
+                        </span>
                         <span> </span>
                         <span className="text-sm text-gray-800">{time}</span>
                       </div>

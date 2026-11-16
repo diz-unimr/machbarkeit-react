@@ -84,7 +84,7 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
                       }
                     >
                       <TableCell className="wrap-break-word">
-                        {queryJob.name.length > 0 ? queryJob.name : "-"}
+                        {queryJob.name ?? "-"}
                       </TableCell>
 
                       <TableCell
