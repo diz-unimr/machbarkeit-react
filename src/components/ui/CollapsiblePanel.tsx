@@ -8,36 +8,43 @@ import Card from "./Card";
 
 type CollapsibleProps = {
   icon?: React.ReactNode;
+  iconBg?: string;
   children: React.ReactNode;
-  label: string;
+  title: string;
+  subtitle: string;
   isPanelExpanded: boolean;
   onToggleCriteriaPanel: () => void;
 };
 const CollapsiblePanel = ({
   icon,
+  iconBg,
   children,
-  label,
+  title,
+  subtitle,
   isPanelExpanded,
   onToggleCriteriaPanel,
 }: CollapsibleProps) => {
   return (
-    <div
-      className={`flex flex-col min-h-0 h-full overflow-hidden ${
-        isPanelExpanded ? "flex-1" : "shrink-0"
+    <Card
+      className={`flex flex-col min-h-0 overflow-hidden ${
+        isPanelExpanded
+          ? "flex-1"
+          : "shrink-0 h-fit 1.5px solid var(--color-border)"
       }`}
-      style={{
-        height: isPanelExpanded ? undefined : "fit-content",
-        borderBottom: !isPanelExpanded
-          ? "1.5px solid var(--color-border)"
-          : undefined,
-      }}
     >
-      <div className="flex items-center py-2 px-1">
-        <div className="flex items-center gap-2 flex-1">
-          {icon && <span>{icon}</span>}
-          <p className="text-lg font-medium">{label}</p>
+      <div className="flex justify-between mb-3 pb-3 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-2">
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: iconBg }}
+          >
+            {icon}
+          </div>
+          <div>
+            <p className="text-lg font-semibold text-[#01014F]">{title}</p>
+            <p className="text-sm text-gray-500">{subtitle}</p>
+          </div>
         </div>
-
         <ArrowButton
           id="characteristic-btn"
           image={accordionArrow}
@@ -49,14 +56,9 @@ const CollapsiblePanel = ({
       <div
         className={`min-h-0 ${isPanelExpanded ? "flex flex-1 flex-col" : "hidden"}`}
       >
-        <Card
-          className="flex flex-col flex-1 h-full"
-          bodyClassName="flex flex-col flex-1 min-h-0 overflow-hidden"
-        >
-          {children}
-        </Card>
+        {children}
       </div>
-    </div>
+    </Card>
   );
 };
 

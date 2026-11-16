@@ -22,7 +22,7 @@ type SplitterProps = {
 const Splitter = ({
   leftChild,
   rightChild,
-  startLeftPercent = 40,
+  startLeftPercent,
 }: SplitterProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isResizing = useRef<boolean>(false);
@@ -42,7 +42,9 @@ const Splitter = ({
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing.current || !containerRef.current) return;
 
-    const currentWidth = e.clientX;
+    const rect = containerRef.current.getBoundingClientRect();
+    const currentWidth = e.clientX - rect.left;
+
     setLeftWidth(currentWidth);
   }, []);
 
@@ -63,13 +65,20 @@ const Splitter = ({
   }, [handleMouseMove, stopResizing]);
 
   return (
-    <div ref={containerRef} className="flex w-full h-screen overflow-hidden">
+    <div
+      ref={containerRef}
+      className="flex w-full min-h-0 h-full overflow-hidden rounded-xl"
+    >
       {/* Left Panel */}
       <div
         className="h-full bg-white flex flex-col overflow-x-auto"
         style={{
           width: isExpanded
-            ? (leftWidth ?? `${startLeftPercent}%`)
+            ? leftWidth !== null
+              ? `${leftWidth}px`
+              : startLeftPercent != null
+                ? `${startLeftPercent}%`
+                : "fit-content"
             : "fit-content",
           minWidth: isExpanded ? "35%" : undefined,
           maxWidth: "min(45%,1000px)",
@@ -82,14 +91,14 @@ const Splitter = ({
       <div
         className={
           isExpanded
-            ? "w-[4px] border-r-2 border-gray-300 bg-[var(--color-border)] hover:bg-gray-300 cursor-col-resize"
-            : "border-r-[1.5px] border-[var(--color-border)]"
+            ? "w-1 border-r-2 border-gray-300 bg-(--color-border) hover:bg-gray-300 cursor-col-resize"
+            : "border-r-[1.5px] border-(--color-border)"
         }
         onMouseDown={isExpanded ? startResizing : undefined}
       ></div>
       {/* Right Panel */}
       <div className="flex flex-col flex-1 h-full min-w-0 bg-gray-100 overflow-x-auto">
-        <div className="min-w-[300px] h-full">{rightChild}</div>
+        <div className="min-w-75 h-full">{rightChild}</div>
       </div>
     </div>
   );

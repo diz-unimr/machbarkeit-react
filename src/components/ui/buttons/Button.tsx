@@ -6,12 +6,12 @@ import { twMerge } from "tailwind-merge";
 export type ButtonProp = {
   id: string;
   type?: "primary" | "secondary" | "tertiary" | "danger";
-  label: string;
+  label: string | React.ReactNode;
   color?: string;
   isActive?: boolean;
   className?: string;
   onClick?: (id: string) => void;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  /* onChange?: React.ChangeEventHandler<HTMLInputElement>; */
 };
 
 export const Button = ({
@@ -24,7 +24,7 @@ export const Button = ({
   onClick,
 }: ButtonProp) => {
   const baseClass =
-    "!min-w-[80px] font-bold border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
+    "!min-w-[80px] font-bold items-center border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
 
   const isActiveClass =
     isActive && "hover:shadow-md transition-all duration-150";
@@ -41,7 +41,7 @@ export const Button = ({
       typeClass = `w-fit! min-w-0! bg-transparent! border-none! m-0! px-1!  text-[var(--btn-bg)] ${isActive ? "hover:underline" : null} hover:bg-transparent hover:shadow-none!`;
       break;
     case "danger":
-      typeClass = "flex items-center gap-1 border-none hover:text-red-700";
+      typeClass = "flex gap-1 border-none hover:text-red-700";
       break;
   }
 

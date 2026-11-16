@@ -3,24 +3,18 @@ SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import useCriteriaDnD from "./hooks/useCriteriaDnD";
 import FeasibilityCriteriaSortableList from "./FeasibilityCriteriaSortableList";
-import type { CriterionNode, SelectedCriteria } from "./types";
-import CollapsiblePanel from "@/components/ui/CollapsiblePanel";
+import type { SelectedCriteria } from "./types";
 import Card from "@/components/ui/Card";
 
 type FeasibilityCriteriaPanelProps = {
   label: string;
   selectedCriteria: SelectedCriteria;
-  isPanelExpanded: boolean;
-  onToggleCriteriaPanel: () => void;
-  onToggleCriterionItem: (item: CriterionNode) => void;
   onRemoveCriterion: (uid: string) => void;
 };
 
 const FeasibilityCriteriaPanel = ({
   label,
   selectedCriteria,
-  isPanelExpanded,
-  onToggleCriteriaPanel,
   onRemoveCriterion,
 }: FeasibilityCriteriaPanelProps) => {
   const {

@@ -1,9 +1,12 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 	SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { Button } from "@components/buttons/Button";
+import { Button } from "@components/ui/buttons/Button";
 import PopupModal from "./PopupModal";
-import type { WarningChoice, WarningConfig } from "@/components/modals/types";
+import type {
+  WarningChoice,
+  WarningConfig,
+} from "@/components/ui/modals/types";
 import { buttonLabels } from "@/app/constants/uiTexts";
 import { Fragment } from "react";
 
