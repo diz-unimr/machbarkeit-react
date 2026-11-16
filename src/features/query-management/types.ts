@@ -7,6 +7,7 @@ export type QueryJobStatus = "pending" | "completed" | "error";
 
 export type QueryJob = {
   id: string;
+  name: string;
   date: string;
   query: FeasibilityQueryData;
   status: QueryJobStatus;
