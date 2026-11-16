@@ -54,9 +54,9 @@ body {
 
 main {
   width: 100%;
-  min-height: 100vh;
   display: flex;
   margin: auto;
+  background-color: #f4f6fe;
 }
 
 div {
