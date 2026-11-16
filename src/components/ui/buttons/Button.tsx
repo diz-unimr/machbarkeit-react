@@ -24,7 +24,7 @@ export const Button = ({
   onClick,
 }: ButtonProp) => {
   const baseClass =
-    "!min-w-[80px] font-bold items-center border-[1.5px] border-[var(--btn-bg)] bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]";
+    "!min-w-[80px] font-bold items-center border-none! bg-[var(--btn-bg)] hover:bg-[var(--btn-bg)]"; /* border-[1.5px] border-[var(--btn-bg)] */
 
   const isActiveClass =
     isActive && "hover:shadow-md transition-all duration-150";
@@ -35,7 +35,7 @@ export const Button = ({
       typeClass = "text-white uppercase hover:border-gray-300";
       break;
     case "secondary":
-      typeClass = "bg-transparent border-none px-2.5 py-1.5 hover:text-white";
+      typeClass = "bg-transparent border-none! px-2.5 py-1.5 hover:text-white";
       break;
     case "tertiary":
       typeClass = `w-fit! min-w-0! bg-transparent! border-none! m-0! px-1!  text-[var(--btn-bg)] ${isActive ? "hover:underline" : null} hover:bg-transparent hover:shadow-none!`;

@@ -41,7 +41,7 @@ const SavedQueries = ({
         icon={<Bookmark size={24} strokeWidth={2.5} color="#16A34A" />}
         iconBg="#DCFCE7"
         title="Gespeicherte Abfragen"
-        subtitle="test"
+        subtitle="Gespeicherte Abfragen"
         isPanelExpanded={isSavedQueriesExpanded}
         onToggleCriteriaPanel={() => setIsSavedQueriesExpanded((prev) => !prev)}
       >
