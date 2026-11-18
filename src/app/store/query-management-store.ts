@@ -31,7 +31,7 @@ const useQueryManagementStore = create<QueryManagementStore>((set) => ({
 
   removeSavedQuery: (id) =>
     set((state) => ({
-      queryJobs: state.queryJobs.filter((c) => c.id !== id),
+      savedQueries: state.savedQueries.filter((c) => c.id !== id),
     })),
 
   updateQueryJob: (updatedQuery) =>
