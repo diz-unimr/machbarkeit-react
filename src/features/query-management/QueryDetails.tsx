@@ -58,7 +58,9 @@ const QueryDetails = ({
                       </div>
 
                       <div>
-                        <p className="text-sm text-gray-500">Erstelldatum</p>
+                        <p className="text-sm text-gray-500">
+                          Ausführungsdatum
+                        </p>
                         <span className="wrap-break-word font-medium">
                           {date}
                         </span>
