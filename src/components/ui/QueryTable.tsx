@@ -30,7 +30,7 @@ export const TableHeader = ({
 }: TableHeaderProps) => {
   return (
     <div
-      className={`${gridClass} grid shrink-0 items-center gap-2 rounded-md bg-[#FAFAFA] px-4 py-3 pr-[28px] text-center ${className}`}
+      className={`${gridClass} grid shrink-0 items-center gap-2 rounded-md bg-[#FAFAFA] px-4 py-3 pr-[28px] font-medium text-center ${className}`}
     >
       {children}
     </div>

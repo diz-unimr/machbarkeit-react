@@ -47,7 +47,7 @@ const Card = ({
         <div
           className={twMerge(
             "flex shrink-0 items-start justify-between gap-4",
-            "rounded-t-sm border-b border-gray-300 pb-4",
+            "rounded-t-sm border-b border-gray-300 pb-2",
             headerClassName,
           )}
         >

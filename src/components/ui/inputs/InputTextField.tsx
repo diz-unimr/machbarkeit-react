@@ -53,12 +53,12 @@ const InputTextField = ({
               min={type === "number" ? 0 : undefined}
               value={value}
               placeholder=""
-              className={`w-full h-full truncate rounded-md! border! border-[#c0c7ce]! outline-0  ${type === "search" ? "pl-10" : "pl-3"}`}
+              className={`w-full h-full truncate rounded-md! border! border-[#D8DFE4]! outline-0  ${type === "search" ? "pl-10" : "pl-3"}`}
             />
             <label
               htmlFor={id}
-              className={`flex items-center absolute left-0 px-1 text-sm cursor-auto transition-all duration-200 ${type === "search" ? "ml-10" : "ml-3"}
-								${(value && value.toString().length > 0) || isFocused ? "-top-2.5 text-xs! font-semibold bg-white" : "h-full top-0"}`}
+              className={`flex items-center absolute left-0 px-1 text-sm text-gray-400 cursor-auto transition-all duration-200 ${type === "search" ? "ml-10" : "ml-3"}
+								${(value && value.toString().length > 0) || isFocused ? "-top-2.5 text-xs! font-semibold bg-white text-black!" : "h-full top-0"}`}
             >
               {label}
             </label>

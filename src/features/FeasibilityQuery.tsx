@@ -18,8 +18,8 @@ const FeasibilityQuery = ({ onBack }: FeasibilityQueryProps) => {
     <PageSection id="feasibility-query" sectionClass="max-w-450">
       <div className="flex max-h-30 shrink-0 items-center justify-between">
         <PageHeader
-          title="Abfrageübersicht"
-          subtitle="Abfrageverlauf und gespeicherte Abfragen verwalten"
+          title="Machbarkeitsabfrage"
+          subtitle="Kriterien definieren und Patientenanzahl ermitteln"
           backLabel="Zurück zur Abfrageübersicht"
           onBack={() => {
             onBack();

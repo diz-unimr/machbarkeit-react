@@ -7,6 +7,7 @@ import Card from "../Card";
 type PopupModalProps = {
   open: boolean;
   title?: string;
+  subtitle?: string;
   message?: string | ReactNode;
   children: ReactNode;
 };
@@ -14,6 +15,7 @@ type PopupModalProps = {
 const PopupModal = ({
   open,
   title = "Warnung",
+  subtitle,
   message,
   children,
 }: PopupModalProps) => {
@@ -23,8 +25,9 @@ const PopupModal = ({
     <div className="flex fixed inset-0 bg-black/50 items-center justify-center z-9999">
       <Card
         header={title}
-        headerClassName="text-2xl border-b-1 border-gray-300 "
-        className={`flex w-fit max-w-170`}
+        subHeader={subtitle}
+        headerClassName="text-2xl border-b-1 border-gray-300"
+        className="flex w-fit min-w-100 max-w-170"
       >
         <p className="mb-5 leading-relaxed whitespace-pre-line">{message}</p>
         <div className="flex gap-3 justify-center">{children}</div>

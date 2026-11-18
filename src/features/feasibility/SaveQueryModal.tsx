@@ -13,7 +13,7 @@ import { useState } from "react";
 
 type SaveQueryModalProps = {
   open: boolean;
-  onSaveFile: (fileName: string) => void;
+  onSaveFile?: (fileName: string) => void;
   onCancel: () => void;
 };
 
@@ -24,7 +24,7 @@ const SaveQueryModal = ({
 }: SaveQueryModalProps) => {
   const [saveFileName, setSaveFileName] = useState<string>("");
   return (
-    <PopupModal open={open} title={titleTexts.saveQuery}>
+    <PopupModal open={open} title={titleTexts.saveQuery} subtitle="Speichern Sie die aktuellen Einschlusskriterien, um sie später wiederzuverwenden.">
       <div className="flex flex-col w-full gap-3">
         <InputTextField
           id="save-query-name"
@@ -50,7 +50,7 @@ const SaveQueryModal = ({
             label={buttonLabels.save.toLocaleUpperCase("de-DE")}
             type="primary"
             onClick={() => {
-              onSaveFile(saveFileName);
+              onSaveFile?.(saveFileName);
               setSaveFileName("");
             }}
           />
