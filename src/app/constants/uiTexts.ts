@@ -8,7 +8,7 @@ export const buttonLabels = {
   cancel: "Abbrechen",
   delete: "Löschen",
   edit: "Bearbeiten",
-  reset: "Zurücksetzen",
+  resetCriteria: "Kriterien zurücksetzen",
   startQuery: "Abfrage Starten",
   stopQuery: "Abfrage Stoppen",
   setFilter: "Filter setzen",
