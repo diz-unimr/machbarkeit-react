@@ -34,6 +34,24 @@ const useQueries = () => {
     fetchQueries();
   }, [setQueryJobs, setSavedQueries]);
 
+  useEffect(() => {
+    const hasRunningQuery = queryJobs.some(
+      (query) => query.status === "pending",
+    );
+
+    if (!hasRunningQuery) return;
+
+    const intervalId = setInterval(async () => {
+      const [jobs] = await getQueryJobs();
+
+      if (jobs) {
+        setQueryJobs(jobs);
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [queryJobs, setQueryJobs]);
+
   return {
     queryJobs,
     savedQueries,
