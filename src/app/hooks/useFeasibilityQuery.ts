@@ -41,6 +41,7 @@ export const useFeasibilityQuery = () => {
     abortController.current = controller;
 
     startQueryRunning();
+    setQueryResult(null);
     setErrorMessageResult(null);
 
     try {
@@ -59,6 +60,7 @@ export const useFeasibilityQuery = () => {
       }
     } finally {
       if (abortController.current === controller) {
+        abortController.current = null;
         stopQueryRunning();
       }
     }
