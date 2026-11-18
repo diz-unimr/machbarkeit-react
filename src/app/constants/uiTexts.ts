@@ -23,7 +23,7 @@ export const buttonLabels = {
 export const titleTexts = {
   deleteGlobalFilter: "Globalen Filter löschen",
   applyGlobalFilter: "Globalen Filter anwenden",
-  saveQuery: "Aktuelle Abfrage speichern",
+  saveQuery: "Abfrage speichern",
   deleteQuery: "Abfrage löschen",
 } as const;
 
