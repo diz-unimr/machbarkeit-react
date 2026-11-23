@@ -8,11 +8,12 @@ import {
   Save,
   Trash,
   MoreHorizontal,
-  RefreshCw,
+  CopyPlus,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
 
-type Action = "start" | "restart" | "edit" | "save" | "delete";
+type Action = "start" | "reuse" | "edit" | "save" | "delete";
 
 type ActionsButtonProps = {
   queryReference: QueryReference;
@@ -25,7 +26,7 @@ type ActionsButtonProps = {
 
 const ActionsButton = ({
   queryReference,
-  actions = ["start", "restart", "edit", "save", "delete"],
+  actions = ["start", "reuse", "edit", "save", "delete"],
   onStart,
   onEdit,
   onSave,
@@ -35,69 +36,79 @@ const ActionsButton = ({
 
   const buttonClass =
     "inline-flex m-0! h-8 w-8 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500";
+  const menuItemClass =
+    "flex w-full items-center gap-3 rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100";
+
+  // Action configuration
+  const actionConfig: Record<
+    Action,
+    {
+      label: string;
+      title: string;
+      icon: LucideIcon;
+      onClick?: (ref: QueryReference) => void;
+      className?: string;
+    }
+  > = {
+    start: {
+      label: "Abfrage starten",
+      title: "Abfrage starten",
+      icon: Play,
+      onClick: onStart,
+    },
+    reuse: {
+      label: "Wiederverwenden",
+      title: "Abfrage wiederverwenden",
+      icon: CopyPlus,
+      onClick: onEdit,
+    },
+    edit: {
+      label: "Bearbeiten",
+      title: "Bearbeiten",
+      icon: Pencil,
+      onClick: onEdit,
+    },
+    save: {
+      label: "Speichern",
+      title: "Speichern",
+      icon: Save,
+      onClick: onSave,
+    },
+    delete: {
+      label: "Löschen",
+      title: "Löschen",
+      icon: Trash,
+      onClick: onDelete,
+      className: "text-red-600 hover:bg-red-50",
+    },
+  };
+
+  const visibleActions = actions.map((action) => ({
+    type: action,
+    ...actionConfig[action],
+  }));
+
+  const handleAction = (callback?: (ref: QueryReference) => void) => {
+    callback?.(queryReference);
+    setIsMenuOpen(false);
+  };
 
   return (
     <div className="relative flex items-center justify-center">
+      {/* Desktop */}
       <div className="hidden items-center justify-center md:flex">
-        {actions.includes("start") && (
+        {visibleActions.map(({ type, label, title, icon: Icon, onClick }) => (
           <button
+            key={type}
             type="button"
             className={buttonClass}
-            aria-label="Abfrage starten"
-            title="Abfrage starten"
-            onClick={() => onStart?.(queryReference)}
+            aria-label={label}
+            title={title}
+            onClick={() => onClick?.(queryReference)}
           >
-            <Play size={15} strokeWidth={1.8} />
+            <Icon size={15} strokeWidth={1.8} />
           </button>
-        )}
-
-        {actions.includes("restart") && (
-          <button
-            type="button"
-            className={buttonClass}
-            aria-label="Abfrage neu starten"
-            title="Abfrage neu starten"
-            onClick={() => onEdit?.(queryReference)}
-          >
-            <RefreshCw size={15} strokeWidth={1.8} />
-          </button>
-        )}
-
-        {actions.includes("edit") && (
-          <button
-            type="button"
-            className={buttonClass}
-            aria-label="Bearbeiten"
-            title="Bearbeiten"
-            onClick={() => onEdit?.(queryReference)}
-          >
-            <Pencil size={15} strokeWidth={1.8} />
-          </button>
-        )}
-
-        {actions.includes("save") && (
-          <button
-            type="button"
-            className={buttonClass}
-            aria-label="Speichern"
-            title="Speichern"
-            onClick={() => onSave?.(queryReference)}
-          >
-            <Save size={15} strokeWidth={1.8} />
-          </button>
-        )}
-
-        {actions.includes("delete") && (
-          <button
-            type="button"
-            className={buttonClass}
-            aria-label="Löschen"
-            title="Löschen"
-            onClick={() => onDelete?.(queryReference)}
-          >
-            <Trash size={15} strokeWidth={1.8} />
-          </button>
-        )}
+        ))}
       </div>
 
       {/* Mobile: Dropdown menu */}
@@ -118,79 +129,19 @@ const ActionsButton = ({
             role="menu"
             className="absolute right-0 top-full z-50 mt-1 min-w-40 rounded-md border border-gray-200 bg-white p-1 shadow-lg"
           >
-            {actions.includes("start") && (
-              <button
-                type="button"
-                role="menuitem"
-                className="flex w-full items-center gap-3 rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => {
-                  onStart?.(queryReference);
-                  setIsMenuOpen(false);
-                }}
-              >
-                <Play size={15} />
-                Abfrage starten
-              </button>
-            )}
-
-            {actions.includes("restart") && (
-              <button
-                type="button"
-                role="menuitem"
-                className="flex w-full items-center gap-3 rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => {
-                  onEdit?.(queryReference);
-                  setIsMenuOpen(false);
-                }}
-              >
-                <RefreshCw size={15} />
-                Abfrage wiederverwenden
-              </button>
-            )}
-
-            {actions.includes("edit") && (
-              <button
-                type="button"
-                role="menuitem"
-                className="flex w-full items-center gap-3 rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => {
-                  onEdit?.(queryReference);
-                  setIsMenuOpen(false);
-                }}
-              >
-                <Pencil size={15} />
-                Bearbeiten
-              </button>
-            )}
-
-            {actions.includes("save") && (
-              <button
-                type="button"
-                role="menuitem"
-                className="flex w-full items-center gap-3 rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => {
-                  onSave?.(queryReference);
-                  setIsMenuOpen(false);
-                }}
-              >
-                <Save size={15} />
-                Speichern
-              </button>
-            )}
-
-            {actions.includes("delete") && (
-              <button
-                type="button"
-                role="menuitem"
-                className="flex w-full items-center gap-3 rounded px-3 py-2 text-sm text-red-600 hover:bg-red-50"
-                onClick={() => {
-                  onDelete?.(queryReference);
-                  setIsMenuOpen(false);
-                }}
-              >
-                <Trash size={15} />
-                Löschen
-              </button>
+            {visibleActions.map(
+              ({ type, label, icon: Icon, onClick, className }) => (
+                <button
+                  key={type}
+                  type="button"
+                  role="menuitem"
+                  className={`${menuItemClass} ${className ?? ""}`}
+                  onClick={() => handleAction(onClick)}
+                >
+                  <Icon size={15} />
+                  {label}
+                </button>
+              ),
             )}
           </div>
         )}
