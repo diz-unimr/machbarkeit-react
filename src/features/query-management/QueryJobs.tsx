@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Clock } from "lucide-react";
 import ActionsButton from "@components/ui/buttons/ActionsButton";
 import type {
+  Attribute,
   QueryJob,
   QueryReference,
 } from "@/features/query-management/types";
@@ -25,8 +26,116 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
   const [isQueryJobsExpanded, setIsQueryJobsExpanded] = useState<boolean>(true);
   const [expandedQueryId, setExpandedQueryId] = useState<string | null>(null);
 
-  const gridColumns =
-    "grid grid-cols-[minmax(0,2fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_minmax(0,0.6fr)_minmax(0,1fr)] items-center";
+  const jobAttributes: Attribute<QueryJob>[] = [
+    {
+      name: "Name",
+      showInRow: true,
+      columnWidth: "minmax(0,2fr)",
+      className: "min-w-0 max-w-[90%] truncate",
+      render: (query: QueryJob) => query.name ?? `Abfrage ${query.id}`,
+    },
+    {
+      name: "Status",
+      showInRow: true,
+      columnWidth: "minmax(0,0.8fr)",
+      className: "",
+      render: (queryJob: QueryJob) => {
+        const messagesClassName = [
+          queryJobStatusMessages[queryJob.status]?.borderColor,
+          queryJobStatusMessages[queryJob.status]?.bgColor,
+          queryJobStatusMessages[queryJob.status]?.textColor,
+        ].join(" ");
+        return (
+          <div
+            className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl border px-3 py-1 text-sm font-medium ${
+              messagesClassName
+            }`}
+          >
+            {queryJobStatusMessages[queryJob.status]?.label ??
+              queryJobStatusMessages.default.label}
+          </div>
+        );
+      },
+      renderDetail: (queryJob: QueryJob) => (
+        <div
+          className={`${queryJobStatusMessages[queryJob.status]?.textColor}`}
+        >
+          {queryJobStatusMessages[queryJob.status]?.label ??
+            queryJobStatusMessages.default.label}
+        </div>
+      ),
+    },
+    {
+      name: "Ausführungsdatum",
+      showInRow: true,
+      columnWidth: "minmax(0,1.2fr)",
+      className: "whitespace-nowrap",
+      render: (queryJob: QueryJob) => {
+        const { date, time } = formatDateTime(queryJob.date);
+        return (
+          <>
+            <div>{date}</div>
+            <div className="text-xs text-[#64748B]">{time}</div>
+          </>
+        );
+      },
+      renderDetail: (queryJob: QueryJob) => {
+        const { date, time } = formatDateTime(queryJob.date);
+        return (
+          <>
+            <span>{date}</span>{" "}
+            <span className="text-xs text-[#64748B]">{time}</span>
+          </>
+        );
+      },
+    },
+    {
+      name: "Dauer",
+      showInRow: false,
+      columnWidth: "",
+      render: (queryJob: QueryJob) =>
+        queryJob.duration ? queryJob.duration + "Sekunden" : "-",
+    },
+    {
+      name: "Anzahl der Patienten",
+      showInRow: false,
+      columnWidth: "",
+      render: (queryJob: QueryJob) => queryJob.result ?? "-",
+    },
+    {
+      name: "Aktionen",
+      showInRow: true,
+      columnWidth: "minmax(0,1fr)",
+      className: "justify-center",
+      render: (queryJob: QueryJob) => (
+        <div onClick={(event) => event.stopPropagation()}>
+          <ActionsButton
+            actions={["restart", "save"]}
+            onEdit={onEdit}
+            onSave={onSave}
+            queryReference={{
+              type: "queryJob",
+              id: queryJob.id,
+              query: queryJob.query,
+            }}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  const rowAttributes = jobAttributes.filter(
+    (attribute) => attribute.showInRow,
+  );
+  const gridClass = {
+    gridTemplateColumns: rowAttributes
+      .map((attribute) => attribute.columnWidth)
+      .join(" "),
+  };
+
+  const handleSaveQuery = (id: string) => {
+    console.log(id);
+  };
 
   return (
     <CollapsiblePanel
@@ -40,17 +149,15 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
       <div className="min-h-0 flex-1 flex flex-col gap-5 overflow-hidden">
         <div className="min-h-0 flex-1 flex flex-col gap-3 overflow-hidden">
           {/* Header */}
-          <TableHeader gridClass={gridColumns}>
-            <TableCell className="font-medium">Name</TableCell>
-            <TableCell className="font-medium">Status</TableCell>
-            <TableCell className="font-medium">Erstelldatum</TableCell>
-            <TableCell className="font-medium">Ergebnis</TableCell>
-            <TableCell className="font-medium">Aktionen</TableCell>
+          <TableHeader gridClass={gridClass}>
+            {rowAttributes.map((jobAttribute) => (
+              <TableCell key={jobAttribute.name}>{jobAttribute.name}</TableCell>
+            ))}
           </TableHeader>
 
           {/* Rows */}
           <div
-            className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden"
+            className="min-h-0 min-w-0 pr-2 flex-1 overflow-y-auto overflow-x-hidden"
             style={{ scrollbarGutter: "stable" }}
           >
             {/* Todo: isLoading... */}
@@ -63,7 +170,6 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
             ) : (
               queryJobs.map((queryJob) => {
                 const isExpanded = expandedQueryId === queryJob.id;
-                const { date, time } = formatDateTime(queryJob.date);
 
                 return (
                   <div
@@ -75,7 +181,7 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
                     }
                   >
                     <TableRow
-                      gridClass={gridColumns}
+                      gridClass={gridClass}
                       isExpanded={isExpanded}
                       onClick={() =>
                         setExpandedQueryId((currentId) =>
@@ -83,52 +189,22 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
                         )
                       }
                     >
-                      <TableCell className="wrap-break-word">
-                        {queryJob.name ?? "-"}
-                      </TableCell>
-
-                      <TableCell
-                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl border px-3 py-1 text-sm font-medium ${
-                          queryJobStatusMessages[queryJob.status]?.className ??
-                          queryJobStatusMessages.default.className
-                        }`}
-                      >
-                        {queryJobStatusMessages[queryJob.status].label}
-                      </TableCell>
-
-                      <TableCell className="wrap-break-word">
-                        <div className="text-[#334155]">{date}</div>
-                        <div className="text-xs text-[#64748B]">{time}</div>
-                      </TableCell>
-
-                      <TableCell className="wrap-break-word">
-                        {queryJob.result ?? "-"}
-                      </TableCell>
-
-                      <TableCell>
-                        <div onClick={(event) => event.stopPropagation()}>
-                          <ActionsButton
-                            actions={["restart", "save"]}
-                            onEdit={onEdit}
-                            onSave={onSave}
-                            queryReference={{
-                              type: "queryJob",
-                              id: queryJob.id,
-                              query: queryJob.query,
-                            }}
-                          />
-                        </div>
-                      </TableCell>
+                      {rowAttributes.map((attribute) => (
+                        <TableCell
+                          key={attribute.name}
+                          className={attribute.className}
+                        >
+                          {attribute.render ? attribute.render(queryJob) : "-"}
+                        </TableCell>
+                      ))}
                     </TableRow>
 
-                    {expandedQueryId === queryJob.id && (
+                    {isExpanded && (
                       <div className="bg-blue-50 p-2">
                         <QueryDetails
-                          type="queryJob"
                           expandedQueryId={expandedQueryId}
                           queryDetails={queryJob}
-                          date={date}
-                          time={time}
+                          attributes={jobAttributes}
                         />
                       </div>
                     )}
