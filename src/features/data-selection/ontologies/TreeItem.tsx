@@ -7,6 +7,7 @@ import { type Criterion } from "@/app/types/ontologyTypes";
 import ArrowButton from "@components/ui/buttons/ArrowButton";
 import { DRAG_DATA_FORMATS } from "@app/constants/dragTypes";
 import dragHandleIcon from "@assets/drag-handle-icon.svg";
+import { getModuleName } from "@/app/utils/moduleUtils";
 
 type TreeItemProps = {
   criterion: Criterion;
@@ -34,46 +35,55 @@ const TreeItem = ({
     event.dataTransfer.effectAllowed = "copy";
   };
 
+  const moduleName = getModuleName(criterion.moduleId);
+
   return (
     <div
       key={criterion.id}
-      className={`flex gap-2 items-start bg-white border border-(--color-border) rounded p-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab active:cursor-grabbing" : "cursor-auto"}`}
+      className={`flex gap-3 justify-between bg-white border border-(--color-border) rounded p-2 shadow-sm w-full ${criterion.selectable ? "cursor-grab active:cursor-grabbing" : "cursor-auto"}`}
       draggable={criterion.selectable}
       onDragStart={handleDragStart}
       onClick={onArrowClick}
     >
-      <ArrowButton
-        id={criterion.id}
-        mode="rotate-right"
-        isExpanded={isExpanded}
-        hasChildren={
-          (criterion.children && criterion.children.length > 0) || false
-        }
-      />
-      {criterion.selectable ? (
-        <div className="pt-1.5 shrink-0">
-          <img src={dragHandleIcon} width={12} height={14} />
-        </div>
-      ) : null}
-      <div className={`flex gap-2`}>
-        {criterion.selectable ? (
-          <>
-            <Highlighter
-              className="whitespace-nowrap"
-              searchWords={searchWords}
-              textToHighlight={criterion.termCodes[0].code}
-              highlightClassName="bg-yellow-200 rounded"
-            />
-            <span>|</span>
-          </>
-        ) : undefined}
-        <Highlighter
-          style={{ overflowWrap: "anywhere" }}
-          searchWords={searchWords}
-          textToHighlight={criterion.display}
-          highlightClassName="bg-yellow-200 rounded"
+      <div className="flex gap-2 items-start">
+        <ArrowButton
+          id={criterion.id}
+          mode="rotate-right"
+          isExpanded={isExpanded}
+          hasChildren={
+            (criterion.children && criterion.children.length > 0) || false
+          }
         />
+        {criterion.selectable ? (
+          <div className="pt-1.5 shrink-0">
+            <img src={dragHandleIcon} width={12} height={14} />
+          </div>
+        ) : null}
+
+        <div className="flex gap-2">
+          {criterion.selectable ? (
+            <>
+              <Highlighter
+                className="whitespace-nowrap"
+                searchWords={searchWords}
+                textToHighlight={criterion.termCodes[0].code}
+                highlightClassName="bg-yellow-200 rounded"
+              />
+              <span>|</span>
+            </>
+          ) : undefined}
+          <Highlighter
+            style={{ overflowWrap: "anywhere" }}
+            searchWords={searchWords}
+            textToHighlight={criterion.display}
+            highlightClassName="bg-yellow-200 rounded"
+          />
+        </div>
       </div>
+      {criterion.selectable &&
+        (moduleName === "Laboruntersuchung" || moduleName === "Vitaldaten") && (
+          <span className="pt-1 text-xs text-gray-400">ug/mL</span>
+        )}
     </div>
   );
 };
