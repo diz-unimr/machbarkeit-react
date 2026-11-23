@@ -5,6 +5,7 @@ import { useState } from "react";
 import ActionsButton from "@components/ui/buttons/ActionsButton";
 import CollapsiblePanel from "@/components/ui/CollapsiblePanel";
 import type {
+  Attribute,
   QueryReference,
   SavedQuery,
 } from "@/features/query-management/types";
@@ -32,8 +33,74 @@ const SavedQueries = ({
   const [isSavedQueriesExpanded, setIsSavedQueriesExpanded] =
     useState<boolean>(true);
 
-  const gridColumns =
-    "grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1fr)] items-center";
+  const savedQueryAttributes: Attribute<SavedQuery>[] = [
+    {
+      name: "Name",
+      showInRow: true,
+      columnWidth: "minmax(0,2fr)",
+      className: "min-w-0 max-w-[90%] truncate",
+      render: (savedQuery: SavedQuery) =>
+        savedQuery.name ?? `Abfrage ${savedQuery.id}`,
+    },
+    {
+      name: "Erstelldatum",
+      showInRow: true,
+      columnWidth: "minmax(0,1fr)",
+      className: "",
+      render: (savedQuery: SavedQuery) => {
+        const { date, time } = formatDateTime(savedQuery.createdAt);
+        return (
+          <>
+            <div>{date}</div>
+            <div className="text-xs text-[#64748B]">{time}</div>
+          </>
+        );
+      },
+    },
+    {
+      name: "Letzte Änderung",
+      showInRow: true,
+      columnWidth: "minmax(0,1.5fr)",
+      className: "whitespace-nowrap",
+      render: (savedQuery: SavedQuery) => {
+        const { date, time } = formatDateTime(savedQuery.updatedAt);
+        return (
+          <>
+            <div>{date}</div>
+            <div className="text-xs text-[#64748B]">{time}</div>
+          </>
+        );
+      },
+    },
+    {
+      name: "Aktionen",
+      showInRow: true,
+      columnWidth: "minmax(0,1fr)",
+      className: "justify-center",
+      render: (savedQuery: SavedQuery) => (
+        <div onClick={(event) => event.stopPropagation()}>
+          <ActionsButton
+            actions={["start", "edit", "delete"]}
+            onStart={onStart}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            queryReference={{
+              type: "savedQuery",
+              id: savedQuery.id,
+              name: savedQuery.name,
+              query: savedQuery.query,
+            }}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  const gridClass = {
+    gridTemplateColumns: savedQueryAttributes
+      .map((attribute) => attribute.columnWidth)
+      .join(" "),
+  };
 
   return (
     <Card>
@@ -47,11 +114,10 @@ const SavedQueries = ({
       >
         <div className="min-h-0 flex-1 flex flex-col gap-3">
           <div className="min-h-0 flex-1 flex flex-col gap-3 overflow-hidden">
-            <TableHeader gridClass={gridColumns}>
-              <TableCell className="font-medium">Name</TableCell>
-              <TableCell className="font-medium">Erstelldatum</TableCell>
-              <TableCell className="font-medium">Letzte Änderung</TableCell>
-              <TableCell className="font-medium">Aktionen</TableCell>
+            <TableHeader gridClass={gridClass}>
+              {savedQueryAttributes.map((attribute) => (
+                <TableCell key={attribute.name}>{attribute.name}</TableCell>
+              ))}
             </TableHeader>
             <div
               className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden"
@@ -65,7 +131,6 @@ const SavedQueries = ({
                 ) : (
                   savedQueries.map((savedQuery) => {
                     const isExpanded = expandedQueryId === savedQuery.id;
-                    const { date, time } = formatDateTime(savedQuery.createdAt);
 
                     return (
                       <div
@@ -77,7 +142,7 @@ const SavedQueries = ({
                         }
                       >
                         <TableRow
-                          gridClass={gridColumns}
+                          gridClass={gridClass}
                           isExpanded={isExpanded}
                           onClick={() =>
                             setExpandedQueryId((currentId) =>
@@ -87,44 +152,24 @@ const SavedQueries = ({
                             )
                           }
                         >
-                          <TableCell className="wrap-break-word">
-                            {savedQuery.name}
-                          </TableCell>
-
-                          <TableCell className="wrap-break-word">
-                            <div>{date}</div>
-                            <div className="text-sm text-gray-500">{time}</div>
-                          </TableCell>
-
-                          <TableCell className="wrap-break-word">
-                            <div>{date}</div>
-                            <div className="text-sm text-gray-500">{time}</div>
-                          </TableCell>
-
-                          <TableCell>
-                            <div onClick={(event) => event.stopPropagation()}>
-                              <ActionsButton
-                                actions={["start", "edit", "delete"]}
-                                onStart={onStart}
-                                onEdit={onEdit}
-                                onDelete={onDelete}
-                                queryReference={{
-                                  type: "savedQuery",
-                                  id: savedQuery.id,
-                                  name: savedQuery.name,
-                                  query: savedQuery.query,
-                                }}
-                              />
-                            </div>
-                          </TableCell>
+                          {savedQueryAttributes.map((attribute) => (
+                            <TableCell
+                              key={attribute.name}
+                              className={attribute.className}
+                            >
+                              {attribute.render
+                                ? attribute.render(savedQuery)
+                                : "-"}
+                            </TableCell>
+                          ))}
                         </TableRow>
 
                         {isExpanded && (
                           <div className="bg-blue-50 p-2">
                             <QueryDetails
-                              type="savedQuery"
                               expandedQueryId={expandedQueryId}
                               queryDetails={savedQuery}
+                              attributes={savedQueryAttributes}
                             />
                           </div>
                         )}
