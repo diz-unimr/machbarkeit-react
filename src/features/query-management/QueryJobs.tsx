@@ -110,7 +110,7 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
       render: (queryJob: QueryJob) => (
         <div onClick={(event) => event.stopPropagation()}>
           <ActionsButton
-            actions={["restart", "save"]}
+            actions={["reuse", "save"]}
             onEdit={onEdit}
             onSave={onSave}
             queryReference={{
