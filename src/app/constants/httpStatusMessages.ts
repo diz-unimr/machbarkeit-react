@@ -17,23 +17,33 @@ export const queryJobStatusMessages: Record<
   QueryJobStatus | "default",
   {
     label: string;
-    className: string;
+    borderColor: string;
+    bgColor: string;
+    textColor: string;
   }
 > = {
   pending: {
     label: "Ausstehend",
-    className: "border-yellow-200 bg-yellow-50 text-yellow-700",
+    borderColor: "border-yellow-200",
+    bgColor: "bg-yellow-50",
+    textColor: "text-yellow-700",
   },
   completed: {
     label: "Abgeschlossen",
-    className: "border-green-200 bg-green-50 text-green-700",
+    borderColor: "border-green-200",
+    bgColor: "bg-green-50",
+    textColor: "text-green-700",
   },
   error: {
     label: "Fehlgeschlagen",
-    className: "border-red-200 bg-red-50 text-red-700",
+    borderColor: "border-red-200",
+    bgColor: "bg-red-50",
+    textColor: "text-red-700",
   },
   default: {
     label: "Unbekannt",
-    className: "border-gray-200 bg-gray-50 text-gray-500",
+    borderColor: "border-gray-200",
+    bgColor: "bg-gray-50",
+    textColor: "text-gray-700",
   },
 };
