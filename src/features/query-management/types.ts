@@ -42,3 +42,12 @@ export type QueryReference =
       name?: string;
       query?: FeasibilityQueryData;
     };
+
+export type Attribute<T> = {
+  name: string;
+  showInRow: boolean;
+  columnWidth?: string;
+  className?: string;
+  render: (query: T) => React.ReactNode;
+  renderDetail?: (query: T) => React.ReactNode;
+};
