@@ -5,13 +5,13 @@ import type { ReactNode } from "react";
 
 type TableHeaderProps = {
   children: ReactNode;
-  gridClass: string;
+  gridClass?: React.CSSProperties;
   className?: string;
 };
 
 type TableRowProps = {
   children: ReactNode;
-  gridClass: string;
+  gridClass?: React.CSSProperties;
   isExpanded?: boolean;
   onClick?: () => void;
   className?: string;
@@ -30,7 +30,8 @@ export const TableHeader = ({
 }: TableHeaderProps) => {
   return (
     <div
-      className={`${gridClass} grid shrink-0 items-center gap-2 rounded-md bg-[#FAFAFA] px-4 py-3 pr-[28px] font-medium text-center ${className}`}
+      className={`grid shrink-0 items-center gap-2 rounded-md bg-[#FAFAFA] px-4 py-3 pr-[28px] font-medium text-center ${className}`}
+      style={gridClass}
     >
       {children}
     </div>
@@ -47,11 +48,12 @@ export const TableRow = ({
 }: TableRowProps) => {
   return (
     <div
-      className={`${gridClass} grid items-center gap-2 px-3 py-2 text-center ${
+      className={`grid items-center gap-2 px-3 py-2 text-center ${
         onClick ? "cursor-pointer" : ""
       } ${
         isExpanded ? "bg-blue-50 text-blue-950" : "hover:bg-gray-50"
       } ${className}`}
+      style={gridClass}
       onClick={onClick}
     >
       {children}
