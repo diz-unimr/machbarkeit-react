@@ -7,6 +7,7 @@ import FeasibilityQueryPanel from "./feasibility/feasibility-builder/Feasibility
 import PageSection from "@/components/layout/PageSection";
 import PageHeader from "@/components/layout/PageHeader";
 import { useResetQueryData } from "@/app/hooks/useResetQueryData";
+import PatientCount from "./feasibility/PatientCount";
 
 type FeasibilityQueryProps = {
   onBack: () => void;
@@ -26,6 +27,7 @@ const FeasibilityQuery = ({ onBack }: FeasibilityQueryProps) => {
             resetQueryData();
           }}
         />
+        <PatientCount />
       </div>
       <div className="flex-1 min-h-0">
         <Splitter
