@@ -3,7 +3,7 @@
 
 import Card from "@/components/ui/Card";
 import TimeRangeOption from "./controls/TimeRangeOption";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useFilterStore from "@/app/store/filter-store";
 import type { TimeRangeType } from "./controls/types";
 import { Button } from "@components/ui/buttons/Button";
@@ -90,9 +90,17 @@ const GlobalFilterPanel = ({
     });
   };
 
+  useEffect(() => {
+    if (hasNoTimeRestriction && isGlobalFilterEditing)
+      stopEditing({
+        scope: "global",
+        filterName: "timeRestriction",
+      });
+  }, [hasNoTimeRestriction, isGlobalFilterEditing, stopEditing]);
+
   return (
     <Card
-      className={`py-3 ${hasNoTimeRestriction ? "pointer-events-none select-none" : ""}`}
+      className={`py-3 ${hasNoTimeRestriction ? "pointer-events-none select-none bg-gray-50 opacity-50" : ""}`}
     >
       <div className="flex flex-col">
         <div className="flex gap-3">
@@ -133,45 +141,45 @@ const GlobalFilterPanel = ({
                   }}
                 />
               )}
-              {!hasNoTimeRestriction &&
-                (isGlobalFilterEditing ? (
-                  <div className="flex gap-2">
-                    <Button
-                      id={"global-btn"}
-                      label={buttonLabels.cancel}
-                      type="tertiary"
-                      onClick={cancelFilterChanges}
-                    />
-                    <Button
-                      id={"global-btn"}
-                      label={buttonLabels.confirm}
-                      type="tertiary"
-                      isActive={isFilterComplete}
-                      onClick={() => {
-                        handleGlobalFilterChange(
-                          "timeRestriction",
-                          globalFilterTemp,
-                        );
-                      }}
-                    />
-                  </div>
-                ) : (
+
+              {isGlobalFilterEditing ? (
+                <div className="flex gap-2">
                   <Button
                     id={"global-btn"}
-                    label={
-                      globalFilter.timeRestriction
-                        ? buttonLabels.edit
-                        : buttonLabels.setFilter
-                    }
+                    label={buttonLabels.cancel}
                     type="tertiary"
+                    onClick={cancelFilterChanges}
+                  />
+                  <Button
+                    id={"global-btn"}
+                    label={buttonLabels.confirm}
+                    type="tertiary"
+                    isActive={isFilterComplete}
                     onClick={() => {
-                      startEditing({
-                        scope: "global",
-                        filterName: "timeRestriction",
-                      });
+                      handleGlobalFilterChange(
+                        "timeRestriction",
+                        globalFilterTemp,
+                      );
                     }}
                   />
-                ))}
+                </div>
+              ) : (
+                <Button
+                  id={"global-btn"}
+                  label={
+                    globalFilter.timeRestriction
+                      ? buttonLabels.edit
+                      : buttonLabels.setFilter
+                  }
+                  type="tertiary"
+                  onClick={() => {
+                    startEditing({
+                      scope: "global",
+                      filterName: "timeRestriction",
+                    });
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
