@@ -31,7 +31,8 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
       name: "Name",
       showInRow: true,
       columnWidth: "minmax(0,2fr)",
-      className: "min-w-0 max-w-[90%] truncate",
+      className:
+        "min-w-0 max-w-[90%] text-left ml-2 lg:ml-6 2xl:ml-10 truncate",
       render: (query: QueryJob) => query.name ?? `Abfrage ${query.id}`,
     },
     {
@@ -105,10 +106,10 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
     {
       name: "Aktionen",
       showInRow: true,
-      columnWidth: "minmax(0,1fr)",
+      columnWidth: "minmax(0,0.6fr)",
       className: "justify-center",
       render: (queryJob: QueryJob) => (
-        <div onClick={(event) => event.stopPropagation()}>
+        <div className="lg:pl-2" onClick={(event) => event.stopPropagation()}>
           <ActionsButton
             actions={["reuse", "save"]}
             onEdit={onEdit}
