@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import download from "downloadjs";
 import Card from "@/components/ui/Card";
 import type { SelectedCriteria, FeasibilityQueryData } from "./types";
@@ -10,14 +9,11 @@ import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQue
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useFilterStore from "@/app/store/filter-store";
-import { Button } from "@/components/ui/buttons/Button";
 import { WarningModal } from "@/components/ui/modals/WarningModal";
 import SaveQueryModal from "../SaveQueryModal";
 import createQueryData from "@/app/utils/createQueryData";
-import convertToCriteriaDisplay from "@/app/utils/convertJsonToCriteriaDisplay";
 import warningIcon from "@assets/warning-icon.svg";
 import {
-  buttonLabels,
   warningMessages,
   commonTexts,
   titleTexts,
@@ -28,7 +24,6 @@ import type { GlobalFilterWarning } from "@/features/filters/GlobalFilterPanel";
 import GlobalFilterPanel from "@/features/filters/GlobalFilterPanel";
 import type { WarningConfig } from "@/components/ui/modals/types";
 import { useWarningConfirmation } from "@/app/hooks/useWarningConfirmation";
-import { useResetQueryData } from "@/app/hooks/useResetQueryData";
 
 const FeasibilityQueryPanel = () => {
   const [inclusionCriteria, setInclusionCriteria] = useState<SelectedCriteria>({
@@ -38,9 +33,6 @@ const FeasibilityQueryPanel = () => {
   });
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria,
-  );
-  const setSelectedCriteria = useSelectedCriteriaStore(
-    (s) => s.setSelectedCriteria,
   );
   const applyGlobalTimeRange = useSelectedCriteriaStore(
     (s) => s.applyGlobalTimeRange,
@@ -52,14 +44,12 @@ const FeasibilityQueryPanel = () => {
     editingFilters: editingFilters,
     criteria: selectedInclusionCriteria.criteria,
   });
-  const stopEditing = useFilterStore((s) => s.stopEditing);
   const updateGlobalFilter = useFilterStore((s) => s.updateGlobalFilter);
   const { warningModal, requestWarningConfirmation, handleWarningChoice } =
     useWarningConfirmation();
 
   const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
 
-  const { resetQueryData } = useResetQueryData();
 
   const getWarningConfig = (warning: GlobalFilterWarning): WarningConfig => {
     if (warning.action === "delete") {
@@ -141,41 +131,6 @@ const FeasibilityQueryPanel = () => {
     return data;
   };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const uploadedCriteria: FeasibilityQueryData =
-        await parseAndValidateFile(file);
-      const inclusionCriteria =
-        await convertToCriteriaDisplay(uploadedCriteria);
-
-      if (inclusionCriteria) {
-        // check if any global filter
-        inclusionCriteria.criteria.some((c) => {
-          if (
-            c.criterion.timeRestrictionAllowed &&
-            c.criterion.timeRestriction &&
-            !c.criterion.isLocalFilter
-          ) {
-            updateGlobalFilter("timeRestriction", c.criterion.timeRestriction);
-            return true;
-          }
-          return false;
-        });
-        // set selected criteria in store
-        setSelectedCriteria(inclusionCriteria);
-      }
-    } catch (error) {
-      alert((error as Error).message);
-    } finally {
-      event.target.value = "";
-    }
-  };
-
   const saveQuery = (fileName: string) => {
     const queryData = createQueryData(selectedInclusionCriteria);
 
@@ -195,17 +150,6 @@ const FeasibilityQueryPanel = () => {
     );
   }, [selectedInclusionCriteria]);
 
-  useEffect(() => {
-    if (!hasNoTimeRestriction) return;
-    updateGlobalFilter("timeRestriction", null);
-    stopEditing({ scope: "global", filterName: "timeRestriction" });
-  }, [hasNoTimeRestriction, selectedInclusionCriteria]);
-
-  useEffect(() => {
-    console.log("selectedInclusionCriteria: ", selectedInclusionCriteria);
-    console.log("incompleteFilterCount: ", incompleteFilterCount);
-  }, [selectedInclusionCriteria, incompleteFilterCount]);
-
   return (
     <>
       <div className="flex flex-col h-full min-h-0 bg-[#fafafa]">
@@ -218,7 +162,7 @@ const FeasibilityQueryPanel = () => {
             className="flex flex-col flex-1 min-h-0 py-0"
             bodyClassName="p-0 flex flex-col flex-1 min-h-0 gap-1"
           >
-            <div className="flex justify-between items-center py-3 border-b-[1.5px] border-(--color-border)">
+            <div className="flex justify-between items-center pt-3">
               <div className="flex gap-2">
                 {incompleteFilterCount > 0 && (
                   <>
@@ -230,40 +174,12 @@ const FeasibilityQueryPanel = () => {
                   </>
                 )}
               </div>
-              <menu className="flex gap-8">
-                <li className="flex gap-7 m-auto">
-                  <input
-                    id="upload"
-                    type="file"
-                    accept="application/json"
-                    hidden
-                    onChange={(e) => {
-                      resetQueryData();
-                      handleFileUpload(e);
-                    }}
-                  />
-                  <label
-                    htmlFor="upload"
-                    className="flex items-center text-[clamp(11px,1vw,14px)] font-medium cursor-pointer px-2.5 py-1.5 hover:text-white hover:rounded-md hover:bg-[#0072DA]"
-                  >
-                    Abfrage laden
-                  </label>
-                  <Button
-                    id={"save-query"}
-                    label={buttonLabels.saveQuery}
-                    type="secondary"
-                    className="m-0! font-medium!"
-                    isActive={
-                      incompleteFilterCount === 0 &&
-                      selectedInclusionCriteria.criteria.length > 0
-                    }
-                    onClick={() => setSaveModalOpen(true)}
-                  />
-                </li>
-              </menu>
             </div>
             <div className="flex flex-col h-full min-h-0 gap-4 py-4">
-              <GlobalFilterPanel onHandleWarning={handleWarning} />
+              <GlobalFilterPanel
+                onHandleWarning={handleWarning}
+                hasNoTimeRestriction={hasNoTimeRestriction}
+              />
               <WarningModal
                 open={warningModal.open}
                 title={warningModal.title}
