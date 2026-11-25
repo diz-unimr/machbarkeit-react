@@ -27,6 +27,10 @@ export const titleTexts = {
   deleteQuery: "Abfrage löschen",
 } as const;
 
+export const subtitleTexts = {
+  saveQuery: "Einschlusskriterien speichern und später wiederverwenden.",
+};
+
 export const confirmationMessages = {
   deleteGlobalFilter:
     "Sind Sie sicher, dass Sie den globalen Filter löschen möchten? \n" +
