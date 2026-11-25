@@ -2,7 +2,7 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@components/ui/buttons/Button";
 import ButtonContainer from "@components/ui/buttons/ฺButtonContainer";
 import type {
@@ -10,11 +10,13 @@ import type {
   SelectedCriteria,
 } from "@/features/feasibility/feasibility-builder/types";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
-import loadingSpinnerIcon from "@assets/loading_spinner.svg";
-import useGlobalFilterStore from "@/app/store/filter-store";
-import { buttonLabels, resultTexts } from "@/app/constants/uiTexts";
+import { buttonLabels } from "@/app/constants/uiTexts";
 import { useFeasibilityQuery } from "@/app/hooks/useFeasibilityQuery";
 import { useResetQueryData } from "@/app/hooks/useResetQueryData";
+import { getIncompleteFilterCount } from "@/app/utils/getIncompleteFilterCount";
+import useFilterStore from "@/app/store/filter-store";
+import SaveQueryModal from "../SaveQueryModal";
+import { toast } from "sonner";
 
 const FeasibilityQueryControl = ({
   completedFilter,
@@ -25,20 +27,21 @@ const FeasibilityQueryControl = ({
     selectedCriteria: SelectedCriteria,
   ) => FeasibilityQueryData | null;
 }) => {
-  const {
-    isQueryRunning,
-    queryResult,
-    errorMessageResult,
-    startQuery,
-    stopQuery,
-  } = useFeasibilityQuery();
+  const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
+  const [queryName, setQueryName] = useState<string>("");
+
+  const { isQueryRunning, startQuery, stopQuery } = useFeasibilityQuery();
 
   const { resetQueryData } = useResetQueryData();
-
+  const editingFilters = useFilterStore((s) => s.editingFilters);
   const selectedInclusionCriteria = useSelectedCriteriaStore(
     (s) => s.selectedInclusionCriteria,
   );
-  const globalFilter = useGlobalFilterStore((s) => s.globalFilter);
+  const incompleteFilterCount = getIncompleteFilterCount({
+    scope: "all",
+    editingFilters: editingFilters,
+    criteria: selectedInclusionCriteria.criteria,
+  });
 
   const toggleQuery = async () => {
     if (isQueryRunning) {
@@ -52,9 +55,28 @@ const FeasibilityQueryControl = ({
     startQuery(queryData);
   };
 
-  const isResetActived =
-    selectedInclusionCriteria.criteria.length > 0 ||
-    !!globalFilter.timeRestriction;
+  const saveQuery = (fileName: string) => {
+    const queryData = createQueryData(selectedInclusionCriteria);
+    setQueryName(fileName);
+
+    if (!queryData) return;
+  };
+
+  const handleSaveQuery = async () => {
+    try {
+      await saveQuery(queryName);
+
+      toast.success("Abfrage erfolgreich gespeichert", {
+        description: `Die Abfrage "${queryName}" wurde erfolgreich gespeichert.`,
+        duration: 4000,
+      });
+    } catch (_error) {
+      toast.error("Abfrage konnte nicht gespeichert werden", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 4000,
+      });
+    }
+  };
 
   useEffect(() => {
     resetQueryData();
@@ -62,28 +84,33 @@ const FeasibilityQueryControl = ({
 
   return (
     <div className="flex h-15 bg-white border-b-[1.5px] border-(--color-border)">
-      <div className="flex w-full max-w-240 justify-between m-auto px-8">
-        <div className="flex w-full h-12.5 items-center px-2">
-          <span className="font-medium mr-2">{resultTexts.patientCount}</span>
-          <span>
-            {isQueryRunning && <img src={loadingSpinnerIcon} />}
-            {!isQueryRunning &&
-              (queryResult !== null
-                ? /* queryResult <= 3
-                  ? resultTexts.insufficientResult
-                  :  */ queryResult
-                : errorMessageResult || "-")}
-          </span>
+      <div className="flex w-full max-w-240 justify-between items-center m-auto px-8">
+        <div className="flex flex-col w-full h-9 px-2">
+          <input
+            onChange={(e) => {
+              setQueryName(e.target.value);
+            }}
+            id="query-name"
+            type="text"
+            value={queryName}
+            placeholder="Abfragename ( z.B. Diabetes Typ 2 )"
+            className="min-w-20 w-full h-full truncate rounded-md! border! border-[#D8DFE4]! outline-0 px-3 text-sm"
+          />
         </div>
         <ButtonContainer className="p-0">
-          {/* Warning Modal */}
           <Button
-            id="reset-query"
+            id={"save-query"}
+            label={buttonLabels.saveQuery}
             type="secondary"
-            label={buttonLabels.reset.toLocaleUpperCase("de-DE")}
-            className="text-black"
-            isActive={isResetActived}
-            onClick={resetQueryData}
+            className="m-0! font-medium!"
+            isActive={
+              incompleteFilterCount === 0 &&
+              selectedInclusionCriteria.criteria.length > 0
+            }
+            onClick={() => {
+              if (!queryName) setSaveModalOpen(true);
+              else handleSaveQuery();
+            }}
           />
           <Button
             id="start-query"
@@ -97,6 +124,16 @@ const FeasibilityQueryControl = ({
             onClick={toggleQuery}
           />
         </ButtonContainer>
+        {(!queryName || queryName.length < 1) && (
+          <SaveQueryModal
+            open={saveModalOpen}
+            onSaveFile={(fileName) => {
+              saveQuery(fileName);
+              setSaveModalOpen(false);
+            }}
+            onCancel={() => setSaveModalOpen(false)}
+          />
+        )}
       </div>
     </div>
   );
