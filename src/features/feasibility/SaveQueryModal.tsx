@@ -6,6 +6,7 @@ import PopupModal from "@/components/ui/modals/PopupModal";
 import InputTextField from "@components/ui/inputs/InputTextField";
 import {
   titleTexts,
+  subtitleTexts,
   buttonLabels,
   placeholderTexts,
 } from "@/app/constants/uiTexts";
@@ -24,7 +25,11 @@ const SaveQueryModal = ({
 }: SaveQueryModalProps) => {
   const [saveFileName, setSaveFileName] = useState<string>("");
   return (
-    <PopupModal open={open} title={titleTexts.saveQuery} subtitle="Speichern Sie die aktuellen Einschlusskriterien, um sie später wiederzuverwenden.">
+    <PopupModal
+      open={open}
+      title={titleTexts.saveQuery}
+      subtitle={subtitleTexts.saveQuery}
+    >
       <div className="flex flex-col w-full gap-3">
         <InputTextField
           id="save-query-name"
