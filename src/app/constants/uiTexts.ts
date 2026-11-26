@@ -25,10 +25,14 @@ export const titleTexts = {
   applyGlobalFilter: "Globalen Filter anwenden",
   saveQuery: "Abfrage speichern",
   deleteQuery: "Abfrage löschen",
+  saveToastSuccess: "Abfrage erfolgreich gespeichert",
+  saveToastError: "Abfrage konnte nicht gespeichert werden",
 } as const;
 
 export const subtitleTexts = {
   saveQuery: "Einschlusskriterien speichern und später wiederverwenden.",
+  saveQueryJobs: "Abfrage speichern und später wiederverwenden.",
+  saveToastError: "Bitte versuchen Sie es erneut.",
 };
 
 export const confirmationMessages = {
