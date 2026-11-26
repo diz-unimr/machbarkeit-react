@@ -1,7 +1,6 @@
 /* SPDX-FileCopyrightText: Nattika Jugkaeo <nattika.jugkaeo@uni-marburg.de>
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
-import type { QueryReference } from "@/features/query-management/types";
 import {
   Play,
   Pencil,
@@ -16,16 +15,14 @@ import { useState } from "react";
 type Action = "start" | "reuse" | "edit" | "save" | "delete";
 
 type ActionsButtonProps = {
-  queryReference: QueryReference;
   actions: Action[];
-  onStart?: (queryReference: QueryReference) => void;
-  onEdit?: (queryReference: QueryReference) => void;
-  onSave?: (queryReference: QueryReference) => void;
-  onDelete?: (queryReference: QueryReference) => void;
+  onStart?: () => void;
+  onEdit?: () => void;
+  onSave?: () => void;
+  onDelete?: () => void;
 };
 
 const ActionsButton = ({
-  queryReference,
   actions = ["start", "reuse", "edit", "save", "delete"],
   onStart,
   onEdit,
@@ -46,7 +43,7 @@ const ActionsButton = ({
       label: string;
       title: string;
       icon: LucideIcon;
-      onClick?: (ref: QueryReference) => void;
+      onClick?: () => void;
       className?: string;
     }
   > = {
@@ -88,8 +85,8 @@ const ActionsButton = ({
     ...actionConfig[action],
   }));
 
-  const handleAction = (callback?: (ref: QueryReference) => void) => {
-    callback?.(queryReference);
+  const handleAction = (callback?: () => void) => {
+    callback?.();
     setIsMenuOpen(false);
   };
 
@@ -104,7 +101,7 @@ const ActionsButton = ({
             className={buttonClass}
             aria-label={label}
             title={title}
-            onClick={() => onClick?.(queryReference)}
+            onClick={() => onClick?.()}
           >
             <Icon size={15} strokeWidth={1.8} />
           </button>
