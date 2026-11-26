@@ -2,12 +2,15 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { resultTexts } from "@/app/constants/uiTexts";
-import { useFeasibilityQuery } from "@/app/hooks/useFeasibilityQuery";
+import useFeasibilityQueryStore from "@/app/store/feasibility-query-store";
 import loadingSpinnerIcon from "@assets/loading_spinner.svg";
 
 const PatientCount = () => {
-  const { isQueryRunning, queryResult, errorMessageResult } =
-    useFeasibilityQuery();
+  const patientCount = useFeasibilityQueryStore((s) => s.patientCount);
+  const errorMessageResult = useFeasibilityQueryStore(
+    (s) => s.errorMessageResult,
+  );
+  const isQueryRunning = useFeasibilityQueryStore((s) => s.isQueryRunning);
 
   return (
     <div className="flex flex-col h-12.5 items-center px-3">
@@ -15,10 +18,10 @@ const PatientCount = () => {
       <span className="font-bold text-2xl">
         {isQueryRunning && <img src={loadingSpinnerIcon} />}
         {!isQueryRunning &&
-          (queryResult !== null
-            ? /* queryResult <= 3
+          (patientCount !== null
+            ? /* patientCount <= 3
                   ? resultTexts.insufficientResult
-                  :  */ queryResult
+                  :  */ patientCount
             : errorMessageResult || "-")}
       </span>
     </div>
