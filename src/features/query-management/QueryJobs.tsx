@@ -6,8 +6,8 @@ import { Clock } from "lucide-react";
 import ActionsButton from "@components/ui/buttons/ActionsButton";
 import type {
   Attribute,
-  QueryJob,
   QueryReference,
+  QueryJob,
 } from "@/features/query-management/types";
 import { queryJobStatusMessages } from "@app/constants/httpStatusMessages";
 import CollapsiblePanel from "@/components/ui/CollapsiblePanel";
@@ -18,8 +18,8 @@ import { commonTexts } from "@/app/constants/uiTexts";
 
 type QueryJobsProps = {
   queryJobs: QueryJob[];
-  onEdit: (queryReference: QueryReference) => void;
-  onSave: (queryReference: QueryReference) => void;
+  onEdit: (queryInfo: QueryReference) => void;
+  onSave: (queryInfo: QueryReference) => void;
 };
 
 const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
@@ -108,20 +108,23 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
       showInRow: true,
       columnWidth: "minmax(0,0.6fr)",
       className: "justify-center",
-      render: (queryJob: QueryJob) => (
-        <div className="lg:pl-2" onClick={(event) => event.stopPropagation()}>
-          <ActionsButton
-            actions={["reuse", "save"]}
-            onEdit={onEdit}
-            onSave={onSave}
-            queryReference={{
-              type: "queryJob",
-              id: queryJob.id,
-              query: queryJob.query,
-            }}
-          />
-        </div>
-      ),
+      render: (queryJob: QueryJob) => {
+        const queryReference: QueryReference = {
+          type: "queryJob",
+          id: queryJob.id,
+          name: queryJob.name,
+          query: queryJob.query,
+        };
+        return (
+          <div className="lg:pl-2" onClick={(event) => event.stopPropagation()}>
+            <ActionsButton
+              actions={["reuse", "save"]}
+              onEdit={() => onEdit(queryReference)}
+              onSave={() => onSave(queryReference)}
+            />
+          </div>
+        );
+      },
     },
   ];
 
@@ -132,10 +135,6 @@ const QueryJobs = ({ queryJobs, onEdit, onSave }: QueryJobsProps) => {
     gridTemplateColumns: rowAttributes
       .map((attribute) => attribute.columnWidth)
       .join(" "),
-  };
-
-  const handleSaveQuery = (id: string) => {
-    console.log(id);
   };
 
   return (
