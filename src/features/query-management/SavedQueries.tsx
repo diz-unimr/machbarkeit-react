@@ -77,22 +77,22 @@ const SavedQueries = ({
       showInRow: true,
       columnWidth: "minmax(0,1fr)",
       className: "justify-center",
-      render: (savedQuery: SavedQuery) => (
+      render: (savedQuery: SavedQuery) => {
+        const queryReference: QueryReference = {
+          type: "savedQuery",
+          id: savedQuery.id,
+          name: savedQuery.name,
+          query: savedQuery.query,
+        };
         <div onClick={(event) => event.stopPropagation()}>
           <ActionsButton
             actions={["start", "edit", "delete"]}
-            onStart={onStart}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            queryReference={{
-              type: "savedQuery",
-              id: savedQuery.id,
-              name: savedQuery.name,
-              query: savedQuery.query,
-            }}
+            onStart={() => onStart(queryReference)}
+            onEdit={() => onEdit(queryReference)}
+            onDelete={() => onDelete(queryReference)}
           />
-        </div>
-      ),
+        </div>;
+      },
     },
   ];
 
