@@ -2,15 +2,13 @@
 SPDX-License-Identifier: AGPL-3.0-or-later */
 
 import { useMemo, useState } from "react";
-import download from "downloadjs";
 import Card from "@/components/ui/Card";
-import type { SelectedCriteria, FeasibilityQueryData } from "./types";
+import type { SelectedCriteria } from "./types";
 import FeasibilityQueryControl from "../feasibility-query-control/FeasibilityQueryControl";
 import FeasibilityCriteriaPanel from "./FeasibilityCriteriaPanel";
 import { useSelectedCriteriaStore } from "@/app/store/selected-criteria-store";
 import useFilterStore from "@/app/store/filter-store";
 import { WarningModal } from "@/components/ui/modals/WarningModal";
-import SaveQueryModal from "../SaveQueryModal";
 import createQueryData from "@/app/utils/createQueryData";
 import warningIcon from "@assets/warning-icon.svg";
 import {
@@ -47,9 +45,6 @@ const FeasibilityQueryPanel = () => {
   const updateGlobalFilter = useFilterStore((s) => s.updateGlobalFilter);
   const { warningModal, requestWarningConfirmation, handleWarningChoice } =
     useWarningConfirmation();
-
-  const [saveModalOpen, setSaveModalOpen] = useState<boolean>(false);
-
 
   const getWarningConfig = (warning: GlobalFilterWarning): WarningConfig => {
     if (warning.action === "delete") {
@@ -112,34 +107,6 @@ const FeasibilityQueryPanel = () => {
         }),
       };
     });
-  };
-
-  const parseAndValidateFile = async (
-    file: File,
-  ): Promise<FeasibilityQueryData> => {
-    const text = await file.text();
-    const data = JSON.parse(text) as FeasibilityQueryData;
-
-    const isValid =
-      (data.inclusionCriteria && data.inclusionCriteria.length > 0) ||
-      (data.exclusionCriteria && data.exclusionCriteria.length > 0);
-
-    if (!isValid) {
-      throw new Error("Invalid JSON format");
-    }
-
-    return data;
-  };
-
-  const saveQuery = (fileName: string) => {
-    const queryData = createQueryData(selectedInclusionCriteria);
-
-    if (!queryData) return;
-    // utf-8 encoder
-    const encoder = new TextEncoder();
-    const jsonString = JSON.stringify(queryData, null, 2);
-    const utf8JsonData = encoder.encode(jsonString);
-    download(utf8JsonData, fileName + ".json", "application/json");
   };
 
   const hasNoTimeRestriction = useMemo(() => {
@@ -205,14 +172,6 @@ const FeasibilityQueryPanel = () => {
           </Card>
         </div>
       </div>
-      <SaveQueryModal
-        open={saveModalOpen}
-        onSaveFile={(fileName) => {
-          saveQuery(fileName);
-          setSaveModalOpen(false);
-        }}
-        onCancel={() => setSaveModalOpen(false)}
-      />
     </>
   );
 };
